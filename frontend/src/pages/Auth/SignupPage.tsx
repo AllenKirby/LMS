@@ -9,6 +9,7 @@ import { MdOutlineKeyboardArrowRight,  MdOutlineKeyboardArrowLeft, MdCalendarTod
 import Municipalities from '../../assets/json/Municipalites.json'
 
 import { Input, Select } from '../../Components/UIComponents'
+import { useAuthHook } from "../../hooks";
 
 interface Signup {
   email: string;
@@ -17,7 +18,6 @@ interface Signup {
   firstname: string;
   lastname: string;
   sex: string;
-  birthdate: string;
   contactNumber: string;
   municipality: string;
   affiliation: string;
@@ -42,6 +42,9 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate()
   const [date, setDate] = useState({ day: '', month: '', year: ''})
   const [municipalitiesSearch, setMunicipalitiesSearch] = useState<string>('')
+  const [showPassword, setShowPassword] = useState<ShowPassword>({password: false, confirmPassword: false})
+  const [counter, setCounter] = useState<number>(1)
+  const { handleSignup, isLoading } = useAuthHook()
   const [signupCredentials, setSignupCredentials] = useState<Signup>({
     email: '', 
     password: '', 
@@ -49,7 +52,6 @@ const SignupPage: React.FC = () => {
     firstname: '',
     lastname: '',
     sex: '',
-    birthdate: `${date.month} ${date.day} ${date.year}`,
     contactNumber: '',
     municipality: '',
     affiliation: '',
@@ -58,35 +60,26 @@ const SignupPage: React.FC = () => {
     division: '',
     positionTitle: ''
   })
-  const [showPassword, setShowPassword] = useState<ShowPassword>({password: false, confirmPassword: false})
-  const [counter, setCounter] = useState<number>(1)
-
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, index) => {
-    const year = currentYear - index;
-    return { label: year.toString(), value: year.toString() };
-  });
-
 
   const months = [
-    {label: 'January', value: 'January'},
-    {label: 'February', value: 'February'},
-    {label: 'March', value: 'March'},
-    {label: 'April', value: 'April'},
-    {label: 'May', value: 'May'},
-    {label: 'June', value: 'June'},
-    {label: 'July', value: 'July'},
-    {label: 'August', value: 'August'},
-    {label: 'September', value: 'September'},
-    {label: 'October', value: 'October'},
-    {label: 'November', value: 'November'},
-    {label: 'December', value: 'December'}
+    {label: 'January', value: '01'},
+    {label: 'February', value: '02'},
+    {label: 'March', value: '03'},
+    {label: 'April', value: '04'},
+    {label: 'May', value: '05'},
+    {label: 'June', value: '06'},
+    {label: 'July', value: '07'},
+    {label: 'August', value: '08'},
+    {label: 'September', value: '09'},
+    {label: 'October', value: '10'},
+    {label: 'November', value: '11'},
+    {label: 'December', value: '12'}
   ]
 
   const sex = [
     { label: "Select Sex", value: "" },
-    { label: "Male", value: "Male" },
-    { label: "Female", value: "Female" }
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" }
   ]
 
   const affiliation = [
@@ -96,6 +89,12 @@ const SignupPage: React.FC = () => {
     { label: "Private Freelancer", value: "Private Freelancer" }
   ]
 
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, index) => {
+    const year = currentYear - index;
+    return { label: year.toString(), value: year.toString() };
+  });
+
   const increment = () => {
     setCounter(prevCounter => prevCounter + 1);
   }
@@ -104,12 +103,28 @@ const SignupPage: React.FC = () => {
     setCounter(prevCounter => prevCounter - 1)
   }
 
-  const openCalendar = () =>{
-    
+  const signup = async(e: React.FormEvent<HTMLFormElement>) =>{
+    e.preventDefault()
+    const data = {
+      first_name: signupCredentials.firstname,
+      last_name: signupCredentials.lastname,
+      email: signupCredentials.email,
+      sex: signupCredentials.sex,
+      birth_date: `${date.year}-${date.month}-${date.day}`,
+      address: signupCredentials.municipality,
+      contact: signupCredentials.contactNumber,
+      password: signupCredentials.password,
+      affiliation: signupCredentials.affiliation,
+      office_name: signupCredentials.officeName,
+      office_address: signupCredentials.officeAddress,
+      division: signupCredentials.division,
+      position_title: signupCredentials.positionTitle
+    }
+    await handleSignup(data)
   }
 
   return (
-    <form className="w-full h-full p-8 flex flex-col gap-5">
+    <form onSubmit={signup} className="w-full h-full p-8 flex flex-col gap-5">
       <div className="w-full h-auto flex flex-col gap-3">
         <h1 className="text-h-h6 font-medium">Acount Registration</h1>
         <div className="flex items-start justify-start">
@@ -138,6 +153,7 @@ const SignupPage: React.FC = () => {
                 <Input 
                   type="email" 
                   styling="secondary"
+                  value={signupCredentials.email}
                   onChange={(e) => setSignupCredentials({...signupCredentials , email: e.target.value})}
                   placeholder='Enter valid email address'/>
             </div>
@@ -149,6 +165,7 @@ const SignupPage: React.FC = () => {
               <Input 
                 type={showPassword.password ? "text" : "password"} 
                 styling="primary"
+                value={signupCredentials.password}
                 onChange={(e) => setSignupCredentials({...signupCredentials, password: e.target.value})} 
                 placeholder='Enter your password'/>
               <button 
@@ -165,6 +182,7 @@ const SignupPage: React.FC = () => {
               <Input 
                 type={showPassword.confirmPassword ? "text" : "password"} 
                 styling="primary"
+                value={signupCredentials.confirmPassword}
                 onChange={(e) => setSignupCredentials({...signupCredentials, confirmPassword: e.target.value})} 
                 placeholder='Confirm your password'/>
               <button 
@@ -180,6 +198,7 @@ const SignupPage: React.FC = () => {
               <Input 
                 type="text" 
                 styling="tertiary" 
+                value={signupCredentials.firstname}
                 placeholder="Enter your firstname" 
                 onChange={(e) => setSignupCredentials({...signupCredentials, firstname: e.target.value})}/>
             </div>
@@ -188,6 +207,7 @@ const SignupPage: React.FC = () => {
               <Input 
                 type="text" 
                 styling="tertiary" 
+                value={signupCredentials.lastname}
                 placeholder="Enter you lastname" 
                 onChange={(e) => setSignupCredentials({...signupCredentials, lastname: e.target.value})}/>
             </div>
@@ -224,7 +244,7 @@ const SignupPage: React.FC = () => {
               <div className="w-2/5">
                 <Select value={date.year} onChange={(e) => setDate({...date, year: e.target.value})} options={years}/>
               </div>
-              <button type="button" onClick={openCalendar} className="w-fit px-2 relative">
+              <button type="button" className="w-fit px-2 relative">
                 <MdCalendarToday className="text-f-gray" size={24}/>
               </button>
             </div>
@@ -240,6 +260,7 @@ const SignupPage: React.FC = () => {
                   type="number" 
                   placeholder="9123456789" 
                   styling="tertiary" 
+                  value={signupCredentials.contactNumber}
                   onChange={(e) => setSignupCredentials({...signupCredentials, contactNumber: e.target.value})}/>
               </div>
             </div>
@@ -251,7 +272,7 @@ const SignupPage: React.FC = () => {
                 type="text" 
                 value={signupCredentials.municipality}
                 placeholder="Select Municipality" 
-                styling="tertiary" 
+                styling="tertiary"
                 onChange={(e) => {
                   setMunicipalitiesSearch(e.target.value); 
                   setSignupCredentials({...signupCredentials, municipality: e.target.value})
@@ -349,6 +370,7 @@ const SignupPage: React.FC = () => {
             </button>
             <button 
               type="submit" 
+              disabled={isLoading}
               className="px-5 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2"
               >
                 Signup

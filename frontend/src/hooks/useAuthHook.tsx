@@ -4,12 +4,26 @@ import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../redux/UserRedux'
 
-import api from '../instance/instanceAPI'
 import { useNavigate } from 'react-router-dom'
 
 interface LoginCredentials {
   email: string;
   password: string;
+}
+
+interface SignupData {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  sex: string;
+  contact: string;
+  address: string;
+  affiliation: string;
+  office_name: string;
+  office_address: string;
+  division: string
+  position_title: string
 }
 
 const useAuthHook = () => {
@@ -21,17 +35,14 @@ const useAuthHook = () => {
   const navigate = useNavigate()
 
   const handleLogin = async(data: LoginCredentials) => {
-    console.log('gegeggegege')
     setError(null)
     setIsLoading(true)
     try {
-      console.log('gegeggegege222')
       const response = await axios.post(`${API_URL}/accounts/login/`, JSON.stringify(data), {
         headers: { 
           'Content-Type': 'application/json'
         }
       })
-      console.log('gegeggegege333')
       if(response.status === 200){
         setIsLoading(false)
         console.log(response.data)
@@ -59,9 +70,8 @@ const useAuthHook = () => {
     setIsLoading(true)
     try {
         const response = await axios.post(`${API_URL}/accounts/logout/`, {},{
-            withCredentials: true
-          });
-          console.log(response.status)
+          withCredentials: true
+        });
         if(response.status === 200){
           setIsLoading(false)
           dispatch(setUser(null))
@@ -78,7 +88,33 @@ const useAuthHook = () => {
     }
   }
 
-  return  {handleLogin, handleLogout, isLoading, error}
+  const handleSignup = async(data: SignupData) => {
+    console.log(JSON.stringify(data))
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await axios.post(`${API_URL}/accounts/register/`, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if(response.status === 200) {
+        setIsLoading(false)
+        console.log(response.data)
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setIsLoading(false)
+        console.log(error.response?.data?.message);
+        setError(error.response?.data?.message || "Something went wrong");
+      } else {
+          console.log(error);
+          setError("An unexpected error occurred");
+      }
+  }
+  }
+
+  return  {handleLogin, handleLogout, handleSignup, isLoading, error}
 }
 
 export default useAuthHook
