@@ -1,35 +1,63 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       fontFamily: {
-  			grotesk: [
-  				'Host Grotesk',
-  				'sans-serif'
-  			]
-  		},
-  		colors: {
-  			'f-dark': '#26282A',
-  			'f-gray': '#9C9C9C',
-  			'f-green': '#0E6D4F',
-		},
-  		fontSize: {
-  			'p-sc': '10px',
-  			'p-sm': '13.33px',
-  			'p-rg': '16px',
-  			'p-lg': '19.2px',
-  			'h-h6': '23.04px',
-  			'h-h5': '26.67px',
-  			'h-h4': '30.31px',
-  			'h-h3': '33.96px',
-  			'h-h2': '37.61px',
-  			'h-h1': '41.26px'
-  		}
+        grotesk: ["Host Grotesk", "sans-serif"],
+      },
+      colors: {
+        "f-dark": "#26282A",
+        "f-light": "#FAFAFA",
+        "f-gray": "#9C9C9C",
+        "f-green": "#0E6D4F",
+
+        "c-blue-5": "#e7f4fd",
+        "c-blue-10": "#b4dbf8",
+        "c-blue-20": "#8fcaf5",
+        "c-blue-30": "#5cb2f0",
+        "c-blue-40": "#3da3ed",
+        "c-blue-50": "#0c8ce9",
+        "c-blue-60": "#0b7fd4",
+        "c-blue-70": "#0963a5",
+        "c-blue-80": "#074d80",
+        "c-blue-90": "#053b62",
+
+        "c-green-5": "#ecf3f2",
+        "c-green-10": "#c3d9d7",
+        "c-green-20": "#a7c7c4",
+        "c-green-30": "#7eaea9",
+        "c-green-40": "#659e98",
+        "c-green-50": "#3f867e",
+        "c-green-60": "#397a73",
+        "c-green-70": "#2d5f59",
+        "c-green-80": "#234a45",
+        "c-green-90": "#1a3835",
+
+        "c-grey-5": "#f3f3f3",
+        "c-grey-10": "#d9d9d9",
+        "c-grey-20": "#c7c7c7",
+        "c-grey-30": "#aeaeae",
+        "c-grey-40": "#9e9e9e",
+        "c-grey-50": "#868686",
+        "c-grey-60": "#7a7a7a",
+        "c-grey-70": "#5f5f5f",
+        "c-grey-80": "#4a4a4a",
+        "c-grey-90": "#383838",
+      },
+      fontSize: {
+        "p-sc": "10px",
+        "p-sm": "13.33px",
+        "p-rg": "16px",
+        "p-lg": "19.2px",
+        "h-h6": "23.04px",
+        "h-h5": "26.67px",
+        "h-h4": "30.31px",
+        "h-h3": "33.96px",
+        "h-h2": "37.61px",
+        "h-h1": "41.26px",
+      },
     },
   },
   plugins: [],
-}
+};
