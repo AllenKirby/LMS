@@ -1,23 +1,28 @@
 import React from "react";
 
 type ButtonProps = {
-    type?: "submit" | "reset" | "button" | undefined;
-    children: string;
-    disabled?: boolean;
-    onClick?: () => void
+  type?: "submit" | "reset" | "button" | undefined;
+  children: string;
+  disabled?: boolean;
+  onClick?: () => void;
 };
 
-const Button: React.FC<ButtonProps> = ({type, children, onClick, disabled}) => {
+const Button: React.FC<ButtonProps> = ({
+  type,
+  children,
+  onClick,
+  disabled,
+}) => {
   return (
-    <button 
-        type={type} 
-        onClick={onClick} 
-        disabled={disabled}
-        className="w-full px-5 py-3 rounded-xl bg-green-950 text-white text-lg"
-        >
-        {children}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full h-fit p-3 rounded-md bg-c-green-60 hover:opacity-90 text-f-light text-p-rg font-medium"
+    >
+      {children}
     </button>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;
