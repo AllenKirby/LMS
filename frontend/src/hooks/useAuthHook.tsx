@@ -6,6 +6,8 @@ import { setUser } from '../redux/UserRedux'
 
 import { useNavigate } from 'react-router-dom'
 
+import api from '../instance/instanceAPI'
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -38,8 +40,8 @@ const useAuthHook = () => {
     setError(null)
     setIsLoading(true)
     try {
-      const response = await axios.post(`${API_URL}/accounts/login/`, JSON.stringify(data), {
-        headers: { 
+      const response = await axios.post(`${API_URL}/accounts/login/`, data, {
+        headers: {
           'Content-Type': 'application/json'
         }
       })
@@ -61,8 +63,9 @@ const useAuthHook = () => {
   }
 
   const role = (roleName: string) => {  
-    if(!roleName) navigate('/login')
-    if(roleName === 'trainee') navigate('/learner/home')
+    if(!roleName) navigate('/')
+    if(roleName === 'trainee') navigate('/trainee/home')
+    if(roleName === 'training_officer') navigate('/trainingofficer/dashboard')
   }
 
   const handleLogout = async() => {
@@ -111,10 +114,28 @@ const useAuthHook = () => {
           console.log(error);
           setError("An unexpected error occurred");
       }
-  }
+    }
   }
 
-  return  {handleLogin, handleLogout, handleSignup, isLoading, error}
+  const handleRefreshToken = async() => { 
+    try {
+      const res = await api.post('/accounts/refresh/', null)
+      if(res.status === 200) {
+        dispatch(setUser(res.data))
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setIsLoading(false)
+        console.log(error.response?.data?.message);
+        setError(error.response?.data?.message || "Something went wrong");
+      } else {
+          console.log(error);
+          setError("An unexpected error occurred");
+      }
+    }
+  }
+
+  return  {handleLogin, handleLogout, handleSignup, handleRefreshToken, isLoading, error}
 }
 
 export default useAuthHook

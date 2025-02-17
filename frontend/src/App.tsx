@@ -1,10 +1,17 @@
 import { createBrowserRouter, Route, createRoutesFromElements, RouterProvider } from "react-router-dom";
 
 import { NotFoundPage, MainPage } from './pages';
-import { Home, MyCourse, Resources } from './pages/Learner';
+import { Home, MyCourse, ResourcesTrainee } from './pages/Learner';
 import { SignupPage, LoginPage, AuthPage } from "./pages/Auth"; 
+import { Dashboard, Courses, Trainee, Resources } from './pages/TrainingOfficer'
 
 function App() {
+    // const { handleRefreshToken } = useAuthHook()
+
+    // useEffect(() => {
+    //     handleRefreshToken()
+    // }, [])
+
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route>
@@ -15,10 +22,16 @@ function App() {
                 </Route>
 
                 // Learner
-                <Route path="/learner" element={<MainPage />}>
+                <Route path="/trainee" element={<MainPage />}>
                     <Route path="home" element={<Home />} />
                     <Route path="mycourses" element={<MyCourse />} />
+                    <Route path="resources" element={<ResourcesTrainee />} />
+                </Route>
+                <Route path="/trainingofficer" element={<MainPage />}>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="courses" element={<Courses />} />
                     <Route path="resources" element={<Resources />} />
+                    <Route path="trainee" element={<Trainee />} />
                 </Route>
 
                 // Error
