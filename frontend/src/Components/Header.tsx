@@ -6,10 +6,34 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 //hooks
 import { useAuthHook } from '../hooks'
+import { useSelector } from "react-redux";
+
+interface User {
+    id: number;
+    email: string;
+    role: string;
+    first_name: string;
+    last_name: string;
+    sex: string;
+    birth_date: string;
+    contact: string;
+    address: string;
+}
+  
+interface UserState {
+    message: string;
+    user: User;
+    access_token?: string;
+    csrf_token?: string;
+}
 
 const Header: React.FC = () => {
+    //states
     const [dropDown, setDropDown] = useState<boolean>(false)
+    //hooks
     const { handleLogout, isLoading } = useAuthHook()
+    //redux
+    const user = useSelector((state: {user: UserState}) => state.user)
 
     const logout = async() => {
         await handleLogout()
@@ -17,19 +41,20 @@ const Header: React.FC = () => {
 
   return (
     <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b">
-        <div className="flex gap-14">
-            <section className="flex items-center justify-center gap-2">
-                <div className="w-12 h-12 rounded-full bg-gray-300"></div>
-                <h1 className="text-p-lg font-medium">NIA-LMS</h1>
-            </section>
-            <nav className="p-3">
-                <ul className="flex gap-8">
-                    <NavLink to={'home'} className="text-f-gray">Home</NavLink>
-                    <NavLink to={'mycourses'} className="text-f-gray">My Courses</NavLink>
-                    <NavLink to={'resources'} className="text-f-gray">Resources</NavLink>
-                </ul>
-            </nav>
-        </div>
+        <section className="flex items-center justify-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-gray-300"></div>
+            <h1 className="text-p-lg font-medium">NIA-LMS</h1>
+        </section>
+        <nav className="p-3">
+            <ul className="flex gap-8">
+               {user.user.role === 'trainee' && <NavLink to={'home'} className="text-f-gray">Home</NavLink>}
+                {user.user.role === 'trainee' && <NavLink to={'mycourses'} className="text-f-gray">My Courses</NavLink>}
+                {user.user.role === 'training_officer' && <NavLink to={'dashboard'} className="text-f-gray">Home</NavLink>}
+                {user.user.role === 'training_officer' && <NavLink to={'courses'} className="text-f-gray">My Courses</NavLink>}
+                {user.user.role === 'training_officer' && <NavLink to={'trainee'} className="text-f-gray">Trainee</NavLink>}
+                <NavLink to={'resources'} className="text-f-gray">Resources</NavLink>
+            </ul>
+        </nav>
         <div className="flex items-center justify-center gap-2">
             <section className="flex gap-2">
                 <button className="rounded-full w-8 h-8 bg-gray-50 flex items-center justify-center">
@@ -43,7 +68,7 @@ const Header: React.FC = () => {
                 <div className="w-10 h-10 rounded-full bg-green-950">
 
                 </div>
-                <h2>Allen Kirby</h2>
+                <h2>{user.user.first_name}</h2>
                 <div className="relative">
                     <button onClick={() => setDropDown(!dropDown)}>
                         <IoIosArrowDown size={16}/>
