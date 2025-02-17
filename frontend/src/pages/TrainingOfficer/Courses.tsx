@@ -109,11 +109,11 @@ const Courses: React.FC = () => {
             <div>
               <h1 className="text-h-h6 font-medium">Course Overview</h1>
             </div>
-            <button className="w-full border-2 border-dashed p-20 flex flex-col items-center justify-center border-c-blue-50 rounded-md">
+            <div className="w-full border-2 border-dashed p-20 flex flex-col items-center justify-center border-c-blue-50 rounded-md">
               <FiUpload size={44}/>
               <p className="font-medium">Upload Cover Image</p>
               <p className="text-c-grey-50">(Max. 20mb, Landscape)</p>
-            </button>
+            </div>
             <div className="w-full py-4 flex items-center justify-between">
               <h1 className="text-h-h5 font-medium">Course Title</h1>
               <FiEdit2 size={20}/>
