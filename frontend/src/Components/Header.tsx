@@ -50,7 +50,7 @@ const Header: React.FC = () => {
                {user.user.role === 'trainee' && <NavLink to={'home'} className="text-f-gray">Home</NavLink>}
                 {user.user.role === 'trainee' && <NavLink to={'mycourses'} className="text-f-gray">My Courses</NavLink>}
                 {user.user.role === 'training_officer' && <NavLink to={'dashboard'} className="text-f-gray">Home</NavLink>}
-                {user.user.role === 'training_officer' && <NavLink to={'courses'} className="text-f-gray">My Courses</NavLink>}
+                {user.user.role === 'training_officer' && <NavLink to={'courses/courseoverview'} className="text-f-gray">My Courses</NavLink>}
                 {user.user.role === 'training_officer' && <NavLink to={'trainee'} className="text-f-gray">Trainee</NavLink>}
                 <NavLink to={'resources'} className="text-f-gray">Resources</NavLink>
             </ul>

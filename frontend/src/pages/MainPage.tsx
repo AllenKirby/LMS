@@ -9,7 +9,7 @@ const MainPage: React.FC = () => {
   const { handleRefreshToken } = useAuthHook()
 
   useEffect(() => {
-    //handleRefreshToken()
+    handleRefreshToken()
   }, [])
 
   return (
