@@ -4,13 +4,9 @@ import { NotFoundPage, MainPage } from './pages';
 import { Home, MyCourse, ResourcesTrainee } from './pages/Learner';
 import { SignupPage, LoginPage, AuthPage } from "./pages/Auth"; 
 import { Dashboard, Courses, Trainee, Resources } from './pages/TrainingOfficer'
+import { CourseOverview, CourseContent, Preview } from './pages/TrainingOfficer/CourseComponent'
 
 function App() {
-    // const { handleRefreshToken } = useAuthHook()
-
-    // useEffect(() => {
-    //     handleRefreshToken()
-    // }, [])
 
     const router = createBrowserRouter(
         createRoutesFromElements(
@@ -29,7 +25,11 @@ function App() {
                 </Route>
                 <Route path="/trainingofficer" element={<MainPage />}>
                     <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="courses" element={<Courses />} />
+                    <Route path="courses" element={<Courses />}>
+                        <Route path="courseoverview" element={<CourseOverview/>}/>
+                        <Route path="coursecontent" element={<CourseContent/>}/>
+                        <Route path="preview" element={<Preview/>}/>
+                    </Route>
                     <Route path="resources" element={<Resources />} />
                     <Route path="trainee" element={<Trainee />} />
                 </Route>

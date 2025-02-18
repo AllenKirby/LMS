@@ -16,6 +16,8 @@ export interface UserState {
   message: string;
   user: User;
   access_token?: string;
+  csrf_token?: string;
+  expiration: Date;
 }
 
 const initialState: UserState | null = null;

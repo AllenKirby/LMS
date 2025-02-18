@@ -7,7 +7,7 @@ const AuthPage = () => {
   const { handleRefreshToken } = useAuthHook()
 
   useEffect(() => {
-    //handleRefreshToken()
+    handleRefreshToken()
   }, [])
 
   return (
