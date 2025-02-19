@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, forwardRef } from "react";
 
 type InputProps = {
   type: string;
@@ -7,8 +7,8 @@ type InputProps = {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   styling: "primary" | "secondary" | "tertiary";
-  min?: string;
-  max?: string;
+  min?: string  | number;
+  max?: string  | number;
 };
 
 interface Styling {
@@ -18,22 +18,32 @@ interface Styling {
   tertiary: string;
 }
 
-const Input: React.FC<InputProps> = ({
-  type,
-  placeholder,
-  value,
-  onChange,
-  disabled,
-  styling,
-  min,
-  max,
-}) => {
-  const inputStyling: Styling = {
-    standard:
-      "w-full p-3 rounded-md focus:outline-c-green-50 border border-c-grey-20 bg-white",
-    primary: "px-12",
-    secondary: "pl-12",
-    tertiary: "",
+// const Input: React.FC<InputProps> = ({
+//   type,
+//   placeholder,
+//   value,
+//   onChange,
+//   disabled,
+//   styling,
+//   min,
+//   max,
+// }) => {
+//   const inputStyling: Styling = {
+//     standard:
+//       "w-full p-3 rounded-md focus:outline-c-green-50 border border-c-grey-20 bg-white",
+//     primary: "px-12",
+//     secondary: "pl-12",
+//     tertiary: "",
+//   };
+
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ type, placeholder, value, onChange, disabled, styling, min, max, ...rest}, ref) => {
+    const inputStyling: Styling = {
+          standard:
+            "w-full p-3 rounded-md focus:outline-c-green-50 border border-c-grey-20 bg-white",
+          primary: "px-12",
+          secondary: "pl-12",
+          tertiary: "",
   };
 
   return (
@@ -46,8 +56,13 @@ const Input: React.FC<InputProps> = ({
       onChange={onChange}
       className={`${inputStyling.standard} ${inputStyling[styling]}`}
       disabled={disabled}
+      ref={ref}
+      {...rest}
     />
   );
-};
+}
+);
+
+Input.displayName = "Input";
 
 export default Input;
