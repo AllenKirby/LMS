@@ -1,14 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useEffect } from 'react'
-
-import { useAuthHook } from '../../hooks'
-
 const AuthPage = () => {
-  const { handleRefreshToken } = useAuthHook()
-
-  useEffect(() => {
-    handleRefreshToken()
-  }, [])
 
   return (
     <section className="w-full h-screen flex flex-row">
