@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import UserReducer from './UserRedux'
+import OverviewDataReducer from './CourseDataRedux'
 import storage from "redux-persist/lib/storage";
 import{ persistReducer, persistStore} from "redux-persist";
 import { combineReducers }from 'redux'
@@ -7,11 +8,12 @@ import { combineReducers }from 'redux'
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user']
+  whitelist: ['user', 'overviewData']
 }
 
 const rootReducer = combineReducers({
-  user: UserReducer
+  user: UserReducer,
+  courseData: OverviewDataReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

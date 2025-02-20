@@ -5,7 +5,8 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { CiImageOn } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { FiPlus } from "react-icons/fi";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 type QuestionnaireState = {
     deleteQuestion: (id: string) => void;
@@ -20,6 +21,14 @@ const Questionnaire: React.FC<QuestionnaireState> = (props) => {
     const { deleteQuestion, questionId, setData, choices, addChoices, deleteChoices } = props
 
     const [answerType, setAnswerType] = useState<string>('Multiple Choice')
+
+    useEffect(() => {
+        setData(questionId, 'choicesType', answerType)
+
+        if(answerType === 'True or False') {
+            setData(questionId, 'choices', '', '')
+        }
+    }, [answerType])
 
   return (
     <section className="w-full h-fit border rounded-md">
@@ -60,12 +69,18 @@ const Questionnaire: React.FC<QuestionnaireState> = (props) => {
                     ))
                 )}
                 {answerType === 'Check Box' && (
-                    <div className="w-full flex items-center justify-center gap-2">
-                        <input type="checkbox" className="w-fit"/>
-                        <input type="text" className="w-full p-1 outline-none focus:border-b" placeholder="Option 1"/>
-                        <button><CiImageOn size={20} className="w-fit" color="gray"/></button>
-                        <button><IoMdClose size={20} className="w-fit" color="gray"/></button>
-                    </div>
+                    choices.map((c, index) => (
+                        <div key={c.id} className="w-full flex items-center justify-center gap-2">
+                            <input type="checkbox" className="w-fit"/>
+                            <input 
+                                type="text" 
+                                className="w-full p-1 outline-none focus:border-b" 
+                                placeholder={`Option ${index + 1}`}
+                                onChange={(e) => setData(questionId, 'choices', e.target.value, c.id)}/>
+                            <button><CiImageOn size={20} className="w-fit" color="gray"/></button>
+                            <button onClick={() => deleteChoices(questionId, c.id)}><IoMdClose size={20} className="w-fit" color="gray"/></button>
+                        </div>
+                    ))
                 )}
                 {answerType === 'Text Answer' && (
                     <textarea className="w-full p-2 resize-none" placeholder="Enter Answer here..."></textarea>

@@ -31,18 +31,6 @@ const LoginPage: React.FC = () => {
   //states
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  // const [loginCredentials, setLoginCredentials] = useState<Login>({
-  //   email: "",
-  //   password: "",
-  // });
-
-  // const login = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   console.log("Login attempt...");
-
-  //   await handleLogin(loginCredentials);
-  // };
-
   const { 
     register,
     handleSubmit,
@@ -73,17 +61,6 @@ const LoginPage: React.FC = () => {
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-c-grey-50"
               size={27}
             />
-            {/* <Input
-              type="email"
-              styling="secondary"
-              onChange={(e) =>
-                setLoginCredentials({
-                  ...loginCredentials,
-                  email: e.target.value,
-                })
-              }
-              placeholder="Enter your email address"
-            /> */}
             <Input
               type="email"
               styling="secondary"
@@ -100,17 +77,6 @@ const LoginPage: React.FC = () => {
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-c-grey-50"
               size={24}
             />
-            {/* <Input
-              type={showPassword ? "text" : "password"}
-              styling="primary"
-              onChange={(e) =>
-                setLoginCredentials({
-                  ...loginCredentials,
-                  password: e.target.value,
-                })
-              }
-              placeholder="Enter your password"
-            /> */}
             <Input
                type={showPassword ? "text" : "password"}
               styling="secondary"
