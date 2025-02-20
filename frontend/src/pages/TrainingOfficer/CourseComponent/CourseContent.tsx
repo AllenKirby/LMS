@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
 
 import { Menu, Questionnaire } from './CourseContentComponents'
@@ -17,20 +17,36 @@ const CourseContent = () => {
   }[]>([])
 
   const [addMenu, setAddMenu] = useState<{ 
-    id: string; 
-    menuTitle: string;
+    menuID: string; 
+    title: string;
+    position: number;
+    modules: {moduleID: string, title: string, position: number}[];
     }[]>([])
+
+  const [selectMenu, setSelectedMenu] = useState<string>('')
+
+  useEffect(() => {
+    console.log(addMenu)
+  }, [addMenu])
+
+  const selectMenuID = (menuID: string) => {
+    setSelectedMenu(menuID)
+  }
 
   const addQuestion = () => {
     setAddQuestionnaire([...addQuestionnaire, {id: uuidv4(), question: '', choices: [], choicesType: 'Multiple Choice'}]);
   };
 
   const addMenuComponent = () => {
-    setAddMenu([...addMenu, {id: uuidv4(), menuTitle: ''}]);
+    setAddMenu([...addMenu, {menuID: uuidv4(), title: '', position: addMenu.length + 1, modules:[]}]);
   };
 
   const deleteQuestion = (id: string) => {
     setAddQuestionnaire(prev => prev.filter(q => q.id !== id));
+  };
+
+  const deleteMenu= (id: string) => {
+    setAddMenu(prev => prev.filter(m => m.menuID !== id));
   };
 
   const AddChoice = (questionID: string) => {
@@ -46,6 +62,19 @@ const CourseContent = () => {
     );
   };
 
+  const AddModule = (menuID: string) => {
+    setAddMenu(prev => 
+      prev.map(m =>
+        m.menuID === menuID
+          ? {
+              ...m,
+              modules: [...m.modules, { moduleID: uuidv4(), title: "", position: m.modules.length + 1 }], 
+            }
+          : m
+      )
+    )
+  }
+
   const DeleteChoice = (questionID: string, choiceID: string) => {
     setAddQuestionnaire(prev =>
       prev.map(q =>
@@ -59,7 +88,20 @@ const CourseContent = () => {
     );
   };
 
-  const setData = (questionID: string, type:string , value: string, choiceID: string = '') => {
+  const DeleteModule = (menuID: string, moduleID: string) => {
+    setAddMenu(prev =>
+      prev.map(m =>
+        m.menuID === menuID
+          ? {
+              ...m,
+              modules: m.modules.filter(module => module.moduleID !== moduleID), // Remove choice
+            }
+          : m
+      )
+    );
+  }
+
+  const setDataQuestionnaire = (questionID: string, type:string , value: string, choiceID: string = '') => {
     if(type === 'question') {
       setAddQuestionnaire(prev =>
         prev.map(question => 
@@ -105,6 +147,18 @@ const CourseContent = () => {
     }
   };
 
+  const setDataMenu = (type: string, menuID: string, value: string) => {
+    if(type === 'menuTitle') {
+      setAddMenu(prev =>
+        prev.map(menu => 
+          menu.menuID === menuID ? { ...menu, title: value } : menu
+        )
+      );
+    }
+  }
+
+  const selectedMenu = addMenu.find(m => m.menuID === selectMenu);
+
   return (
     <section className="w-full h-full flex flex-row gap-5">
       <div className="w-1/4 h-full">
@@ -113,39 +167,54 @@ const CourseContent = () => {
         </div>
         <div className='w-full flex flex-col gap-3 items-center'>
           {addMenu.map((m) => (
-            <Menu key={m.id}/>
+            <Menu 
+              key={m.menuID}
+              deleteMenu={deleteMenu}
+              menuID={m.menuID}
+              setData={setDataMenu}
+              addModule={AddModule}
+              modules={m.modules}
+              setSelectedMenu={selectMenuID}
+              deleteModule={DeleteModule}
+              />
           ))}
           <button onClick={addMenuComponent} className="h-fit w-fit p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
         </div>
       </div>
       <div className="w-3/4 h-fit">
-        <div className='w-full h-full border rounded-md overflow-hidden'>
-          <div className='w-full flex items-center justify-between p-3 border-b'>
-            <input type="text" className="bg-transparent p-1 text-h-h6 font-medium outline-none" placeholder="Module Title"/>
-            <button>
-              <FiEdit2 size={20} className='text-c-grey-50'/>
-            </button>
-          </div>
-          <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
-            {addQuestionnaire.map((q) => (
-              <Questionnaire 
-                key={q.id} 
-                questionId={q.id} 
-                deleteQuestion={deleteQuestion} 
-                setData={setData} 
-                choices={q.choices}
-                addChoices={AddChoice}
-                deleteChoices={DeleteChoice}/>
-            ))}
-            {/* <UploadContent/> */}
-            {/* <Separator/>  */}
-            <div className='w-full flex items-center justify-center gap-3'>
-              <button onClick={addQuestion} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
-              <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
-              <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+        {selectedMenu && selectedMenu.modules.length > 0 ? (
+          <div className='w-full h-full border rounded-md overflow-hidden'>
+            <div className='w-full flex items-center justify-between p-3 border-b'>
+              <input type="text" className="bg-transparent p-1 text-h-h6 font-medium outline-none" placeholder="Module Title"/>
+              <button>
+                <FiEdit2 size={20} className='text-c-grey-50'/>
+              </button>
+            </div>
+            <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
+              {addQuestionnaire.map((q) => (
+                <Questionnaire 
+                  key={q.id} 
+                  questionId={q.id} 
+                  deleteQuestion={deleteQuestion} 
+                  setData={setDataQuestionnaire} 
+                  choices={q.choices}
+                  addChoices={AddChoice}
+                  deleteChoices={DeleteChoice}/>
+              ))}
+              {/* <UploadContent/> */}
+              {/* <Separator/>  */}
+              <div className='w-full flex items-center justify-center gap-3'>
+                <button onClick={addQuestion} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+                <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
+                <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className='w-full h-full flex items-center justify-center'>
+            <p className='font-medium text-lg'>No Module Found</p>
+          </div>
+        )}
       </div>
     </section>
   )
