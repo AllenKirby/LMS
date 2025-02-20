@@ -17,8 +17,11 @@ import { useAuthHook } from "../../hooks";
 // }
 
 const loginSchema = yup.object({
-  email: yup.string().email("Invalid email format").required("Email is required!"),
-  password: yup.string().min(8, "Password must be at least 8 character").required("Password is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required!"),
+  password: yup.string().required("Password is required"),
 });
 
 type LoginForm = yup.InferType<typeof loginSchema>;
@@ -43,20 +46,26 @@ const LoginPage: React.FC = () => {
   //   await handleLogin(loginCredentials);
   // };
 
-  const { 
+  const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
+    trigger,
   } = useForm<LoginForm>({
     resolver: yupResolver(loginSchema),
-    mode: "onBlur",
-  })
+    mode: "all",
+  });
 
   const login = async (data: LoginForm) => {
-      console.log(data, "Login attempt...");
-  
-      await handleLogin(data);
-    };
+    console.log(data, "Login attempt...");
+    await handleLogin(data);
+  };
+
+  const handleButtonClick = async () => {
+    const valid = await trigger();
+    if (!valid) return;
+  };
+
   return (
     <form onSubmit={handleSubmit(login)} className="w-3/4 h-fit text-f-dark">
       <section>
@@ -70,7 +79,9 @@ const LoginPage: React.FC = () => {
           <label>Email Address</label>
           <div className="relative w-auto h-auto mt-1">
             <IoIosAt
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-c-grey-50"
+              className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${
+                errors.email ? "text-red-500" : "text-c-grey-50"
+              }`}
               size={27}
             />
             {/* <Input
@@ -89,15 +100,22 @@ const LoginPage: React.FC = () => {
               styling="secondary"
               {...register("email")}
               placeholder="Enter your email address"
+              error={!!errors.email}
             />
           </div>
-          {errors.email && <p className="text-p-sm text-red-500 mt-1">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-p-sm text-red-500 mt-1">
+              {errors.email.message}
+            </p>
+          )}
         </div>
         <div>
           <label>Password</label>
           <div className="relative w-auto h-auto mt-1">
             <GoLock
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-c-grey-50"
+              className={`absolute left-4 top-1/2 transform -translate-y-1/2 text-c-grey-50 ${
+                errors.password ? "text-red-500" : "text-c-grey-50"
+              }`}
               size={24}
             />
             {/* <Input
@@ -112,10 +130,11 @@ const LoginPage: React.FC = () => {
               placeholder="Enter your password"
             /> */}
             <Input
-               type={showPassword ? "text" : "password"}
+              type={showPassword ? "text" : "password"}
               styling="secondary"
               {...register("password")}
               placeholder="Enter your password"
+              error={!!errors.password}
             />
             <button
               type="button"
@@ -135,7 +154,11 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
           <div className="flex justify-between items-center">
-            {errors.password && <p className="text-p-sm text-red-500 mt-1">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-p-sm text-red-500 mt-1 text-nowrap">
+                {errors.password.message}
+              </p>
+            )}
             <p className="w-full text-end cursor-pointer text-c-green-70 font-medium mt-1">
               Forgot Password?
             </p>
@@ -143,7 +166,12 @@ const LoginPage: React.FC = () => {
         </div>
       </section>
       <section>
-        <Button type="submit" children="Sign In" disabled={isLoading || !isValid} />
+        <Button
+          type="submit"
+          onClick={handleButtonClick}
+          children="Sign In"
+          disabled={isLoading}
+        />
         <p className="text-c-grey-50 w-full text-center mt-4">
           Don't have an account?{" "}
           <span
