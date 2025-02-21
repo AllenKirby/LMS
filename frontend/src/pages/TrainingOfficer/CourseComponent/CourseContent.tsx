@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
+
 import { Menu, Questionnaire } from './CourseContentComponents'
 
 import { FiEdit2, FiPlus, FiUpload } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
+
 
 const CourseContent = () => {
 
@@ -11,14 +13,20 @@ const CourseContent = () => {
     id: string; 
     question: string; 
     choices: { id: string; choice: string }[];
+    choicesType: 'Multiple Choice' | 'Check Box' | 'True or False' | 'Text Answer' 
   }[]>([])
 
-  useEffect(() => {
-    console.log(addQuestionnaire)
-  }, [addQuestionnaire])
+  const [addMenu, setAddMenu] = useState<{ 
+    id: string; 
+    menuTitle: string;
+    }[]>([])
 
   const addQuestion = () => {
-    setAddQuestionnaire([...addQuestionnaire, {id: uuidv4(), question: '', choices: []}]);
+    setAddQuestionnaire([...addQuestionnaire, {id: uuidv4(), question: '', choices: [], choicesType: 'Multiple Choice'}]);
+  };
+
+  const addMenuComponent = () => {
+    setAddMenu([...addMenu, {id: uuidv4(), menuTitle: ''}]);
   };
 
   const deleteQuestion = (id: string) => {
@@ -49,7 +57,7 @@ const CourseContent = () => {
           : q
       )
     );
-};
+  };
 
   const setData = (questionID: string, type:string , value: string, choiceID: string = '') => {
     if(type === 'question') {
@@ -60,14 +68,38 @@ const CourseContent = () => {
       );
     } 
     if(type === 'choices') {
+      if(choiceID && value) {
+        setAddQuestionnaire(prev =>
+          prev.map(q =>
+              q.id === questionID ? { ...q,
+                choices: q.choices.map(choice =>
+                  choice.id === choiceID ? { ...choice, choice: value } : choice
+                ),
+              }
+            : q
+          )
+        );
+      } else {
+        const newChoices = [
+          {id: uuidv4(), choice: 'True'},
+          {id: uuidv4(), choice: 'False'}
+        ]
+        setAddQuestionnaire((prev) =>
+          prev.map((q) =>
+            q.id === questionID
+              ? {
+                  ...q,
+                  choices: newChoices, 
+                }
+              : q
+          )
+        );
+      }
+    }
+    if (type === 'choicesType') {
       setAddQuestionnaire(prev =>
-        prev.map(q =>
-            q.id === questionID ? { ...q,
-              choices: q.choices.map(choice =>
-                choice.id === choiceID ? { ...choice, choice: value } : choice
-              ),
-            }
-          : q
+        prev.map(question => 
+          question.id === questionID ? { ...question, choicesType: value as "Multiple Choice" | "Check Box" | "True or False" | "Text Answer" } : question
         )
       );
     }
@@ -80,10 +112,10 @@ const CourseContent = () => {
           <h1 className="font-medium text-h-h6">Course Menu</h1>
         </div>
         <div className='w-full flex flex-col gap-3 items-center'>
-          <Menu/>
-          <Menu/>
-          <Menu/>
-          <button className="h-fit w-fit p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+          {addMenu.map((m) => (
+            <Menu key={m.id}/>
+          ))}
+          <button onClick={addMenuComponent} className="h-fit w-fit p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
         </div>
       </div>
       <div className="w-3/4 h-fit">
@@ -105,8 +137,8 @@ const CourseContent = () => {
                 addChoices={AddChoice}
                 deleteChoices={DeleteChoice}/>
             ))}
-            {/* <UploadContent/>
-            <Separator/> */}
+            {/* <UploadContent/> */}
+            {/* <Separator/>  */}
             <div className='w-full flex items-center justify-center gap-3'>
               <button onClick={addQuestion} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
               <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
