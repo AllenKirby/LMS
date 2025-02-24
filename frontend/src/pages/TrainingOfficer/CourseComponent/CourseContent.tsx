@@ -6,90 +6,113 @@ import { Menu, Questionnaire } from './CourseContentComponents'
 import { FiEdit2, FiPlus, FiUpload } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
 
+interface ChoicesState {
+  choiceID: string;
+  choice: string;
+}
+
+type ModuleContent = 
+  | { type: "separator"; lessonID: string; title: string; content: string; }
+  | { type: "uploadedFile"; fileID: string; fileName: string; fileUrl: string; }
+  | { type: "questionnaire"; questionnaireID: string; question: string; choices: ChoicesState[]; answer: string; };
+
+interface ModuleState {
+  moduleID: string;
+  title: string;
+  content: ModuleContent[]
+}
+
+interface MenuDataState {
+  menuID: string; 
+  title: string;
+  modules: ModuleState[];
+}
 
 const CourseContent = () => {
 
-  const [addQuestionnaire, setAddQuestionnaire] = useState<{ 
-    id: string; 
-    question: string; 
-    choices: { id: string; choice: string }[];
-    choicesType: 'Multiple Choice' | 'Check Box' | 'True or False' | 'Text Answer' 
-  }[]>([])
-
-  const [addMenu, setAddMenu] = useState<{ 
-    menuID: string; 
-    title: string;
-    position: number;
-    modules: {moduleID: string, title: string, position: number}[];
-    }[]>([])
+  const [menuData, setMenuData] = useState<MenuDataState[]>([
+    { menuID: "1", title: "Introduction", modules: [] },
+    { menuID: "2", title: "Training Proper", modules: [] },
+    { menuID: "3", title: "Post Test", modules: [] }
+  ])
 
   const [selectMenu, setSelectedMenu] = useState<string>('')
+  const [selectModule, setSelectedModule] = useState<string>('')
 
   useEffect(() => {
-    console.log(addMenu)
-  }, [addMenu])
+    console.log(menuData)
+  }, [menuData])
 
   const selectMenuID = (menuID: string) => {
     setSelectedMenu(menuID)
   }
 
-  const addQuestion = () => {
-    setAddQuestionnaire([...addQuestionnaire, {id: uuidv4(), question: '', choices: [], choicesType: 'Multiple Choice'}]);
-  };
+  const selectModuleID = (moduleID: string) => {
+    setSelectedModule(moduleID)
+  }
 
-  const addMenuComponent = () => {
-    setAddMenu([...addMenu, {menuID: uuidv4(), title: '', position: addMenu.length + 1, modules:[]}]);
-  };
-
-  const deleteQuestion = (id: string) => {
-    setAddQuestionnaire(prev => prev.filter(q => q.id !== id));
-  };
-
-  const deleteMenu= (id: string) => {
-    setAddMenu(prev => prev.filter(m => m.menuID !== id));
-  };
-
-  const AddChoice = (questionID: string) => {
-    setAddQuestionnaire(prev =>
-      prev.map(q =>
-        q.id === questionID
+  const addQuestion = (menuID: string, moduleID: string, newContent: ModuleContent) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
           ? {
-              ...q,
-              choices: [...q.choices, { id: uuidv4(), choice: "" }], 
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { ...module, content: [...module.content, newContent] }
+                  : module
+              ),
             }
-          : q
+          : menu
       )
     );
   };
 
+  // const deleteQuestion = (id: string) => {
+  //   setAddQuestionnaire(prev => prev.filter(q => q.id !== id));
+  // };
+
+  // const AddChoice = (questionID: string) => {
+  //   setAddQuestionnaire(prev =>
+  //     prev.map(q =>
+  //       q.id === questionID
+  //         ? {
+  //             ...q,
+  //             choices: [...q.choices, { id: uuidv4(), choice: "" }], 
+  //           }
+  //         : q
+  //     )
+  //   );
+  // };
+
   const AddModule = (menuID: string) => {
-    setAddMenu(prev => 
+    setMenuData(prev => 
       prev.map(m =>
         m.menuID === menuID
           ? {
               ...m,
-              modules: [...m.modules, { moduleID: uuidv4(), title: "", position: m.modules.length + 1 }], 
+              modules: [...m.modules, { moduleID: uuidv4(), title: "", content: [] }], 
             }
           : m
       )
     )
   }
 
-  const DeleteChoice = (questionID: string, choiceID: string) => {
-    setAddQuestionnaire(prev =>
-      prev.map(q =>
-        q.id === questionID
-          ? {
-              ...q,
-              choices: q.choices.filter(choice => choice.id !== choiceID), // Remove choice
-            }
-          : q
-      )
-    );
-  };
+  // const DeleteChoice = (questionID: string, choiceID: string) => {
+  //   setAddQuestionnaire(prev =>
+  //     prev.map(q =>
+  //       q.id === questionID
+  //         ? {
+  //             ...q,
+  //             choices: q.choices.filter(choice => choice.id !== choiceID), // Remove choice
+  //           }
+  //         : q
+  //     )
+  //   );
+  // };
 
   const DeleteModule = (menuID: string, moduleID: string) => {
-    setAddMenu(prev =>
+    setMenuData(prev =>
       prev.map(m =>
         m.menuID === menuID
           ? {
@@ -101,63 +124,53 @@ const CourseContent = () => {
     );
   }
 
-  const setDataQuestionnaire = (questionID: string, type:string , value: string, choiceID: string = '') => {
-    if(type === 'question') {
-      setAddQuestionnaire(prev =>
-        prev.map(question => 
-          question.id === questionID ? { ...question, question: value } : question
-        )
-      );
-    } 
-    if(type === 'choices') {
-      if(choiceID && value) {
-        setAddQuestionnaire(prev =>
-          prev.map(q =>
-              q.id === questionID ? { ...q,
-                choices: q.choices.map(choice =>
-                  choice.id === choiceID ? { ...choice, choice: value } : choice
-                ),
-              }
-            : q
-          )
-        );
-      } else {
-        const newChoices = [
-          {id: uuidv4(), choice: 'True'},
-          {id: uuidv4(), choice: 'False'}
-        ]
-        setAddQuestionnaire((prev) =>
-          prev.map((q) =>
-            q.id === questionID
-              ? {
-                  ...q,
-                  choices: newChoices, 
-                }
-              : q
-          )
-        );
-      }
-    }
-    if (type === 'choicesType') {
-      setAddQuestionnaire(prev =>
-        prev.map(question => 
-          question.id === questionID ? { ...question, choicesType: value as "Multiple Choice" | "Check Box" | "True or False" | "Text Answer" } : question
-        )
-      );
-    }
-  };
+  // const setDataQuestionnaire = (questionID: string, type:string , value: string, choiceID: string = '') => {
+  //   if(type === 'question') {
+  //     setAddQuestionnaire(prev =>
+  //       prev.map(question => 
+  //         question.id === questionID ? { ...question, question: value } : question
+  //       )
+  //     );
+  //   } 
+  //   if(type === 'choices') {
+  //     if(choiceID && value) {
+  //       setAddQuestionnaire(prev =>
+  //         prev.map(q =>
+  //             q.id === questionID ? { ...q,
+  //               choices: q.choices.map(choice =>
+  //                 choice.id === choiceID ? { ...choice, choice: value } : choice
+  //               ),
+  //             }
+  //           : q
+  //         )
+  //       );
+  //     } else {
+  //       const newChoices = [
+  //         {id: uuidv4(), choice: 'True'},
+  //         {id: uuidv4(), choice: 'False'}
+  //       ]
+  //       setAddQuestionnaire((prev) =>
+  //         prev.map((q) =>
+  //           q.id === questionID
+  //             ? {
+  //                 ...q,
+  //                 choices: newChoices, 
+  //               }
+  //             : q
+  //         )
+  //       );
+  //     }
+  //   }
+  //   if (type === 'choicesType') {
+  //     setAddQuestionnaire(prev =>
+  //       prev.map(question => 
+  //         question.id === questionID ? { ...question, choicesType: value as "Multiple Choice" | "Check Box" | "True or False" | "Text Answer" } : question
+  //       )
+  //     );
+  //   }
+  // };
 
-  const setDataMenu = (type: string, menuID: string, value: string) => {
-    if(type === 'menuTitle') {
-      setAddMenu(prev =>
-        prev.map(menu => 
-          menu.menuID === menuID ? { ...menu, title: value } : menu
-        )
-      );
-    }
-  }
-
-  const selectedMenu = addMenu.find(m => m.menuID === selectMenu);
+  const selectedMenu = menuData.find(m => m.menuID === selectMenu);
 
   return (
     <section className="w-full h-full flex flex-row gap-5">
@@ -166,19 +179,30 @@ const CourseContent = () => {
           <h1 className="font-medium text-h-h6">Course Menu</h1>
         </div>
         <div className='w-full flex flex-col gap-3 items-center'>
-          {addMenu.map((m) => (
-            <Menu 
-              key={m.menuID}
-              deleteMenu={deleteMenu}
-              menuID={m.menuID}
-              setData={setDataMenu}
-              addModule={AddModule}
-              modules={m.modules}
-              setSelectedMenu={selectMenuID}
-              deleteModule={DeleteModule}
-              />
-          ))}
-          <button onClick={addMenuComponent} className="h-fit w-fit p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+          <Menu 
+            key={menuData[0].menuID}
+            menuID={menuData[0].menuID}
+            addModule={AddModule}
+            menuData={menuData[0]}
+            setSelectedMenu={selectMenuID}
+            deleteModule={DeleteModule}
+            />
+          <Menu 
+            key={menuData[1].menuID}
+            menuID={menuData[1].menuID}
+            addModule={AddModule}
+            menuData={menuData[1]}
+            setSelectedMenu={selectMenuID}
+            deleteModule={DeleteModule}
+          />
+          <Menu 
+            key={menuData[2].menuID}
+            menuID={menuData[2].menuID}
+            addModule={AddModule}
+            menuData={menuData[2]}
+            setSelectedMenu={selectMenuID}
+            deleteModule={DeleteModule}
+          />
         </div>
       </div>
       <div className="w-3/4 h-fit">
@@ -191,7 +215,7 @@ const CourseContent = () => {
               </button>
             </div>
             <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
-              {addQuestionnaire.map((q) => (
+              {/* {addQuestionnaire.map((q) => (
                 <Questionnaire 
                   key={q.id} 
                   questionId={q.id} 
@@ -200,11 +224,11 @@ const CourseContent = () => {
                   choices={q.choices}
                   addChoices={AddChoice}
                   deleteChoices={DeleteChoice}/>
-              ))}
+              ))} */}
               {/* <UploadContent/> */}
               {/* <Separator/>  */}
               <div className='w-full flex items-center justify-center gap-3'>
-                <button onClick={addQuestion} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+                <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
                 <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
                 <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
               </div>
