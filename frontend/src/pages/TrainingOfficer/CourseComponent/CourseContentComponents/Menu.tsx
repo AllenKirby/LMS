@@ -10,7 +10,7 @@ interface ChoicesState {
 
 type ModuleContent = 
   | { type: "separator"; lessonID: string; title: string; content: string; }
-  | { type: "uploadedFile"; fileID: string; fileName: string; fileUrl: string; }
+  | { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
   | { type: "questionnaire"; questionnaireID: string; question: string; choices: ChoicesState[]; answer: string; };
 
 interface ModuleState {

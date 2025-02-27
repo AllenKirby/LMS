@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface CourseData {
-    cover_image: string,
+  cover_image_upload: string,
     course_title: string;
     course_description: string;
     department: 'IT' | 'EOD' | 'AFD' | 'RIM' | 'EMU' | '';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
 
-import { Menu, Questionnaire } from './CourseContentComponents'
+import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
 
 import { FiEdit2, FiPlus, FiUpload } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
@@ -13,7 +13,7 @@ interface ChoicesState {
 
 type ModuleContent = 
   | { type: "separator"; lessonID: string; title: string; content: string; }
-  | { type: "uploadedFile"; fileID: string; fileName: string; fileUrl: string; }
+  | { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
   | { 
       type: "questionnaire"; 
       questionnaireID: string; 
@@ -68,7 +68,7 @@ const CourseContent = () => {
     setSelectedModule(moduleID)
   }
 
-  const addQuestion = (menuID: string, moduleID: string, newContent: ModuleContent) => {
+  const addContent= (menuID: string, moduleID: string, newContent: ModuleContent) => {
     setMenuData(prev => 
       prev.map(menu =>
         menu.menuID === menuID
@@ -212,6 +212,50 @@ const CourseContent = () => {
     );
   };
 
+  const deleteSeparator = (menuID: string, moduleID: string, lessonID: string) => {
+    setMenuData(prev =>
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? {
+                      ...module,
+                      content: module.content.filter(
+                        s => s.type !== "separator" || s.lessonID !== lessonID
+                      ) 
+                    }
+                  : module
+              )
+            }
+          : menu
+      )
+    );
+  };
+
+  const deleteUploadContent = (menuID: string, moduleID: string, fileID: string) => {
+    setMenuData(prev =>
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? {
+                      ...module,
+                      content: module.content.filter(
+                        uc => uc.type !== "uploadedFile" || uc.fileID !== fileID
+                      ) 
+                    }
+                  : module
+              )
+            }
+          : menu
+      )
+    );
+  };
+
   const setModuleTitle = (menuID: string, moduleID: string, moduleTitle: string) => {
     setMenuData(prev => 
       prev.map(m =>
@@ -245,6 +289,168 @@ const CourseContent = () => {
                               ...c, answer: correctAnswer
                           } 
                           : c
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setQuestions = (menuID: string, moduleID: string, questionnaireID: string, question: string) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(c => 
+                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
+                          ? {
+                              ...c, question: question
+                          } 
+                          : c
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setChoices = (menuID: string, moduleID: string, questionnaireID: string, choiceID: string, question: string) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(c => 
+                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
+                          ? {
+                              ...c, 
+                              choices: c.choices.map(choice =>
+                                choice.choiceID === choiceID 
+                                ? {
+                                  ...choice, choice: question
+                                } : choice
+                              )
+                          } 
+                          : c
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setTitleLesson = (menuID: string, moduleID: string, lessonID: string, title: string) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(s => 
+                        s.type === "separator" && s.lessonID === lessonID 
+                          ? {
+                              ...s, title: title
+                          } 
+                          : s
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setContent = (menuID: string, moduleID: string, lessonID: string, content: string) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(s => 
+                        s.type === "separator" && s.lessonID === lessonID 
+                          ? {
+                              ...s, content: content
+                          } 
+                          : s
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setFileName = (menuID: string, moduleID: string, fileID: string, fileName: string) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(uc => 
+                        uc.type === "uploadedFile" && uc.fileID === fileID 
+                          ? {
+                              ...uc, fileName: fileName
+                          } 
+                          : uc
+                      )
+                  }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
+
+  const setFile = (menuID: string, moduleID: string, fileID: string, file: File ) => {
+    setMenuData(prev => 
+      prev.map(menu =>
+        menu.menuID === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.moduleID === moduleID
+                  ? { 
+                      ...module,
+                      content: module.content.map(uc => 
+                        uc.type === "uploadedFile" && uc.fileID === fileID 
+                          ? {
+                              ...uc, file: file
+                          } 
+                          : uc
                       )
                   }
                   : module
@@ -306,22 +512,51 @@ const CourseContent = () => {
             </button>
           </div>
           <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
-            {selectedModule?.content.map((item, index) => (
-              <Questionnaire 
-                key={index}
-                addChoice={addChoice}
-                data={item}
-                menuID={selectMenu}
-                moduleID={selectModule}
-                choiceType={selectChoiceType}
-                deleteQuestion={deleteQuestions}
-                deleteChoice={deleteChoices}
-                selectAnswer={setCorrectAnswer}/>
-            ))}
+            {selectedModule?.content.map((item, index) => {
+              switch(item.type) {
+                case 'questionnaire': 
+                  return (
+                    <Questionnaire 
+                      key={index}
+                      addChoice={addChoice}
+                      data={item}
+                      menuID={selectMenu}
+                      moduleID={selectModule}
+                      choiceType={selectChoiceType}
+                      deleteQuestion={deleteQuestions}
+                      deleteChoice={deleteChoices}
+                      selectAnswer={setCorrectAnswer}
+                      setQuestion={setQuestions}
+                      setChoice={setChoices}/>
+                  )
+                case 'uploadedFile': 
+                  return (
+                    <UploadContent 
+                      key={index}
+                      menuID={selectMenu}
+                      moduleID={selectModule}
+                      data={item}
+                      setTitle={setFileName}
+                      deleteUploadContent={deleteUploadContent}
+                      setFile={setFile}/>
+                  )
+                case 'separator': 
+                  return (
+                    <Separator 
+                      key={index}
+                      setTitle={setTitleLesson}
+                      menuID={selectMenu}
+                      moduleID={selectModule}
+                      data={item}
+                      setContent={setContent}
+                      deleteSeparator={deleteSeparator}/>
+                  )
+              }
+            })}
             <div className='w-full flex items-center justify-center gap-3'>
-              <button onClick={() => addQuestion(selectMenu, selectModule, {type: "questionnaire", questionnaireID: uuidv4(), question: '', choiceType: 'Multiple Choice', choices: [], answer: ''})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
-              <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
-              <button className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+              <button onClick={() => addContent(selectMenu, selectModule, {type: "questionnaire", questionnaireID: uuidv4(), question: '', choiceType: 'Multiple Choice', choices: [], answer: ''})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+              <button onClick={() => addContent(selectMenu, selectModule, {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
+              <button onClick={() => addContent(selectMenu, selectModule, {type: "separator", lessonID: uuidv4(), title: '', content: ''})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
             </div>
           </div>
         </div>

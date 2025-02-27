@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { FiUpload, FiEdit2, FiSearch, FiFilter } from "react-icons/fi";
+import { FiUpload, FiEdit2} from "react-icons/fi";
 
-import { useTrainingOfficerHook } from '../../../hooks'
+import { ParticipantsList } from '../'
+import { useDispatch } from "react-redux";
+
+import { setData } from "../../../redux/CourseDataRedux";
 
 interface OverviewData {
   cover_image_upload: string,
@@ -20,8 +23,7 @@ const CourseOverview = () => {
     department: '',
     visibility: ''
   })
-
-  const { handleAddCourse } = useTrainingOfficerHook()
+  const dispatch = useDispatch()
 
   const handleImageUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -55,105 +57,27 @@ const CourseOverview = () => {
   useEffect(() => {
     const sendOverviewData = async() => {
       if(Object.values(overviewData).every(value => value !== "")) {
-        await handleAddCourse(overviewData)
+        dispatch(setData(overviewData))
       }
     }
     sendOverviewData()
   }, [overviewData])
 
   return (
-    <section className="w-full h-auto">
-      <div className="flex flex-row gap-5">
-        <section className="w-1/2 h-auto flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <h1 className="text-h-h6 font-medium">0 Participants</h1>
-            <div className="flex gap-2">
-              <button className="p-2 bg-c-grey-5 rounded-md"><FiSearch size={20}/></button>
-              <button className="p-2 bg-c-grey-5 rounded-md"><FiFilter size={20}/></button>
-            </div>
-          </div>
-          <table className="w-full border">
-            <thead className="bg-c-blue-5">
-              <tr className="rounded-t-md">
-                <th className="p-3 border-r-2"><input type="checkbox" className="scale-150"/></th>
-                <th className="p-3 border-r-2">Full Name</th>
-                <th className="p-3 border-r-2">Position</th>
-                <th className="p-3">Department</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-              <tr>
-                <td className="p-3 border-r-2 text-center"><input type="checkbox" className="scale-150"/></td>
-                <td className="p-3 border-r-2 text-center">Allen Kirby</td>
-                <td className="p-3 border-r-2 text-center">Intern</td>
-                <td className="p-3 border-r-2 text-center">IT</td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-        <section className="w-1/2 h-auto p-3 border border-c-grey-500 rounded-md">
+    <section className="w-full h-full">
+      <div className="w-full h-full flex flex-row gap-5">
+        <div className="w-1/2 h-full">
+          <ParticipantsList/>
+        </div>
+        <section className="w-1/2 h-full p-5 border border-c-grey-500 rounded-md">
           <div>
-            <h1 className="text-h-h6 font-medium">Course Overview</h1>
+            <h1 className="text-h-h6 font-medium pb-3">Course Overview</h1>
           </div>
-         <div className="w-full h-[200px] overflow-hidden"> 
+          <div className="w-full h-[200px] overflow-hidden"> 
             {overviewData.cover_image_upload ? 
             <img className="w-full object-cover" src={`data:image/png;base64,${overviewData.cover_image_upload}`} alt="Base64 Image" />
               : 
-              <div className="w-full border-2 border-dashed p-20 border-c-blue-50 rounded-md">
+              <div className="w-full h-full border-2 border-dashed border-c-blue-50 rounded-md">
                 <button onClick={uploadFile} className="w-full h-full flex flex-col items-center justify-center">
                   <FiUpload size={44}/>
                   <p className="font-medium">Upload Cover Image</p>
@@ -161,7 +85,7 @@ const CourseOverview = () => {
                 </button>
               </div>}
           </div>
-          <div className="w-full py-4 flex items-center justify-between">
+          <div className="w-full flex items-center justify-between mt-5">
             <input 
               type="text" 
               value={overviewData.course_title}
@@ -170,7 +94,7 @@ const CourseOverview = () => {
               placeholder="Course Title"/>
             <FiEdit2 size={20}/>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-5">
             <label className="text-c-grey-50">Course Description</label>
             <textarea 
               value={overviewData.course_description}
