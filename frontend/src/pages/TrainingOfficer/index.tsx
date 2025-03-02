@@ -1,6 +1,8 @@
-export {default as Dashboard} from './Dashboard'
-export {default as Courses} from './Courses'
-export {default as Resources} from './Resources'
-export {default as Trainee} from './Trainee'
-export {default as ExternalTrainingForm} from './ExternalTrainingForm'
-export {default as ParticipantsList} from './ParticipantsList'
+export { default as Dashboard } from "./Dashboard";
+export { default as CourseCreation } from "./CoursesCreation";
+export { default as Resources } from "./Resources";
+export { default as Trainee } from "./Trainee";
+export { default as ExternalTrainingForm } from "./ExternalTrainingComponent/ExternalTrainingForm";
+export { default as ParticipantsList } from "./ParticipantsList";
+export { default as Course } from "./Course";
+export { default as ExternalTrainingView } from "./ExternalTrainingView";

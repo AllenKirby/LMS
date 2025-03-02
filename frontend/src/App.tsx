@@ -1,50 +1,68 @@
-import { createBrowserRouter, Route, createRoutesFromElements, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Route,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
 
-import { NotFoundPage, MainPage } from './pages';
-import { Home, MyCourse, ResourcesTrainee } from './pages/Learner';
-import { SignupPage, LoginPage, AuthPage } from "./pages/Auth"; 
-import { Dashboard, Courses, Trainee, Resources } from './pages/TrainingOfficer'
-import { CourseOverview, CourseContent, Preview } from './pages/TrainingOfficer/CourseComponent'
+import { NotFoundPage, MainPage } from "./pages";
+import { Home, MyCourse, ResourcesTrainee } from "./pages/Learner";
+import { SignupPage, LoginPage, AuthPage } from "./pages/Auth";
+import {
+  Dashboard,
+  CourseCreation,
+  Trainee,
+  Resources,
+  Course,
+  ExternalTrainingView,
+} from "./pages/TrainingOfficer";
+import {
+  CourseOverview,
+  CourseContent,
+  Preview,
+} from "./pages/TrainingOfficer/CourseComponent";
 
 function App() {
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <Route>
+        // Auth
+        <Route path="/" element={<AuthPage />}>
+          <Route index element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+        </Route>
+        // Learner
+        <Route path="/trainee" element={<MainPage />}>
+          <Route path="home" element={<Home />} />
+          <Route path="mycourses" element={<MyCourse />} />
+          <Route path="resources" element={<ResourcesTrainee />} />
+        </Route>
+        <Route path="/trainingofficer" element={<MainPage />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="course" element={<Course />} />
+          <Route
+            path="ExternalTrainingView"
+            element={<ExternalTrainingView />}
+          />
+          <Route path="courseCreation" element={<CourseCreation />}>
+            <Route path="courseoverview" element={<CourseOverview />} />
+            <Route path="coursecontent" element={<CourseContent />} />
+            <Route path="preview" element={<Preview />} />
+          </Route>
+          <Route path="resources" element={<Resources />} />
+          <Route path="trainee" element={<Trainee />} />
+        </Route>
+        // Error
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    )
+  );
 
-    const router = createBrowserRouter(
-        createRoutesFromElements(
-            <Route>
-                // Auth
-                <Route path="/" element={<AuthPage/>}>
-                    <Route index element={<LoginPage />} />
-                    <Route path="signup" element={<SignupPage />} />
-                </Route>
-
-                // Learner
-                <Route path="/trainee" element={<MainPage />}>
-                    <Route path="home" element={<Home />} />
-                    <Route path="mycourses" element={<MyCourse />} />
-                    <Route path="resources" element={<ResourcesTrainee />} />
-                </Route>
-                <Route path="/trainingofficer" element={<MainPage />}>
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="courses" element={<Courses />}>
-                        <Route path="courseoverview" element={<CourseOverview/>}/>
-                        <Route path="coursecontent" element={<CourseContent/>}/>
-                        <Route path="preview" element={<Preview/>}/>
-                    </Route>
-                    <Route path="resources" element={<Resources />} />
-                    <Route path="trainee" element={<Trainee />} />
-                </Route>
-
-                // Error
-                <Route path="*" element={<NotFoundPage />} />
-            </Route>
-        )
-    );
-
-    return (
-      <div className="font-grotesk text-f-dark">
-          <RouterProvider router={router} />
-      </div>
-    );
+  return (
+    <div className="font-grotesk text-f-dark">
+      <RouterProvider router={router} />
+    </div>
+  );
 }
 
 export default App;
