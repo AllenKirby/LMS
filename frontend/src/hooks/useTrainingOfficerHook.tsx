@@ -9,15 +9,15 @@ interface OverviewData {
     visibility: 'public' | 'private' | '';
   }
 
-  interface TrainingDataState {
-    trainingSetup: string;
-    trainingTitle: string;
-    startDate: string;
-    endDate: string;
-    host?: string;
+interface TrainingDataState {
+    training_setup: string;
+    training_title: string;
+    start_date: string;
+    end_date: string;
+    resource_speakers: {host_name: string}[];
     venue: string;
     participants: (string | number)[];
-  }
+}
 
 const useTrainingOfficer = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -67,14 +67,12 @@ const useTrainingOfficer = () => {
     }
 
     const createExternalTraining = async(data: TrainingDataState) => {
+        console.log(data)
         setIsLoading(true)
         setError(null)
         try {
             const response = await axios.post(`${API_URL}/training/training-course/`, data, {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
+                withCredentials: true 
             })
             if(response.status === 200) {
                 setIsLoading(false)

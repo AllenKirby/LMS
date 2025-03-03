@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FiUpload, FiEdit2} from "react-icons/fi";
 
 import { ParticipantsList } from '../'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setData } from "../../../redux/CourseDataRedux";
 
@@ -15,6 +15,19 @@ interface OverviewData {
   visibility: 'public' | 'private' | '';
 }
 
+interface Trainees {
+  id: number;
+  email: string;
+  role: string;
+  first_name: string;
+  last_name: string;
+  sex: string;
+  department: string;
+  birth_date: string;
+  contact: string;
+  address: string;
+}
+
 const CourseOverview = () => {
   const [ overviewData, setOverviewData ] = useState<OverviewData>({
     cover_image_upload: '',
@@ -24,6 +37,7 @@ const CourseOverview = () => {
     visibility: ''
   })
   const dispatch = useDispatch()
+  const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
 
   const handleImageUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -67,7 +81,7 @@ const CourseOverview = () => {
     <section className="w-full h-full">
       <div className="w-full h-full flex flex-row gap-5">
         <div className="w-1/2 h-full">
-          <ParticipantsList/>
+          <ParticipantsList trainees={trainees}/>
         </div>
         <section className="w-1/2 h-full p-5 border border-c-grey-500 rounded-md">
           <div>
