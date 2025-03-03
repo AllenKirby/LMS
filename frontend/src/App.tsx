@@ -15,6 +15,7 @@ import {
   Resources,
   Course,
   ExternalTrainingView,
+  CourseContainer
 } from "./pages/TrainingOfficer";
 import {
   CourseOverview,
@@ -39,15 +40,14 @@ function App() {
         </Route>
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="course" element={<Course />} />
-          <Route
-            path="ExternalTrainingView"
-            element={<ExternalTrainingView />}
-          />
-          <Route path="courseCreation" element={<CourseCreation />}>
-            <Route path="courseoverview" element={<CourseOverview />} />
-            <Route path="coursecontent" element={<CourseContent />} />
-            <Route path="preview" element={<Preview />} />
+          <Route path="courses" element={<CourseContainer />} >
+            <Route path="externalTrainingView/:id" element={<ExternalTrainingView />} />
+            <Route path="course" element={<Course />} />
+            <Route path="courseCreation" element={<CourseCreation />}>
+              <Route path="courseOverview" element={<CourseOverview />} />
+              <Route path="courseContent" element={<CourseContent />} />
+              <Route path="preview" element={<Preview />} />
+            </Route>
           </Route>
           <Route path="resources" element={<Resources />} />
           <Route path="trainee" element={<Trainee />} />

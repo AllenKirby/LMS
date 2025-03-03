@@ -1,19 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
-import UserReducer from './UserRedux'
-import OverviewDataReducer from './CourseDataRedux'
 import storage from "redux-persist/lib/storage";
 import{ persistReducer, persistStore} from "redux-persist";
 import { combineReducers }from 'redux'
 
+import UserReducer from './UserRedux'
+import OverviewDataReducer from './CourseDataRedux'
+import TraineesAccountsReducer from "./TraineesAccountsRedux";
+
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user', 'overviewData']
+  whitelist: ['user', 'overviewData, trainees']
 }
 
 const rootReducer = combineReducers({
   user: UserReducer,
-  courseData: OverviewDataReducer
+  courseData: OverviewDataReducer,
+  trainees: TraineesAccountsReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

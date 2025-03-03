@@ -8,11 +8,13 @@ import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingFo
 //Styling
 import { PrimaryRegularA } from "../../assets/Util/ButtonStyle";
 import { SearchBar } from "../../assets/Util/InputStyle";
+import { useNavigate } from "react-router-dom";
 
 const Course: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Course");
   const [activeTab, setActiveTab] = useState<string>(selectedTab);
   const [isTrainingModalOpen, setTrainingModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate()
 
   const handleToggle = () => {
     if (document.startViewTransition) {
@@ -60,7 +62,7 @@ const Course: React.FC = () => {
             className={PrimaryRegularA}
             onClick={() => {
               if (activeTab === "Course") {
-                console.log("Creating a new Course...");
+                navigate('../courseCreation/courseOverview')
               } else if (activeTab === "External Training") {
                 handleToggle();
               }

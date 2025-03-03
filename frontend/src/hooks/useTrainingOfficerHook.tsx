@@ -9,6 +9,16 @@ interface OverviewData {
     visibility: 'public' | 'private' | '';
   }
 
+  interface TrainingDataState {
+    trainingSetup: string;
+    trainingTitle: string;
+    startDate: string;
+    endDate: string;
+    host?: string;
+    venue: string;
+    participants: (string | number)[];
+  }
+
 const useTrainingOfficer = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
@@ -35,7 +45,54 @@ const useTrainingOfficer = () => {
             }
         }
     }
-  return { handleAddCourse, isLoading, error }
+
+    const retrieveTrainees = async() => {
+        try {
+            const response = await axios.get(`${API_URL}/accounts/trainees/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                return response.data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const createExternalTraining = async(data: TrainingDataState) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.post(`${API_URL}/training/training-course/`, data, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            if(response.status === 200) {
+                setIsLoading(false)
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+  return { handleAddCourse, retrieveTrainees, createExternalTraining,isLoading, error }
 }
 
 export default useTrainingOfficer
