@@ -11,6 +11,7 @@ export default {
         "f-light": "#FAFAFA",
         "f-gray": "#9C9C9C",
         "f-green": "#0E6D4F",
+        "content-bg": "#F3F4F5",
 
         "c-blue-5": "#e7f4fd",
         "c-blue-10": "#b4dbf8",
@@ -46,7 +47,7 @@ export default {
         "c-grey-90": "#383838",
       },
       fontSize: {
-        "p-sc": "10px",
+        "p-sc": "12px",
         "p-sm": "13.33px",
         "p-rg": "16px",
         "p-lg": "19.2px",
