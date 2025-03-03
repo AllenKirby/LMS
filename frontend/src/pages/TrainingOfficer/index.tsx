@@ -6,3 +6,4 @@ export { default as ExternalTrainingForm } from "./ExternalTrainingComponent/Ext
 export { default as ParticipantsList } from "./ParticipantsList";
 export { default as Course } from "./Course";
 export { default as ExternalTrainingView } from "./ExternalTrainingView";
+export { default as CourseContainer } from "./CourseContainer";

@@ -70,7 +70,7 @@ const Courses: React.FC = () => {
             <ul className="flex text-p-sm">
               <button
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/courseoverview"
+                  activeSection === "/trainingofficer/courses/courseCreation/courseOverview"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 }
@@ -81,12 +81,12 @@ const Courses: React.FC = () => {
                 ) : (
                   <FaCircleCheck size={16} className="text-c-grey-30" />
                 )}{" "}
-                <NavLink to="courseoverview"> Course Overview</NavLink>
+                <NavLink to="courseOverview"> Course Overview</NavLink>
               </button>
               <button
                 disabled={!courseOverviewData}
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/coursecontent"
+                  activeSection === "/trainingofficer/courses/courseCreation/courseContent"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 } 
@@ -95,7 +95,7 @@ const Courses: React.FC = () => {
                   }`}
                 onClick={() =>
                   handleNavigationRequest(
-                    "/trainingofficer/courses/coursecontent"
+                    "/trainingofficer/courses/courseCreation/courseContent"
                   )
                 }
               >
@@ -108,7 +108,7 @@ const Courses: React.FC = () => {
               </button>
               <button
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/preview"
+                  activeSection === "/trainingofficer/courses/courseCreation/preview"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 }
