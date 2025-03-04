@@ -15,9 +15,9 @@ interface TrainingDataState {
   training_title: string;
   start_date: string;
   end_date: string;
-  host?: string;
+  resource_speakers: {host_name: string}[];
   venue: string;
-  participants: (string | number)[];
+  participants: string[];
 }
 
 interface Trainees {
@@ -40,11 +40,12 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     training_title: '',
     start_date: '',
     end_date: '',
-    host: '',
+    resource_speakers: [],
     venue: '',
     participants: []
   })
   const [counter, setCounter] = useState<number>(1);
+  const [inputSpeaker, setInputSpeaker] = useState<string>('')
 
   //redux
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
@@ -65,20 +66,43 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     if(Array.isArray(valueArray)) {
       setTrainingData({...trainingData, participants: valueArray})
     } else {
-      const value  = Number(event.target.value);
       setTrainingData((prevData) => ({
         ...prevData, // Spread existing properties
         participants: checked
-          ? [...prevData.participants, value] // ✅ Add value to array
-          : prevData.participants.filter((val) => val !== value) // ✅ Remove value from array
+          ? [...prevData.participants, valueArray]
+          : prevData.participants.filter((val) => val !== valueArray)
       }));
     }
   };
   
-  const handleSubmit = async(e) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     await createExternalTraining(trainingData)
   }
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputSpeaker(e.target.value)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if(inputSpeaker.trim() !== "") {
+        setTrainingData(prevData => ({
+          ...prevData, 
+          resource_speakers: [...prevData.resource_speakers, { host_name: inputSpeaker.trim() }] // Append object
+        }));
+        setInputSpeaker("");
+      }
+    }
+  };
+
+  const removeParticipant = (index: number) => {
+    setTrainingData(prevData => ({
+      ...prevData,
+      resource_speakers: prevData.resource_speakers.filter((_, i) => i !== index) // Remove item at index
+    }));
+  };
 
   return (
     <>
@@ -101,8 +125,8 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                     onChange={(e) => setTrainingData({...trainingData, training_setup: e.target.value})} 
                     className="w-full">
                     <option value="" disabled>Select training setup</option>
-                    <option value="Virtual">Virtual</option>
-                    <option value="F2F">Face-to-Face</option>
+                    <option value="virtual">Virtual</option>
+                    <option value="ftf">Face-to-Face</option>
                   </select>
                 </div>
                 <div className="flex flex-col">
@@ -136,10 +160,16 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                   <input
                     type="text"
                     className="w-full"
-                    value={trainingData.host}
-                    onChange={(e) => setTrainingData({...trainingData, host: e.target.value})}>
-
-                  </input>
+                    onChange={handleInput}
+                    onKeyDown={handleKeyDown}/>
+                </div>
+                <div className="w-full h-fit p-2">
+                  {trainingData.resource_speakers.map((item, index) => (
+                    <div key={index} className="w-full h-fit py-2 flex items-center justify-between">
+                      <li key={index}>{item.host_name}</li>
+                      <button type="button" onClick={() => removeParticipant(index)}>&times;</button>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex flex-col">
                   <label>Venue</label>
