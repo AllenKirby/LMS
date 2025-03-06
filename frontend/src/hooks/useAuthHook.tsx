@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import Cookies from "universal-cookie";
 
 import { useDispatch } from 'react-redux'
 import { setUser } from '../redux/UserRedux'
@@ -35,6 +36,8 @@ const useAuthHook = () => {
   const API_URL: string = import.meta.env.VITE_URL
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const cookies = new Cookies();
+
 
   const handleLogin = async(data: LoginCredentials) => {
     setError(null)
@@ -48,6 +51,11 @@ const useAuthHook = () => {
       if(response.status === 200){
         setIsLoading(false)
         console.log(response.data)
+        cookies.set("user", response.data, { 
+          path: "/", 
+          expires: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
+          secure: true
+        });        
         dispatch(setUser(response.data))
         role(response.data.user.role)
       }  

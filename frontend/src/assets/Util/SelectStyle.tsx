@@ -1,0 +1,1 @@
+export const defaultSelect = "mt-1 px-3 py-2 border rounded-md w-full h-fit hover:border-c-grey-10 outline-c-green-30";

@@ -66,13 +66,41 @@ const useTrainingOfficer = () => {
         }
     }
 
-    const createExternalTraining = async(data: TrainingDataState) => {
+    const createExternalTraining = async(data: TrainingDataState, documents: FormData) => {
         console.log(data)
         setIsLoading(true)
         setError(null)
         try {
             const response = await axios.post(`${API_URL}/training/training-course/`, data, {
                 withCredentials: true 
+            })
+            if(response.status === 200) {
+                const data = response.data
+                setIsLoading(false)
+                console.log(data)
+                await uploadDocsExternalTraining(data.id, documents)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const uploadDocsExternalTraining = async(id: number, documents: FormData) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.put(`${API_URL}/training/trainings/${id}/upload-document/`, documents, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             })
             if(response.status === 200) {
                 setIsLoading(false)
@@ -90,7 +118,33 @@ const useTrainingOfficer = () => {
         }
     }
 
-  return { handleAddCourse, retrieveTrainees, createExternalTraining,isLoading, error }
+    const retrieveExternalTraining = async() => {
+        try {
+            const response = await axios.get(`${API_URL}/training/training-course/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                return response.data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+  return { 
+    handleAddCourse, 
+    retrieveTrainees, 
+    createExternalTraining,
+    retrieveExternalTraining,
+    isLoading, 
+    error }
 }
 
 export default useTrainingOfficer
