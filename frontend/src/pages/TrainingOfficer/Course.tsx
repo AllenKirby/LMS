@@ -35,7 +35,7 @@ const Course: React.FC = () => {
   }, [selectedTab]);
 
   return (
-    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg">
+    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg flex flex-col">
       <header className="flex justify-between items-center">
         <h1 className="text-h-h6 font-medium">{selectedTab}</h1>
         <div className="flex gap-3">
@@ -92,7 +92,7 @@ const Course: React.FC = () => {
           External Training
         </button>
       </nav>
-      <main className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+      <main className="w-full flex-1 grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10 overflow-y-auto">
         {activeTab === "Course" && <CourseCard />}
         {activeTab === "External Training" && <TrainingCard />}
       </main>

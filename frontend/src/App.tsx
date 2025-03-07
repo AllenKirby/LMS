@@ -34,7 +34,7 @@ function App() {
         </Route>
         // Learner
         <Route path="/trainee" element={<MainPage />}>
-          <Route path="home" element={<Home />} />
+          <Route path="home" element={<Home/>}/>
           <Route path="mycourses" element={<MyCourse />} />
           <Route path="resources" element={<ResourcesTrainee />} />
         </Route>

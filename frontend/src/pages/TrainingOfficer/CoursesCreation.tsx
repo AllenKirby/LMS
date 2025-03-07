@@ -10,6 +10,8 @@ import { useSelector } from "react-redux";
 import { GoLock } from "react-icons/go";
 import { FaCircleCheck } from "react-icons/fa6";
 
+import { IoIosArrowBack, IoIosArrowRoundBack } from "react-icons/io";
+
 interface CourseData {
   cover_image_upload: string;
   course_title: string;
@@ -61,10 +63,32 @@ const Courses: React.FC = () => {
 
   return (
     <section className="w-full h-full flex flex-col">
+      <header className="w-full h-fit">
+        <section className="w-full h-fit flex items-center justify-between px-10 py-4">
+          <div className="flex items-center gap-1">
+            <button onClick={() => window.history.back()}><IoIosArrowRoundBack size={24}/></button>
+            <h6 className="text-p-lg font-medium">Create Course</h6>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="text-c-grey-50">Step 1:</p>
+            <p className="flex items-center gap-1 font-medium text-c-green-50"><FaCircleCheck size={16} className="text-c-blue-50" /> Course Overview</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <p className="text-p-sm text-c-grey-50">Next: Select Participant</p>
+            <nav className="flex items-center gap-2 border-l border-c-grey-20 pl-3">
+              <button className="px-2 py-2 rounded-md bg-white shadow-md"><IoIosArrowBack/></button>
+              <button className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light">Continue</button>
+            </nav>
+          </div>
+        </section>
+        <section className="w-full h-fit flex gap-1">
+          <div className="flex-1 h-1 rounded-full bg-c-green-50"></div>
+          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
+          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
+          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
+        </section>
+      </header>
       <header className="w-full h-auto pt-5 px-7 border-b-2">
-        <div className="w-full mb-3">
-          <h1 className="font-medium text-h-h6">Create Course</h1>
-        </div>
         <div className="w-full flex items-center justify-between text-p-rg py-2">
           <nav>
             <ul className="flex text-p-sm">

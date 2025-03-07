@@ -6,6 +6,7 @@ import { combineReducers }from 'redux'
 import UserReducer from './UserRedux'
 import OverviewDataReducer from './CourseDataRedux'
 import TraineesAccountsReducer from "./TraineesAccountsRedux";
+import ExternalTrainingDataReducer from './ExternalTrainingDataRedux'
 
 const persistConfig = {
   key: 'root',
@@ -16,7 +17,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   user: UserReducer,
   courseData: OverviewDataReducer,
-  trainees: TraineesAccountsReducer
+  trainees: TraineesAccountsReducer,
+  externalTrainingData: ExternalTrainingDataReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
