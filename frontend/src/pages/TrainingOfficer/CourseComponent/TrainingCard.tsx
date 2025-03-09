@@ -9,13 +9,21 @@ interface TrainingDataState {
   start_date: string;
   end_date: string;
   venue: string;
-  resource_speakers: {id: number; host_name: string}[];
-  participants_display: {id: number; first_name: string; last_name: string; email: string}[];
-  document_url: string[]
+  resource_speakers: { id: number; host_name: string }[];
+  participants_display: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+  }[];
+  document_url: string[];
 }
 
 const TrainingCard: React.FC = () => {
-  const externalTrainings = useSelector((state: {externalTrainingData :TrainingDataState[]}) => state.externalTrainingData)
+  const externalTrainings = useSelector(
+    (state: { externalTrainingData: TrainingDataState[] }) =>
+      state.externalTrainingData
+  );
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -26,7 +34,6 @@ const TrainingCard: React.FC = () => {
     };
     return date.toLocaleDateString(undefined, options);
   };
-  
 
   return (
     <>
@@ -36,7 +43,14 @@ const TrainingCard: React.FC = () => {
           key={index}
         >
           <div className="w-full h-full bg-black opacity-0 group-hover:opacity-10 absolute rounded-xl flex items-center justify-center transition-opacity duration-300">
-            {/*Action button / o ano*/}
+            <div className="absolute opacity-0 group-hover:opacity-100 top-3 right-3 bg-white w-10 h-5 gap-1 rounded-full flex items-center justify-center">
+              <div className="h-1 w-1 bg-black rounded-full"></div>
+              <div className="h-1 w-1 bg-black rounded-full"></div>
+              <div className="h-1 w-1 bg-black rounded-full"></div>
+            </div>
+            <h6 className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100">
+              View Training
+            </h6>
           </div>
           <div className="w-full h-full">
             <figure className="w-full h-2/5">
@@ -48,16 +62,20 @@ const TrainingCard: React.FC = () => {
             <main className="w-full h-3/5 flex flex-col items-center justify-between p-5">
               <section className="w-full">
                 <p className="text-p-sc font-medium text-c-green-50">
-                  {info.training_setup === 'virtual' && 'Virtual' || info.training_setup === 'f2f' && 'Face To Face'}
+                  {(info.training_setup === "virtual" && "Virtual") ||
+                    (info.training_setup === "f2f" && "Face To Face")}
                 </p>
-                <h1 className="text-p-lg font-semibold w-full">{info.training_title}</h1>
+                <h1 className="text-p-lg font-semibold w-full">
+                  {info.training_title}
+                </h1>
                 <p className="text-p-rg text-c-grey-70 w-full">{info.venue}</p>
               </section>
               <article className="w-full flex flex-col gap-1 text-p-sm">
                 <p className="text-f-dark font-medium">Date</p>
                 <p className="text-c-grey-70 flex items-center gap-1">
                   <MdOutlineCalendarToday size={15} />
-                  {formatDate(info.start_date)} - <MdOutlineCalendarToday size={15} />
+                  {formatDate(info.start_date)} -{" "}
+                  <MdOutlineCalendarToday size={15} />
                   {formatDate(info.end_date)}
                 </p>
               </article>

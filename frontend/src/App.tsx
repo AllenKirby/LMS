@@ -15,10 +15,11 @@ import {
   Resources,
   Course,
   ExternalTrainingView,
-  CourseContainer
+  CourseContainer,
 } from "./pages/TrainingOfficer";
 import {
   CourseOverview,
+  CourseParticipants,
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
@@ -34,17 +35,24 @@ function App() {
         </Route>
         // Learner
         <Route path="/trainee" element={<MainPage />}>
-          <Route path="home" element={<Home/>}/>
+          <Route path="home" element={<Home />} />
           <Route path="mycourses" element={<MyCourse />} />
           <Route path="resources" element={<ResourcesTrainee />} />
         </Route>
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="courses" element={<CourseContainer />} >
-            <Route path="externalTrainingView/:id" element={<ExternalTrainingView />} />
+          <Route path="courses" element={<CourseContainer />}>
+            <Route
+              path="externalTrainingView/:id"
+              element={<ExternalTrainingView />}
+            />
             <Route path="course" element={<Course />} />
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
+              <Route
+                path="courseParticipants"
+                element={<CourseParticipants />}
+              />
               <Route path="courseContent" element={<CourseContent />} />
               <Route path="preview" element={<Preview />} />
             </Route>
