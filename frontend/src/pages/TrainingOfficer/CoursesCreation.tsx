@@ -61,31 +61,101 @@ const Courses: React.FC = () => {
     setActiveState(location.pathname);
   }, [location]);
 
+  const [count, setCount] = useState<number>(0);
+  const steps = [
+    {
+      title: "Course Overview",
+      next: "Select Participant",
+      path: "courseParticipants",
+    },
+    {
+      title: "Select Participant",
+      next: "Course Creation",
+      path: "/trainingofficer/courses/courseCreation/courseContent",
+    },
+    { title: "Course Creation", next: "Preview", path: "preview" },
+    { title: "Preview", next: "", path: "" },
+  ];
+
   return (
     <section className="w-full h-full flex flex-col">
       <header className="w-full h-fit">
         <section className="w-full h-fit flex items-center justify-between px-10 py-4">
           <div className="flex items-center gap-1">
-            <button onClick={() => window.history.back()}><IoIosArrowRoundBack size={24}/></button>
+            <button onClick={() => window.history.back()}>
+              <IoIosArrowRoundBack size={24} />
+            </button>
             <h6 className="text-p-lg font-medium">Create Course</h6>
           </div>
-          <div className="flex items-center gap-2">
-            <p className="text-c-grey-50">Step 1:</p>
-            <p className="flex items-center gap-1 font-medium text-c-green-50"><FaCircleCheck size={16} className="text-c-blue-50" /> Course Overview</p>
+          <div className="flex items-center gap-2 w-1/6">
+            <p className="text-c-grey-50">Step {count + 1}:</p>
+            <p className="flex items-center gap-1 font-medium text-c-green-50">
+              <FaCircleCheck size={16} className="text-c-blue-50" />{" "}
+              {steps[count].title}
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <p className="text-p-sm text-c-grey-50">Next: Select Participant</p>
+          <div className="flex items-center justify-end gap-3 w-1/5">
+            <p className="text-p-sm text-c-grey-50">
+              {steps[count].next ? `Next: ${steps[count].next}` : ""}
+            </p>
             <nav className="flex items-center gap-2 border-l border-c-grey-20 pl-3">
-              <button className="px-2 py-2 rounded-md bg-white shadow-md"><IoIosArrowBack/></button>
-              <button className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light">Continue</button>
+              <button
+                className="px-2 py-2 rounded-md bg-white shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  setCount((prevCount) => prevCount - 1);
+                  window.history.back();
+                }}
+                disabled={count === 0}
+              >
+                <IoIosArrowBack />
+              </button>
+              <button
+                className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light"
+                disabled={count === 3}
+              >
+                {count === 0 && (
+                  <NavLink
+                    to="courseParticipants"
+                    onClick={() => setCount((prevCount) => prevCount + 1)}
+                  >
+                    Continue
+                  </NavLink>
+                )}
+                {count === 1 && (
+                  <button
+                    disabled={!courseOverviewData}
+                    onClick={() => {
+                      handleNavigationRequest(
+                        "/trainingofficer/courses/courseCreation/courseContent"
+                      );
+                      setCount((prevCount) => prevCount + 1);
+                    }}
+                  >
+                    Continue
+                  </button>
+                )}
+                {count === 2 && (
+                  <NavLink
+                    to="preview"
+                    onClick={() => setCount((prevCount) => prevCount + 1)}
+                  >
+                    Continue
+                  </NavLink>
+                )}
+                {count === 3 && <button onClick={modal}>Publish Course</button>}
+              </button>
             </nav>
           </div>
         </section>
         <section className="w-full h-fit flex gap-1">
-          <div className="flex-1 h-1 rounded-full bg-c-green-50"></div>
-          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
-          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
-          <div className="flex-1 h-1 rounded-full bg-c-grey-10"></div>
+          {[...Array(4)].map((_, index) => (
+            <div
+              key={index}
+              className={`flex-1 h-1 rounded-full ${
+                index <= count ? "bg-c-green-50" : "bg-c-grey-10"
+              }`}
+            ></div>
+          ))}
         </section>
       </header>
       <header className="w-full h-auto pt-5 px-7 border-b-2">
@@ -94,7 +164,8 @@ const Courses: React.FC = () => {
             <ul className="flex text-p-sm">
               <button
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/courseCreation/courseOverview"
+                  activeSection ===
+                  "/trainingofficer/courses/courseCreation/courseOverview"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 }
@@ -110,7 +181,8 @@ const Courses: React.FC = () => {
               <button
                 disabled={!courseOverviewData}
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/courseCreation/courseContent"
+                  activeSection ===
+                  "/trainingofficer/courses/courseCreation/courseContent"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 } 
@@ -132,7 +204,8 @@ const Courses: React.FC = () => {
               </button>
               <button
                 className={`px-3 py-2 flex items-center gap-1 ${
-                  activeSection === "/trainingofficer/courses/courseCreation/preview"
+                  activeSection ===
+                  "/trainingofficer/courses/courseCreation/preview"
                     ? "border-2 rounded-md bg-c-grey-5 border-c-blue-50 font-medium text-c-blue-50"
                     : "text-c-grey-50"
                 }
