@@ -119,6 +119,10 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     inputClick.current?.click()
   }
 
+  const removeFile = (index: number) => {
+    setUploadedFile((prevData) => prevData.filter((_, i) => i !== index));
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files; // This is FileList | null
 
@@ -132,8 +136,8 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
   };
 
   useEffect(() => {
-    console.log(trainingData)
-  },[trainingData])
+    console.log(uploadedFile)
+  },[uploadedFile])
 
   return (
     <>
@@ -223,7 +227,10 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                   Upload Necessary Document
                 </button>
                 {uploadedFile?.map((item, index) => (
-                  <li key={index}>{item.name}</li>
+                  <div key={index} className="w-full h-fit flex items-center justify-between">
+                    <li key={index}>{item.name}</li>
+                    <button type="button" onClick={() => removeFile(index)}>&times;</button>
+                  </div>
                 ))}
               </div>
             )}

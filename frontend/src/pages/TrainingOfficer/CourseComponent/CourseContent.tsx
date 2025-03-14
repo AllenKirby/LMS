@@ -2,564 +2,194 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
 
 import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
+import { useTrainingOfficerHook } from '../../../hooks'
 
-import { FiEdit2, FiPlus, FiUpload } from "react-icons/fi";
+import { FiPlus, FiUpload, FiSave } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  setModule, 
+  setContent, 
+  setModuleTitle,
+  setQuestion,
+  addChoice,
+  setChoice,
+  deleteModule,
+  deleteContent,
+  deleteChoice,
+  setLesson,
+  setFileName
+} from '../../../redux/ModuleDataRedux';
 
-interface ChoicesState {
-  choiceID: string;
-  choice: string;
-}
-
-type ModuleContent = 
-  | { type: "separator"; lessonID: string; title: string; content: string; }
-  | { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
-  | { 
-      type: "questionnaire"; 
-      questionnaireID: string; 
-      question: string; 
-      choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; 
-      choices: ChoicesState[]; 
-      answer: string; };
-
-interface ModuleState {
-  moduleID: string;
-  title: string;
-  content: ModuleContent[]
-}
-
-interface MenuDataState {
-  menuID: string; 
-  title: string;
-  modules: ModuleState[];
-}
+import { CourseContentState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
-
-  const [menuData, setMenuData] = useState<MenuDataState[]>([
-    { menuID: "1", title: "Introduction", modules: [{ moduleID: uuidv4(), title: "", content: [] }] },
-    { menuID: "2", title: "Training Proper", modules: [{ moduleID: uuidv4(), title: "", content: [] }] },
-    { menuID: "3", title: "Post Test", modules: [{ moduleID: uuidv4(), title: "", content: [] }] }
-  ])
-
-  const [selectMenu, setSelectedMenu] = useState<string>('')
-  const [selectModule, setSelectedModule] = useState<string>('')
-
-  useEffect(() => {
-    if (menuData.length > 0) {
-      const firstMenu = menuData[0];
-      setSelectedMenu(firstMenu.menuID);
+  //redux
+  const courseContentData = useSelector((state: {courseContent: CourseContentState[]}) => state.courseContent)
+  const courseID = useSelector((state: {courseID: number}) => state.courseID)
+  const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
+  const dispatch = useDispatch()
   
-      if (firstMenu.modules.length > 0) {
-        setSelectedModule(firstMenu.modules[0].moduleID);
-      }
-    }
-  }, []);
+  console.log(courseContentData)
 
-  useEffect(() => {
-    console.log(menuData)
-  }, [menuData])
+  //states
+  const [selectedMenu, setSelectedMenu] = useState<number>(0)
+  const [selectedModule, setSelectedModule] = useState<string>('')
 
-  const selectMenuID = (menuID: string) => {
-    setSelectedMenu(menuID)
+  //hooks
+  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, isLoading } = useTrainingOfficerHook()
+
+  const setMenuID = (id: number) => {
+    setSelectedMenu(id)
   }
 
-  const selectModuleID = (moduleID: string) => {
-    setSelectedModule(moduleID)
+  const setModuleID = (id: string) => {
+    setSelectedModule(id)
   }
 
-  const addContent= (menuID: string, moduleID: string, newContent: ModuleContent) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { ...module, content: [...module.content, newContent] }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  };
-
-  const selectChoiceType = (menuID: string, moduleID: string, questionnaireID: string, choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | '') => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(c => 
-                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
-                          ? {
-                              ...c, choiceType: choiceType
-                          } 
-                          : c
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
+  const AddModule = (id: number) => {
+    dispatch(setModule({menuID: id, moduleID: uuidv4(), title: '', content: [], submitted: false, id: 0}))
   }
 
-  const addChoice = (menuID: string, moduleID: string, questionnaireID: string, newChoice: ChoicesState) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(c => 
-                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
-                          ? {
-                              ...c, choices: [...c.choices, newChoice]
-                          } 
-                          : c
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  };
-
-  const AddModule = (menuID: string) => {
-    setMenuData(prev => 
-      prev.map(m =>
-        m.menuID === menuID
-          ? {
-              ...m,
-              modules: [...m.modules, { moduleID: uuidv4(), title: "", content: [] }], 
-            }
-          : m
-      )
-    )
+  const DeleteModule = (id: string) => {
+    dispatch(deleteModule(id))
   }
 
-  const DeleteModule = (menuID: string, moduleID: string) => {
-    setMenuData(prev =>
-      prev.map(m =>
-        m.menuID === menuID
-          ? {
-              ...m,
-              modules: m.modules.filter(module => module.moduleID !== moduleID), // Remove choice
-            }
-          : m
-      )
-    );
+  const SetQuestion = (id: string, questionnaireID: string, fieldString: string, dataString: string) => {
+    dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question" | "answer", value: dataString}))
   }
 
-  const deleteQuestions = (menuID: string, moduleID: string, questionnaireID: string) => {
-    setMenuData(prev =>
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? {
-                      ...module,
-                      content: module.content.filter(
-                        c => c.type !== "questionnaire" || c.questionnaireID !== questionnaireID
-                      ) 
-                    }
-                  : module
-              )
-            }
-          : menu
-      )
-    );
-  };
-
-  const deleteChoices = (menuID: string, moduleID: string, questionnaireID: string, choiceID: string) => {
-    setMenuData(prev =>
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? {
-                      ...module,
-                      content: module.content.map(c =>
-                        c.type === 'questionnaire' && c.questionnaireID === questionnaireID
-                          ? {
-                              ...c,
-                              choices: c.choices.filter(choice => choice.choiceID !== choiceID)
-                            }
-                          : c 
-                      )
-                    }
-                  : module
-              )
-            }
-          : menu
-      )
-    );
-  };
-
-  const deleteSeparator = (menuID: string, moduleID: string, lessonID: string) => {
-    setMenuData(prev =>
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? {
-                      ...module,
-                      content: module.content.filter(
-                        s => s.type !== "separator" || s.lessonID !== lessonID
-                      ) 
-                    }
-                  : module
-              )
-            }
-          : menu
-      )
-    );
-  };
-
-  const deleteUploadContent = (menuID: string, moduleID: string, fileID: string) => {
-    setMenuData(prev =>
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? {
-                      ...module,
-                      content: module.content.filter(
-                        uc => uc.type !== "uploadedFile" || uc.fileID !== fileID
-                      ) 
-                    }
-                  : module
-              )
-            }
-          : menu
-      )
-    );
-  };
-
-  const setModuleTitle = (menuID: string, moduleID: string, moduleTitle: string) => {
-    setMenuData(prev => 
-      prev.map(m =>
-        m.menuID === menuID
-          ? {
-              ...m,
-              modules: m.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { ...module, title: moduleTitle }
-                  : module
-              )
-            }
-          : m
-      )
-    )
-  }
-
-  const setCorrectAnswer = (menuID: string, moduleID: string, questionnaireID: string, correctAnswer: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(c => 
-                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
-                          ? {
-                              ...c, answer: correctAnswer
-                          } 
-                          : c
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setQuestions = (menuID: string, moduleID: string, questionnaireID: string, question: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(c => 
-                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
-                          ? {
-                              ...c, question: question
-                          } 
-                          : c
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setChoices = (menuID: string, moduleID: string, questionnaireID: string, choiceID: string, question: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(c => 
-                        c.type === "questionnaire" && c.questionnaireID === questionnaireID 
-                          ? {
-                              ...c, 
-                              choices: c.choices.map(choice =>
-                                choice.choiceID === choiceID 
-                                ? {
-                                  ...choice, choice: question
-                                } : choice
-                              )
-                          } 
-                          : c
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setTitleLesson = (menuID: string, moduleID: string, lessonID: string, title: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(s => 
-                        s.type === "separator" && s.lessonID === lessonID 
-                          ? {
-                              ...s, title: title
-                          } 
-                          : s
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setContent = (menuID: string, moduleID: string, lessonID: string, content: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(s => 
-                        s.type === "separator" && s.lessonID === lessonID 
-                          ? {
-                              ...s, content: content
-                          } 
-                          : s
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setFileName = (menuID: string, moduleID: string, fileID: string, fileName: string) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(uc => 
-                        uc.type === "uploadedFile" && uc.fileID === fileID 
-                          ? {
-                              ...uc, fileName: fileName
-                          } 
-                          : uc
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
-  }
-
-  const setFile = (menuID: string, moduleID: string, fileID: string, file: File ) => {
-    setMenuData(prev => 
-      prev.map(menu =>
-        menu.menuID === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.moduleID === moduleID
-                  ? { 
-                      ...module,
-                      content: module.content.map(uc => 
-                        uc.type === "uploadedFile" && uc.fileID === fileID 
-                          ? {
-                              ...uc, file: file
-                          } 
-                          : uc
-                      )
-                  }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
+  const AddChoice = (id: string, questionnaireID: string, dataString: ChoicesState) => {
+    dispatch(addChoice({moduleID: id, questionnaireID: questionnaireID, value: dataString}))
   }
   
-  console.log(selectMenu, selectModule)
+  const SetChoice = (id: string, questionnaireID: string, choiceID: string, dataString: string) => {
+    dispatch(setChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID, value: dataString}))
+  }
+
+  const DeleteContent = (id: string, contentID: string) => {
+    dispatch(deleteContent({moduleID: id, contentID: contentID}))
+  }
+
+  const DeleteChoice = (id: string, questionnaireID: string, choiceID: string) => {
+    dispatch(deleteChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID}))
+  }
+
+  const DeleteModulePermanent = async(id: number) => {
+    await handleDeleteModule(id)
+  }
+
+  const SetContent = (id: string, lessonID: string, field: string, value: string) => {
+    dispatch(setLesson({moduleID: id, lessonID: lessonID, field: field as "content" | "title" , value: value}))
+  }
+
+  const SetFileName = (id: string, fileID: string, value: string) => {
+    dispatch(setFileName({moduleID: id, fileID: fileID, value: value}))
+  }
 
   //map the questionnaire, separator and upload file
-  const selectedMenuMap = menuData.find(menu => menu.menuID === selectMenu);
-  const selectedModule = selectedMenuMap?.modules.find(module => module.moduleID === selectModule);
+  const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
 
+  useEffect(() => {
+    console.log(courseID)
+  }, [courseID])
+  
   return (
-    <section className="w-full h-full flex flex-row gap-5">
-      <div className="w-1/4 h-full">
+    <section className="w-full h-full flex flex-row">
+      <div className="w-1/4 h-full p-8">
         <div className="w-full pb-3">
           <h1 className="font-medium text-h-h6">Course Menu</h1>
         </div>
         <div className='w-full flex flex-col gap-3 items-center'>
-          <Menu 
-            key={menuData[0].menuID}
-            menuID={menuData[0].menuID}
-            addModule={AddModule}
-            menuData={menuData[0]}
-            deleteModule={DeleteModule}
-            selectMenu={selectMenuID}
-            selectModule={selectModuleID}
-            />
-          <Menu 
-            key={menuData[1].menuID}
-            menuID={menuData[1].menuID}
-            addModule={AddModule}
-            menuData={menuData[1]}
-            deleteModule={DeleteModule}
-            selectMenu={selectMenuID}
-            selectModule={selectModuleID}
-          />
-          <Menu 
-            key={menuData[2].menuID}
-            menuID={menuData[2].menuID}
-            addModule={AddModule}
-            menuData={menuData[2]}
-            deleteModule={DeleteModule}
-            selectMenu={selectMenuID}
-            selectModule={selectModuleID}
-          />
+          {courseContentData.map((item, index) => (
+            <Menu 
+              key={index}
+              menuData={item}
+              addModule={AddModule}
+              modules={modules}
+              setMenuID={setMenuID}
+              setModuleID={setModuleID}
+              deleteModule={DeleteModule}
+              deleteModulePermanent={DeleteModulePermanent}
+              />
+          ))}
+        </div>
+        <div className='w-full h-fit flex items-center justify-center py-3'>
+          <button onClick={() => handleAddMenu(courseID)} disabled={isLoading}>Add Menu</button>
         </div>
       </div>
-      <div className="w-3/4 h-fit">
-        <div className='w-full h-full border rounded-md overflow-hidden'>
-          <div className='w-full flex items-center justify-between p-3 border-b'>
-            <input type="text" value={selectedModule?.title} onChange={(e) => setModuleTitle(selectMenu, selectModule, e.target.value)} className="bg-transparent p-1 text-h-h6 font-medium outline-none" placeholder="Module Title"/>
-            <button>
-              <FiEdit2 size={20} className='text-c-grey-50'/>
-            </button>
-          </div>
-          <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
-            {selectedModule?.content.map((item, index) => {
-              switch(item.type) {
-                case 'questionnaire': 
-                  return (
-                    <Questionnaire 
-                      key={index}
-                      addChoice={addChoice}
-                      data={item}
-                      menuID={selectMenu}
-                      moduleID={selectModule}
-                      choiceType={selectChoiceType}
-                      deleteQuestion={deleteQuestions}
-                      deleteChoice={deleteChoices}
-                      selectAnswer={setCorrectAnswer}
-                      setQuestion={setQuestions}
-                      setChoice={setChoices}/>
-                  )
-                case 'uploadedFile': 
-                  return (
-                    <UploadContent 
-                      key={index}
-                      menuID={selectMenu}
-                      moduleID={selectModule}
-                      data={item}
-                      setTitle={setFileName}
-                      deleteUploadContent={deleteUploadContent}
-                      setFile={setFile}/>
-                  )
-                case 'separator': 
-                  return (
-                    <Separator 
-                      key={index}
-                      setTitle={setTitleLesson}
-                      menuID={selectMenu}
-                      moduleID={selectModule}
-                      data={item}
-                      setContent={setContent}
-                      deleteSeparator={deleteSeparator}/>
-                  )
-              }
-            })}
-            <div className='w-full flex items-center justify-center gap-3'>
-              <button onClick={() => addContent(selectMenu, selectModule, {type: "questionnaire", questionnaireID: uuidv4(), question: '', choiceType: 'Multiple Choice', choices: [], answer: ''})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
-              <button onClick={() => addContent(selectMenu, selectModule, {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
-              <button onClick={() => addContent(selectMenu, selectModule, {type: "separator", lessonID: uuidv4(), title: '', content: ''})} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+      <div className="w-3/4 h-full bg-white">
+        {selectedModuleMap ? (
+          <div className='w-full h-full border rounded-md overflow-hidden flex flex-col'>
+            <div className='w-full h-fit flex items-center justify-between py-3 px-5 border-b'>
+              <div className='flex flex-row gap-2'>
+                <input 
+                  value={selectedModuleMap?.title} 
+                  onChange={(e) => dispatch(setModuleTitle({moduleID: selectedModule, title: e.target.value}))} 
+                  type="text" 
+                  className="bg-transparent p-1 text-h-h6 font-medium outline-none" 
+                  placeholder="Module Title"/>
+              </div>
+              {selectedModuleMap?.submitted ? (
+                  <button onClick={() => handleUpdateModule(selectedModuleMap.id, selectedModuleMap)}>
+                    <FiSave size={20} className='text-f-gray'/>
+                  </button>
+                ) : (
+                  <button onClick={() => handleAddModule(selectedMenu, selectedModuleMap)}>
+                    <FiSave size={20} className='text-f-gray'/>
+                  </button>
+              )}
+            </div>
+            <div className='w-full p-5 h-full overflow-y-auto flex flex-col gap-5'>
+              {selectedModuleMap?.content.map((item, index) => {
+                switch(item.type) {
+                  case 'questionnaire': 
+                    return (
+                      <Questionnaire 
+                        key={index}
+                        data={item}
+                        moduleID={selectedModuleMap.moduleID}
+                        setQuestion={SetQuestion}
+                        addChoice={AddChoice}
+                        setChoice={SetChoice}
+                        deleteQuestionnaire={DeleteContent}
+                        deleteChoice={DeleteChoice}
+                        />
+                    )
+                  case 'uploadedFile': 
+                    return (
+                      <UploadContent 
+                        key={index}
+                        data={item}
+                        deleteUploadContent={DeleteContent}
+                        moduleID={selectedModule}
+                        setTitle={SetFileName}
+                        />
+                    )
+                  case 'separator': 
+                    return (
+                      <Separator 
+                        key={index}
+                        moduleID={selectedModuleMap.moduleID}
+                        data={item}
+                        deleteSeparator={DeleteContent}
+                        setContent={SetContent}
+                        />
+                    )
+                }
+              })}
+              <div className='w-full flex items-center justify-center gap-3'>
+                <button onClick={() => dispatch(setContent({moduleID: selectedModule, newContent: {type: "questionnaire", questionnaireID: uuidv4(), question: '', choiceType: 'Multiple Choice', choices: [], answer: '', questionPoint: 0}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: selectedModule, newContent: {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: selectedModule, newContent: {type: "separator", lessonID: uuidv4(), title: '', content: ''}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className='w-full h-full flex items-center justify-center'>
+            <h1 className='text-h-h6 font-medium'>No Module Selected</h1>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -42,14 +42,11 @@ function App() {
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseContainer />}>
-            <Route
-              path="externalTrainingView/:id"
-              element={<ExternalTrainingView />}
-            />
-            <Route path="course" element={<Course />} />
+            <Route path="course" element={<Course />}/>
+            <Route path="externaltraining" element={<ExternalTrainingView />}/> 
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
-              <Route
+              <Route  
                 path="courseParticipants"
                 element={<CourseParticipants />}
               />

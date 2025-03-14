@@ -1,18 +1,7 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
 import { useLocation } from "react-router-dom";
 
-interface Trainees {
-  id: number;
-  email: string;
-  role: string;
-  first_name: string;
-  last_name: string;
-  sex: string;
-  department: string;
-  birth_date: string;
-  contact: string;
-  address: string;
-}
+import { Trainees } from '../../types/CourseCreationTypes'
 
 type ParticipantsListState = {
   trainees: {trainees: Trainees[]};
@@ -23,8 +12,6 @@ type ParticipantsListState = {
 const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
   const { trainees, handleCheckBox = () => {}, participants= [] } = props
   const location= useLocation()
-
-  console.log(trainees)
 
   return (
     <section className="w-full h-full flex flex-col gap-3">

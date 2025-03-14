@@ -1,38 +1,52 @@
 import { useState } from "react"
 import axios from "axios"
 
-interface OverviewData {
-    cover_image_upload: string,
-    course_title: string;
-    course_description: string;
-    department: 'IT' | 'EOD' | 'AFD' | 'RIM' | 'EMU' | '';
-    visibility: 'public' | 'private' | '';
-  }
+import { useDispatch } from "react-redux";
+import { setMenus, setMenu } from "../redux/CourseContentDataRedux";
+import { setID } from '../redux/CourseIDRedux'
+import { updateField, setCourseData } from "../redux/CourseDataRedux";
 
-interface TrainingDataState {
-    training_setup: string;
-    training_title: string;
-    start_date: string;
-    end_date: string;
-    resource_speakers: {host_name: string}[];
-    venue: string;
-    participants: (string | number)[];
-}
+import { replaceModule, setSubmitted, deleteModulePermanent } from "../redux/ModuleDataRedux";
+import { ModuleState, CourseData, TrainingDataState } from '../types/CourseCreationTypes'
 
 const useTrainingOfficer = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
 
     const API_URL: string = import.meta.env.VITE_URL
+    const dispatch = useDispatch()
     
-    const handleAddCourse = async(data: OverviewData) => {
+    const handleAddCourse = async(data: CourseData) => {
         setIsLoading(true)
         setError(null)
+
+        const formData = new FormData();
+        if (data.cover_image_upload) {
+            formData.append("cover_image_upload", data.cover_image_upload);
+        }
+        formData.append("course_title", data.course_title);
+        formData.append("course_description", data.course_description);
+        formData.append("department", data.department);
+        formData.append("visibility", data.visibility);
+        formData.append("submitted", data.submitted.toString());
+
+        data.participants.forEach((participant, index) => {
+            formData.append(`participants[${index}]`, participant);
+        });
+
         try {
-           const res = await axios.post(`${API_URL}/course/courses/`, data) 
-           if(res){
+           const res = await axios.post(`${API_URL}/course/courses/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+           }) 
+           if(res.status === 201){
                 setIsLoading(false)
-                console.log(res.data)
+                const data = res.data
+                console.log(data)
+                dispatch(setID(data.id))
+                dispatch(setCourseData(res.data))
+                await getMenus(data.id)
            }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -43,6 +57,144 @@ const useTrainingOfficer = () => {
                 console.log(error);
                 setError("An unexpected error occurred");
             }
+        }
+    }
+
+    const getMenus = async(id: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                dispatch(setMenus(response.data))
+                dispatch(updateField({name: 'submitted', value: true}))
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    } 
+
+    const handleUpdateCourse = async(id: number, data: CourseData) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+           const res = await axios.put(`${API_URL}/course/courses/${id}/`, data) 
+           if(res.status === 201){
+                setIsLoading(false)
+                const data = res.data
+                dispatch(setID(data.id))
+                await getMenus(data.id)
+           }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const handleAddMenu = async(id: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const res = await axios.post(`${API_URL}/course/courses/${id}/section-details/`, {title: 'Untitled'}) 
+            if(res.status === 201){
+                setIsLoading(false)
+                const data = res.data
+                dispatch(setMenu(data))
+            }
+         } catch (error) {
+             if (axios.isAxiosError(error)) {
+                 setIsLoading(false)
+                 console.log(error.response?.data?.message);
+                 setError(error.response?.data?.message || "Something went wrong");
+             } else {
+                 console.log(error);
+                 setError("An unexpected error occurred");
+             }
+         }
+    }
+
+    const handleAddModule = async(id: number, data: ModuleState) => {
+        console.log(id, data)
+        setIsLoading(true)
+        setError(null)
+        try {
+            const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, data) 
+            if(res.status === 201){
+                setIsLoading(false)
+                const data = res.data
+                console.log(data)
+                dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
+                dispatch(setSubmitted({moduleID: data.moduleID, value: true}))
+            }
+         } catch (error) {
+             if (axios.isAxiosError(error)) {
+                 setIsLoading(false)
+                 console.log(error.response?.data?.message);
+                 setError(error.response?.data?.message || "Something went wrong");
+             } else {
+                 console.log(error);
+                 setError("An unexpected error occurred");
+             }
+         }
+    }
+
+    const handleUpdateModule = async(id: number, data: ModuleState) => {
+        console.log(id, data)
+        setIsLoading(true)
+        setError(null)
+        try {
+            const res = await axios.put(`${API_URL}/course/modules/${id}/`, data) 
+            if(res.status === 200){
+                setIsLoading(false)
+                const data = res.data
+                console.log(data)
+                dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
+            }
+         } catch (error) {
+             if (axios.isAxiosError(error)) {
+                 setIsLoading(false)
+                 console.log(error.response?.data?.message);
+                 setError(error.response?.data?.message || "Something went wrong");
+             } else {
+                 console.log(error);
+                 setError("An unexpected error occurred");
+             }
+        }
+    }
+
+    const handleDeleteModule = async(id: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const res = await axios.delete(`${API_URL}/course/modules/${id}/`) 
+            if(res.status === 204){
+                setIsLoading(false)
+                const data = res.data
+                console.log(data)
+                dispatch(deleteModulePermanent(id))
+            }
+         } catch (error) {
+             if (axios.isAxiosError(error)) {
+                 setIsLoading(false)
+                 console.log(error.response?.data?.message);
+                 setError(error.response?.data?.message || "Something went wrong");
+             } else {
+                 console.log(error);
+                 setError("An unexpected error occurred");
+             }
         }
     }
 
@@ -143,6 +295,11 @@ const useTrainingOfficer = () => {
     retrieveTrainees, 
     createExternalTraining,
     retrieveExternalTraining,
+    handleAddMenu,
+    handleAddModule,
+    handleUpdateCourse,
+    handleUpdateModule,
+    handleDeleteModule,
     isLoading, 
     error }
 }
