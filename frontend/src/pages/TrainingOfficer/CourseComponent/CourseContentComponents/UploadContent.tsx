@@ -12,16 +12,14 @@ interface UploadContentData {
 }
 
 type UploadContentState = {
-    menuID: string;
     moduleID: string;
-    setTitle: (menuID: string, moduleID: string, fileID: string, title: string) => void;
-    setFile: (menuID: string, moduleID: string, fileID: string, file: File) => void;
-    deleteUploadContent: (menuID: string, moduleID: string, fileID: string) => void;
+    setTitle: (moduleID: string, fileID: string, title: string) => void;
+    deleteUploadContent: (moduleID: string, fileID: string) => void;
     data: UploadContentData
 }
 
 const UploadContent: React.FC<UploadContentState> = (props) => {
-    const { menuID, moduleID, setTitle, deleteUploadContent, data, setFile } = props
+    const {moduleID, data, deleteUploadContent, setTitle} = props
     const inputFile = useRef<HTMLInputElement>(null)
 
     const uploadFile = () => {
@@ -34,14 +32,14 @@ const UploadContent: React.FC<UploadContentState> = (props) => {
             <div className="flex items-center justify-center gap-2">
                 <button><BiDownArrowAlt size={24} color="gray"/></button>
                 <button><BiUpArrowAlt size={24} color="gray"/></button>
-                <button onClick={() => deleteUploadContent(menuID, moduleID, data.fileID)}><RiDeleteBinLine size={24} color="gray"/></button>
+                <button onClick={() => deleteUploadContent(moduleID, data.fileID)}><RiDeleteBinLine size={24} color="gray"/></button>
             </div>
         </header>
         <div className="w-full p-3 flex flex-col gap-3">
             <input 
                 type="text" 
                 value={data.fileName}
-                onChange={(e) => setTitle(menuID, moduleID, data.fileID, e.target.value)}
+                onChange={(e) => setTitle(moduleID, data.fileID, e.target.value)}
                 className="w-full p-2" 
                 placeholder="Untitled file name..." />
             <div className="w-full h-fit">
@@ -49,11 +47,11 @@ const UploadContent: React.FC<UploadContentState> = (props) => {
                     type="file" 
                     ref={inputFile}
                     className="hidden"
-                    onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setFile(menuID, moduleID, data.fileID, e.target.files[0]);
-                        }
-                      }} 
+                    // onChange={(e) => {
+                    //     if (e.target.files && e.target.files[0]) {
+                    //       setFile(menuID, moduleID, data.fileID, e.target.files[0]);
+                    //     }
+                    //   }} 
                     />
                 <button onClick={uploadFile} className="w-full h-60 border-dashed border-2 rounded-md border-c-blue-50 bg-c-blue-5 flex items-center justify-center">
                     <p className="flex flex-col items-center text-p-sm font-medium text-c-grey-50 gap-2"><FiUpload size={40}/> Upload your file</p>

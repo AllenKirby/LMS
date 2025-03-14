@@ -1,25 +1,18 @@
 import { FiSearch } from "react-icons/fi";
 import {
   ExternalParticipantCard,
-  ParticipantUploadedDocument,
 } from "./ExternalTrainingComponent";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ExternalTrainingView: React.FC = () => {
-  const [viewUpload, setViewUpload] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handletoggle = () => {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => setViewUpload(!viewUpload));
-    } else {
-      setViewUpload(!viewUpload);
-    }
-  };
   return (
     <section className="w-full h-full px-7 py-5 text-f-dark bg-[#F3F4F5]">
       <header className="flex justify-between items-center">
         <section className="flex items-center gap-3">
-          <button className="flex items-center justify-center">&lt;</button>
+          <button className="flex items-center justify-center" onClick={() => navigate('/trainingofficer/courses/course')}
+          >&lt;</button>
           <h1 className="text-h-h6 font-medium">Training title</h1>
         </section>
         <div className="flex gap-3">
@@ -45,9 +38,8 @@ const ExternalTrainingView: React.FC = () => {
         </div>
       </header>
       <main className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 pt-5 gap-10">
-        <ExternalParticipantCard onClick={handletoggle} />
+        <ExternalParticipantCard/>
       </main>
-      {viewUpload && <ParticipantUploadedDocument onClose={handletoggle} />}
     </section>
   );
 };
