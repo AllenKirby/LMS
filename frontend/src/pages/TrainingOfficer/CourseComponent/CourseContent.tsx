@@ -18,7 +18,8 @@ import {
   deleteContent,
   deleteChoice,
   setLesson,
-  setFileName
+  setFileName,
+  deleteAllChoicesFromQuestionnaire
 } from '../../../redux/ModuleDataRedux';
 
 import { CourseContentState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
@@ -73,6 +74,10 @@ const CourseContent = () => {
 
   const DeleteChoice = (id: string, questionnaireID: string, choiceID: string) => {
     dispatch(deleteChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID}))
+  }
+
+  const DeleteAllChoice = (id: string, questionnaireID: string) => {
+    dispatch(deleteAllChoicesFromQuestionnaire({moduleID: id, questionnaireID: questionnaireID}))
   }
 
   const DeleteModulePermanent = async(id: number) => {
@@ -154,6 +159,7 @@ const CourseContent = () => {
                         setChoice={SetChoice}
                         deleteQuestionnaire={DeleteContent}
                         deleteChoice={DeleteChoice}
+                        deleteAllChoices={DeleteAllChoice}
                         />
                     )
                   case 'uploadedFile': 

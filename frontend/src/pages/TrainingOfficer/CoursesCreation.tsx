@@ -39,7 +39,7 @@ const Courses: React.FC = () => {
   const courseOverviewData = useSelector(
     (state: { courseData: CourseData }) => state.courseData
   );
-  const { handleAddCourse, handleUpdateCourse } = useTrainingOfficerHook();
+  const { handleAddCourse, handleUpdateCourse, publishCourse } = useTrainingOfficerHook();
 
   const modal = () => {
     setIsModalOpen(!isModalOpen);
@@ -53,6 +53,15 @@ const Courses: React.FC = () => {
     setPendingNavigation(path);
     setConfirmationOpen(true);
   };
+
+  const handlePublish = async() => {
+    await publishCourse(courseID)
+    dispatch(resetCourseData())
+    dispatch(resetCourseContent())
+    dispatch(resetCourseID())
+    dispatch(resetModuleData())
+    navigate('/trainingofficer/courses/course')
+  }
 
   const handleConfirmNavigation = async () => {
     console.log(courseOverviewData)
@@ -160,7 +169,7 @@ const Courses: React.FC = () => {
                 {activeSection === "/trainingofficer/courses/courseCreation/preview" && 
                   <button 
                     className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light"
-                    onClick={modal}
+                    onClick={handlePublish}
                   >
                     Publish Course
                   </button>

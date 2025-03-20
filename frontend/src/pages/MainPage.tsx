@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTrainingOfficerHook } from '../hooks/'
 import { setTrainees } from '../redux/TraineesAccountsRedux';
 import { setData } from '../redux/ExternalTrainingDataRedux';
+import { setCourses } from '../redux/CoursesRedux';
 
 interface User {
   id: number;
@@ -30,7 +31,7 @@ interface UserState {
 const MainPage: React.FC = () => {
   const user = useSelector((state: {user: UserState}) => state.user)
   const dispatch = useDispatch()
-  const { retrieveTrainees, retrieveExternalTraining } = useTrainingOfficerHook()
+  const { retrieveTrainees, retrieveExternalTraining, retrieveCourses } = useTrainingOfficerHook()
 
   useEffect(() => {
     const getTrainees = async() => {
@@ -43,9 +44,15 @@ const MainPage: React.FC = () => {
       dispatch(setData(response))
     }
 
+    const getCourses = async() => {
+      const response = await retrieveCourses()
+      dispatch(setCourses(response))
+    }
+
     if(user.user.role === 'training_officer') {
       getTrainees()
       getExternalTrainings()
+      getCourses()
     }
   }, [])
 

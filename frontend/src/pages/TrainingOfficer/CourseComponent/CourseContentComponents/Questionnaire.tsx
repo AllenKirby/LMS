@@ -20,6 +20,7 @@ type QuestionnaireDataState = {
     setChoice: (id: string, questionnaireID: string, choiceID: string, dataString: string) => void;
     deleteQuestionnaire: (id: string, contentID: string) => void;
     deleteChoice: (id: string, questionnaireID: string, choiceID: string) => void;
+    deleteAllChoices: (id: string, questionnaireID: string) => void
 }
 
 const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
@@ -30,23 +31,37 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         addChoice,
         setChoice,
         deleteQuestionnaire,
-        deleteChoice
+        deleteChoice,
+        deleteAllChoices
     } = props
 
     useEffect(() => {
+        deleteAllChoices(moduleID, data.questionnaireID)
+    }, [data.choiceType])
+
+    useEffect(() => {
         if(data.choiceType === 'True or False') {
-            const bool = [
-                {choiceID: uuidv4(), choice: 'True'},
-                {choiceID: uuidv4(), choice: 'False'}
-            ]
-            bool.map((item,) => 
-                addChoice( moduleID, data.questionnaireID, item)
-            )
+            const hasTrue = data.choices?.some(choice => choice.choice === 'True');
+            const hasFalse = data.choices?.some(choice => choice.choice === 'False');
+
+            if (!hasTrue || !hasFalse) {
+                const bool = [
+                    { choiceID: uuidv4(), choice: 'True' },
+                    { choiceID: uuidv4(), choice: 'False' }
+                ];
+                bool.forEach(item => addChoice(moduleID, data.questionnaireID, item));
+            }
         }
         if(data.choiceType === 'Text Answer') {
-            addChoice( moduleID, data.questionnaireID, {choiceID: uuidv4(), choice: ''})
+            const hasTextAnswer = data.choices?.some(choice => choice.choice === '');
+        
+            if (!hasTextAnswer) {
+                addChoice(moduleID, data.questionnaireID, { choiceID: uuidv4(), choice: '' });
+            }
         }
-    }, [])
+    }, [data.choiceType])
+
+    console.log('choices', data.choices)
 
   return (
     <section className="w-full h-fit border border-c-grey-20 rounded-lg">

@@ -11,6 +11,7 @@ import { CourseData } from '../../../types/CourseCreationTypes'
 const CourseOverview = () => {
   const dispatch = useDispatch()
   const courseData = useSelector((state: {courseData: CourseData}) => state.courseData)
+  const API_URL = import.meta.env.VITE_URL
 
   const handleImageUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -40,9 +41,12 @@ const CourseOverview = () => {
           <div>
             <h1 className="text-h-h6 font-medium pb-3">Course Overview</h1>
           </div>
-          <div className="w-full h-[200px] overflow-hidden"> 
+          <div className="w-full h-[200px] overflow-hidden relative"> 
             {courseData.cover_image_upload ? 
-            <img className="w-full object-cover" src={`data:image/png;base64,${courseData.cover_image_upload}`} alt="Base64 Image" />
+              <div>
+                <img className="w-full h-full object-cover" src={courseData.cover_image_url ? `${API_URL}${courseData.cover_image_url}` : URL.createObjectURL(courseData.cover_image_upload)} alt="Base64 Image" />
+                <button onClick={uploadFile} className="absolute right-5 top-5 bg-white p-2 rounded-md"><FiUpload size={20}/></button>
+              </div>
               : 
               <div className="w-full h-full border-2 border-dashed border-c-blue-50 rounded-md">
                 <button onClick={uploadFile} className="w-full h-full flex flex-col items-center justify-center">

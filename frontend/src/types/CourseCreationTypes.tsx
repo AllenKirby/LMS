@@ -85,6 +85,7 @@ export interface CourseData {
 }
 
 export interface TrainingDataState {
+    id?: number;
     training_setup: string;
     training_title: string;
     start_date: string;
@@ -92,5 +93,26 @@ export interface TrainingDataState {
     resource_speakers: {host_name: string}[];
     venue: string;
     participants?: (string | number)[];
-    participants_display?: {id: number; first_name: string; last_name: string; email: string; status?: string; department?: string;}[]
+    document_url: string[]
+    participants_display?: {id: number; first_name: string; last_name: string; email: string; status: string; department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";}[]
+}
+
+export interface ExternalParticipantState {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
+    status: string;
+} 
+
+export interface CoursesState {
+    id: number;
+    course_title: string;
+    course_description: string;
+    department: string;
+    visibility: string;
+    cover_image_url: string;
+    created_at: string;
+    participants_display: {id: number; first_name: string; last_name: string; email: string;}[]
 }
