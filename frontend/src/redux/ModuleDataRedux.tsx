@@ -112,6 +112,20 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
+    deleteAllChoicesFromQuestionnaire: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string }>) => {
+        const { moduleID, questionnaireID } = action.payload;
+        const module = state.find((mod) => mod.moduleID === moduleID);
+        
+        if (module) {
+            const questionnaire = module.content.find(
+                (item) => item.type === "questionnaire" && item.questionnaireID === questionnaireID
+            ) as Extract<ModuleContent, { type: "questionnaire" }> | undefined;
+    
+            if (questionnaire) {
+                questionnaire.choices = []; 
+            }
+        }
+    },    
     setLesson: (state, action: PayloadAction<{ 
         moduleID: string; 
         lessonID: string; 
@@ -171,6 +185,7 @@ export const {
     resetModuleData,
     replaceModule,
     setSubmitted,
-    deleteModulePermanent
+    deleteModulePermanent,
+    deleteAllChoicesFromQuestionnaire
 } = ModuleDataRedux.actions;
 export default ModuleDataRedux.reducer;

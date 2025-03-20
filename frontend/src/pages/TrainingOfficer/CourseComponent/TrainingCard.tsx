@@ -28,7 +28,7 @@ const TrainingCard: React.FC = () => {
     <>
       {externalTrainings.map((info, index) => (
         <section
-          onClick={() => navigate(`/trainingofficer/courses/externaltraining?data=${encodeURIComponent(JSON.stringify(info))}`)}
+          onClick={() => navigate(`/trainingofficer/courses/externaltraining/${info.id}`)}
           className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
           key={index}
         >

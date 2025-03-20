@@ -3,3 +3,5 @@ export {default as CourseCard} from './CourseCard';
 export {default as Calendar} from './Calendar';
 export {default as DatePickerComponent} from './DatePickerComponent'
 export {default as ConfirmationModal} from './ConfirmationModal'
+export {default as CourseView} from './CourseView'
+export {default as CourseContentOverview } from './CourseContentOverview'

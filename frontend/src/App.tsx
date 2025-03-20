@@ -24,6 +24,8 @@ import {
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
 
+import { CourseView } from "./Components"; 
+
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -43,7 +45,8 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseContainer />}>
             <Route path="course" element={<Course />}/>
-            <Route path="externaltraining" element={<ExternalTrainingView />}/> 
+            <Route path="externaltraining/:id" element={<ExternalTrainingView />}/> 
+            <Route path="CourseView" element={<CourseView/>} />
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
               <Route  

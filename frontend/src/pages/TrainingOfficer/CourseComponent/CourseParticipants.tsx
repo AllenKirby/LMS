@@ -9,8 +9,16 @@ import { Trainees, CourseData } from '../../../types/CourseCreationTypes'
 const CourseParticipants = () => {
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
   const courseData = useSelector((state: {courseData: CourseData}) => state.courseData)
-  const [participants, setParticipants] = useState<string[]>([...courseData.participants])
+  const [participants, setParticipants] = useState<string[]>([])
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if(Array.isArray(courseData?.participants_display)) {
+      const emails = courseData.participants_display.map(email => email.email)
+      console.log(emails)
+      setParticipants([...emails])
+    }
+  }, [])
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const valueArray  = event.target.value;

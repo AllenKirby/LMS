@@ -1,16 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-interface TrainingDataState {
-  id: number;
-  training_title: string;
-  training_setup: string;
-  start_date: string;
-  end_date: string;
-  venue: string;
-  resource_speakers: {id: number; host_name: string}[];
-  participants_display: {id: number; first_name: string; last_name: string; email: string}[];
-  document_url: string[]
-}
+import { TrainingDataState } from '../types/CourseCreationTypes'
 
 const initialState: TrainingDataState | null = null;
 

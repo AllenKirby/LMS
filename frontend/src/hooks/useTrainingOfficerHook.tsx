@@ -243,6 +243,39 @@ const useTrainingOfficer = () => {
             }
         }
     }
+    const uploadParticipantDocument = async(trainingID: number, participant: number, data: File[]) => {
+        setIsLoading(true)
+        setError(null)
+
+        const formData = new FormData()
+        data.forEach((item) => {
+            formData.append(`document_name`, item.name)
+            formData.append(`document`, item)
+        })
+
+        try {
+            const response = await axios.post(`${API_URL}/training/trainings/${trainingID}/participants/${participant}/documents/upload/`, formData, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": 'multipart/form-data'
+                }
+            })
+            if(response.status === 201) {
+                const data = response.data
+                setIsLoading(false)
+                console.log(data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
 
     const uploadDocsExternalTraining = async(id: number, documents: FormData) => {
         setIsLoading(true)
@@ -257,6 +290,46 @@ const useTrainingOfficer = () => {
             if(response.status === 200) {
                 setIsLoading(false)
                 console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const retrieveExternalDocuments = async(trainingID: number, participantsID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/training/trainings/${trainingID}/participants/${participantsID}/documents/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                return response.data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const retrieveExternalParticipants = async(id: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/training/trainings/${id}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                return response.data
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -290,9 +363,76 @@ const useTrainingOfficer = () => {
         }
     }
 
+    const retrieveCourses = async() => {
+        try {
+            const response = await axios.get(`${API_URL}/course/courses/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                return response.data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const markComplete = async(trainingID: number, id: number, status: {status: string}) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.patch(`${API_URL}/training/status/${trainingID}/${id}/`, status, {
+                withCredentials: true
+            })
+            if(response.status === 200) {
+                setIsLoading(false)
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const publishCourse = async( id: number ) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.patch(`${API_URL}/course/course-status/${id}/`, {course_status: "published"}, {
+                withCredentials: true
+            })
+            if(response.status === 200) {
+                setIsLoading(false)
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return { 
     handleAddCourse, 
     retrieveTrainees, 
+    retrieveExternalParticipants,
     createExternalTraining,
     retrieveExternalTraining,
     handleAddMenu,
@@ -300,6 +440,11 @@ const useTrainingOfficer = () => {
     handleUpdateCourse,
     handleUpdateModule,
     handleDeleteModule,
+    uploadParticipantDocument,
+    retrieveExternalDocuments,
+    markComplete,
+    publishCourse,
+    retrieveCourses,
     isLoading, 
     error }
 }
