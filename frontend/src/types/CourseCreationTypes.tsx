@@ -93,7 +93,7 @@ export interface TrainingDataState {
     resource_speakers: {host_name: string}[];
     venue: string;
     participants?: (string | number)[];
-    document_url: string[]
+    document_url?: string[]
     participants_display?: {id: number; first_name: string; last_name: string; email: string; status: string; department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";}[]
 }
 
@@ -114,5 +114,6 @@ export interface CoursesState {
     visibility: string;
     cover_image_url: string;
     created_at: string;
+    course_status: string;
     participants_display: {id: number; first_name: string; last_name: string; email: string;}[]
 }

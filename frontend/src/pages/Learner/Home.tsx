@@ -74,10 +74,6 @@ const Home: React.FC = () => {
                 </div>
                 <div className="w-full h-auto">
                     <CourseCard />
-                    <CourseCard/>
-                    <CourseCard/>
-                    <CourseCard/>
-                    <CourseCard/>
                 </div>
             </section>
         </section>
@@ -85,10 +81,6 @@ const Home: React.FC = () => {
             <div className="w-full h-full rounded-md shadow-lg bg-white p-3 flex flex-col">
                 <Calendar/>
                 <div className="w-full flex-1 overflow-y-auto">
-                    <CourseCard/>
-                    <CourseCard/>
-                    <CourseCard/>
-                    <CourseCard/>
                     <CourseCard/>
                 </div>
             </div>

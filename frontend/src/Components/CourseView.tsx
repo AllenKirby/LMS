@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 import { CourseData } from '../types/CourseCreationTypes'
 
@@ -7,7 +8,7 @@ import { CourseContentOverview } from "./"
 import { CiSquareInfo } from "react-icons/ci";
 
 const CourseView = () => {
-
+  const navigate = useNavigate();
   const courseOverview = useSelector((state: {courseData: CourseData}) => state.courseData)
 
   return (
@@ -15,6 +16,7 @@ const CourseView = () => {
         <div className='w-3/5 flex flex-col gap-5'>
             <nav className='flex items-center justify-between'>
                 <section className='flex items-center gap-1'>
+                    <button onClick={() => navigate('/trainingofficer/courses/course')}>&lt;</button>
                     <p>Course &gt;</p>
                     <p>Course Title</p>
                 </section>
