@@ -159,6 +159,20 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
+    setFile: (state, action: PayloadAction<{moduleID: string; fileID: string; value: File;}>) => {
+        const { moduleID, fileID, value } = action.payload;
+        const module = state.find((mod) => mod.moduleID === moduleID);
+        
+        if (module) {
+            const file = module.content.find(
+                (item) => item.type === "uploadedFile" && item.fileID === fileID
+            ) as Extract<ModuleContent, { type: "uploadedFile" }> | undefined
+
+            if (file) {
+                file.file = value;
+            }
+        }
+    },
     replaceModule: (state, action: PayloadAction<{ moduleID: string; newModule: ModuleState }>) => {
         const { moduleID, newModule } = action.payload;
         const index = state.findIndex((mod) => mod.moduleID === moduleID);
@@ -182,6 +196,7 @@ export const {
     deleteChoice,
     setLesson,
     setFileName,
+    setFile,
     resetModuleData,
     replaceModule,
     setSubmitted,

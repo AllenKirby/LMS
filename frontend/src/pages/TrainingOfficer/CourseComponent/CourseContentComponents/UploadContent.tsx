@@ -15,11 +15,12 @@ type UploadContentState = {
     moduleID: string;
     setTitle: (moduleID: string, fileID: string, title: string) => void;
     deleteUploadContent: (moduleID: string, fileID: string) => void;
-    data: UploadContentData
+    data: UploadContentData;
+    setFile: (id: string, fileID: string, value: File) => void
 }
 
 const UploadContent: React.FC<UploadContentState> = (props) => {
-    const {moduleID, data, deleteUploadContent, setTitle} = props
+    const {moduleID, data, deleteUploadContent, setTitle, setFile} = props
     const inputFile = useRef<HTMLInputElement>(null)
 
     const uploadFile = () => {
@@ -43,15 +44,16 @@ const UploadContent: React.FC<UploadContentState> = (props) => {
                 className="w-full p-2" 
                 placeholder="Untitled file name..." />
             <div className="w-full h-fit">
+                {/* {data.} */}
                 <input 
                     type="file" 
                     ref={inputFile}
                     className="hidden"
-                    // onChange={(e) => {
-                    //     if (e.target.files && e.target.files[0]) {
-                    //       setFile(menuID, moduleID, data.fileID, e.target.files[0]);
-                    //     }
-                    //   }} 
+                    onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setFile(moduleID, data.fileID, e.target.files[0]);
+                        }
+                      }} 
                     />
                 <button onClick={uploadFile} className="w-full h-60 border-dashed border-2 rounded-md border-c-blue-50 bg-c-blue-5 flex items-center justify-center">
                     <p className="flex flex-col items-center text-p-sm font-medium text-c-grey-50 gap-2"><FiUpload size={40}/> Upload your file</p>

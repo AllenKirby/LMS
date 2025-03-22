@@ -7,7 +7,7 @@ import { setID } from '../redux/CourseIDRedux'
 import { updateField, setCourseData } from "../redux/CourseDataRedux";
 
 import { replaceModule, setSubmitted, deleteModulePermanent } from "../redux/ModuleDataRedux";
-import { ModuleState, CourseData, TrainingDataState } from '../types/CourseCreationTypes'
+import { ModuleState, CourseData, TrainingDataState, FileUploadState } from '../types/CourseCreationTypes'
 
 const useTrainingOfficer = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -127,17 +127,28 @@ const useTrainingOfficer = () => {
     }
 
     const handleAddModule = async(id: number, data: ModuleState) => {
-        console.log(id, data)
         setIsLoading(true)
         setError(null)
+
+        const newData = { ...data, content: [...data.content] };
+
+        newData.content = newData.content.filter(item => item.type !== 'uploadedFile')
+        const withFile = data.content.filter(item => item.type === 'uploadedFile')
+
+        console.log(id,data)
+
         try {
-            const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, data) 
+            const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, newData) 
             if(res.status === 201){
                 setIsLoading(false)
-                const data = res.data
-                console.log(data)
-                dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
-                dispatch(setSubmitted({moduleID: data.moduleID, value: true}))
+                const response = res.data
+                console.log(response)
+                if(withFile.length > 0) {
+                    await uploadCourseFile(response.id, withFile)
+                } else {
+                    dispatch(replaceModule({moduleID: response.moduleID, newModule: response}))
+                    dispatch(setSubmitted({moduleID: response.moduleID, value: true}))
+                }
             }
          } catch (error) {
              if (axios.isAxiosError(error)) {
@@ -148,7 +159,50 @@ const useTrainingOfficer = () => {
                  console.log(error);
                  setError("An unexpected error occurred");
              }
-         }
+        }
+    }
+
+    const uploadCourseFile = async(id: number, data: FileUploadState[]) => {
+        setIsLoading(true)
+        setError(null)
+
+        console.log(id)
+
+        const formData = new FormData();
+        if(data) {
+            data.forEach((doc) => {
+                if(doc.file){
+                    formData.append(`document_name`, doc.fileName);
+                    formData.append(`document`, doc.file);
+                    formData.append(`fileID`, doc.fileID);
+                    formData.append(`type`, doc.type);
+                }
+            });
+        }
+        
+        try {
+           const res = await axios.post(`${API_URL}/course/documents/${id}/upload/`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+           }) 
+           if(res.status === 201){
+                setIsLoading(false)
+                const response = res.data
+                console.log(response)
+                dispatch(replaceModule({moduleID: response.moduleID, newModule: response}))
+                dispatch(setSubmitted({moduleID: response.moduleID, value: true}))
+           }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
     }
 
     const handleUpdateModule = async(id: number, data: ModuleState) => {

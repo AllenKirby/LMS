@@ -92,9 +92,13 @@ const Course: React.FC = () => {
           External Training
         </button>
       </nav>
-      <main className="w-full flex-1 grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10 overflow-y-auto">
-        {activeTab === "Course" && <CourseCard />}
-        {activeTab === "External Training" && <TrainingCard />}
+      <main className="w-full flex-1  overflow-y-auto">
+        <>
+          {activeTab === "Course" && <CourseCard />}
+        </>
+        <section className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+          {activeTab === "External Training" && <TrainingCard />}
+        </section>
       </main>
       {isTrainingModalOpen && <ExternalTrainingForm modal={handleToggle} />}
     </section>

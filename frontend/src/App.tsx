@@ -41,6 +41,7 @@ function App() {
           <Route path="mycourses" element={<MyCourse />} />
           <Route path="resources" element={<ResourcesTrainee />} />
         </Route>
+        // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseContainer />}>

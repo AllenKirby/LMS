@@ -19,7 +19,8 @@ import {
   deleteChoice,
   setLesson,
   setFileName,
-  deleteAllChoicesFromQuestionnaire
+  deleteAllChoicesFromQuestionnaire,
+  setFile
 } from '../../../redux/ModuleDataRedux';
 
 import { CourseContentState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
@@ -92,12 +93,16 @@ const CourseContent = () => {
     dispatch(setFileName({moduleID: id, fileID: fileID, value: value}))
   }
 
+  const SetFile = (id: string, fileID: string, value: File) => {
+    dispatch(setFile({moduleID: id, fileID: fileID, value: value}))
+  }
+
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
 
   useEffect(() => {
-    console.log(courseID)
-  }, [courseID])
+    console.log(modules)
+  }, [modules])
   
   return (
     <section className="w-full h-full flex flex-row">
@@ -170,6 +175,7 @@ const CourseContent = () => {
                         deleteUploadContent={DeleteContent}
                         moduleID={selectedModule}
                         setTitle={SetFileName}
+                        setFile={SetFile}
                         />
                     )
                   case 'separator': 
