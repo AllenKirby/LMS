@@ -1,62 +1,139 @@
-import MyCourseCard from "../../Components/MyCourseCard";
-import { FiSearch, FiFilter, FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import { IoMdAddCircleOutline } from "react-icons/io";
-import { CiGrid2H, CiTextAlignLeft  } from "react-icons/ci";
+import { useState } from "react";
+
+interface Filters {
+  course: boolean;
+  externalCourse: boolean;
+  all: boolean;
+  inProgress: boolean;
+  completed: boolean;
+  saved: boolean;
+  sort: string;
+}
 
 const MyCourse = () => {
+  const [selectedFilters, setSelectedFilters] = useState<Filters>({
+    course: false,
+    externalCourse: false,
+    all: false,
+    inProgress: false,
+    completed: false,
+    saved: false,
+    sort: "Relevance",
+  });
+  const [activeButtonCourse, setActiveButtonCourse] = useState<string>("All");
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setSelectedFilters((prev) => ({ ...prev, [name]: checked }));
+  };
+
+  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setSelectedFilters((prev) => ({ ...prev, sort: value }));
+  };
+
   return (
-    <section className="w-full h-full px-9 flex flex-col gap-5 bg-gray-50 overflow-y-auto">
-      <section className="w-full flex flex-col mt-5">
-        <div className="flex items-center justify-between w-full mb-2">
-          <p className="text-h-h6 font-medium text-f-black">My Courses</p>
-          <div className="flex gap-2">
-            <button className="rounded w-8 h-8 bg-gray-300 flex items-center justify-center">
-              <FiSearch size={18} />
-            </button>
-            <button className="rounded w-8 h-8 bg-gray-300 flex items-center justify-center">
-              <FiFilter size={18} />
-            </button>
-            <button className="rounded w-16 h-8 bg-gray-300 flex items-center justify-center gap-1 px-0">
-              <CiTextAlignLeft className="text-black-700" size={18} strokeWidth={1} />
-              <div className="bg-white rounded p-1 flex items-center justify-center">
-                <CiGrid2H className="text-black-700" size={18} strokeWidth={1} />
-              </div>
-            </button>
-
-
-            <button className="rounded w-auto px-3 py-2 h-8 bg-gray-300 flex items-center justify-center gap-2">
-              <IoMdAddCircleOutline size={18} />
-              <span className="text-sm font-medium">New Course</span>
-            </button>
-
-            
+    <section className="w-full h-full flex flex-row gap-5 bg-content-bg">
+      <nav className="w-1/5 h-full border-r border-c-grey-20 px-10 py-8 flex flex-col gap-5">
+        <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>
+        <section className="w-full flex flex-col gap-3">
+          <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+            <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+            <p className="text-p-lg">Categories</p>
+          </header>
+          <div className="flex-1 flex flex-col">
+            {["All", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
+              <button
+                key={category}
+                className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
+                  activeButtonCourse === category
+                    ? "bg-c-blue-10 text-f-dark"
+                    : "bg-none text-c-grey-50"
+                }`}
+                onClick={() => setActiveButtonCourse(category)}
+              >
+                {category}
+              </button>
+            ))}
           </div>
-        </div>
-        
-        <nav className="px-2">
-          <ul className="flex gap-8 border-b border-gray-200 py-1 px-2">
-            <li className="text-f-gray">All</li>
-            <li className="text-f-gray">Category 1</li>
-            <li className="text-f-gray">Category 2</li>
-            <li className="text-f-gray">Category 3</li>
-          </ul>
-          
-        </nav>
+        </section>
+        <section className="w-full flex flex-col gap-3">
+          <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+            <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+            <p className="text-p-lg">Filters</p>
+          </header>
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="w-full flex flex-col">
+              {["Course", "External Course"].map((category) => (
+                <label
+                  key={category}
+                  htmlFor={category}
+                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    id={category}
+                    name={category.toLowerCase().replace(" ", "")}
+                    checked={
+                      selectedFilters[category.toLowerCase().replace(" ", "")]
+                    }
+                    onChange={handleCheckboxChange}
+                    className="mr-2"
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
 
-        <div className="flex flex-row items-center justify-between w-full">
-          
-        </div>
+            {/* Status Filter */}
+            <div className="w-full flex flex-col">
+              <p className="text-p-sm font-medium text-c-green-50">Status</p>
+              {["All", "In Progress", "Completed", "Saved"].map((status) => (
+                <label
+                  key={status}
+                  htmlFor={status}
+                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    id={status}
+                    name={status.toLowerCase().replace(" ", "")}
+                    checked={
+                      selectedFilters[status.toLowerCase().replace(" ", "")]
+                    }
+                    onChange={handleCheckboxChange}
+                    className="mr-2"
+                  />
+                  {status}
+                </label>
+              ))}
+            </div>
 
-        {/* MyCourseCard Grid - 3 per row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full mt-4 ">
-          <MyCourseCard />
-          <MyCourseCard />
-          <MyCourseCard />
-          <MyCourseCard />
-          <MyCourseCard />
-          <MyCourseCard />
-        </div>
-      </section>
+            <div className="w-full flex flex-col">
+              <p className="text-p-sm font-medium text-c-green-50">Sort By</p>
+              {["Relevance", "Latest", "A-Z", "Z-A"].map((filter) => (
+                <label
+                  key={filter}
+                  htmlFor={filter}
+                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    id={filter}
+                    name="sort"
+                    value={filter}
+                    checked={selectedFilters.sort === filter}
+                    onChange={handleRadioChange}
+                    className="mr-2"
+                  />
+                  {filter}
+                </label>
+              ))}
+            </div>
+          </div>
+        </section>
+      </nav>
+      <section className="w-4/5 h-full"> </section>
     </section>
   );
 };
