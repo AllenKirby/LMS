@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 //icons
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -28,6 +28,8 @@ interface UserState {
 }
 
 const Header: React.FC = () => {
+  const location = useLocation();
+  const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
   //hooks
@@ -39,6 +41,8 @@ const Header: React.FC = () => {
     await handleLogout();
   };
 
+  console.log(location.pathname);
+
   return (
     <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b">
       <section className="flex items-center justify-center gap-2">
@@ -48,31 +52,43 @@ const Header: React.FC = () => {
       <nav className="p-3">
         <ul className="flex gap-8">
           {user.user.role === "trainee" && (
-            <NavLink to={"home"} className="text-f-gray">
+            <NavLink to={"home"} className={({ isActive }) =>
+              `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            }>
               Home
             </NavLink>
           )}
           {user.user.role === "trainee" && (
-            <NavLink to={"mycourses"} className="text-f-gray">
-              My Courses
+            <NavLink to={"mycourses"} className={({ isActive }) =>
+            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+          }>
+              Course Library
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
-            <NavLink to={"dashboard"} className="text-f-gray">
+            <NavLink to={"dashboard"} className={({ isActive }) =>
+            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+          }>
               Home
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
-            <NavLink to={"courses/course"} className="text-f-gray">
+            <NavLink to={"courses/course"} className={({ isActive }) =>
+            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+          }>
               My Courses
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
-            <NavLink to={"trainee"} className="text-f-gray">
+            <NavLink to={"trainee"} className={({ isActive }) =>
+            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+          }>
               Trainee
             </NavLink>
           )}
-          <NavLink to={"resources"} className="text-f-gray">
+          <NavLink to={"resources"} className={({ isActive }) =>
+            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+          }>
             Resources
           </NavLink>
         </ul>

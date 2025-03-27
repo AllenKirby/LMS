@@ -54,8 +54,6 @@ const CourseView = () => {
     getCourseDetails()
   }, [id, courses])
 
-  console.log(menus)
-
   return (
     <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">
         <div className='w-3/5 flex flex-col gap-5'>

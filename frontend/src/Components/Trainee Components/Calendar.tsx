@@ -1,63 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiCalendar } from "react-icons/fi";
 
 interface Day {
   day: string;
   date: number;
+  fullDate: Date;
 }
 
 const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const daysInWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const getWeekDays = (date: Date): Day[] => {
-    const startOfWeek = new Date(date.setDate(date.getDate() - date.getDay())); // Start of the week (Sunday)
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
     return Array.from({ length: 7 }).map((_, index) => {
-      const current = new Date(
-        startOfWeek.getFullYear(),
-        startOfWeek.getMonth(),
-        startOfWeek.getDate() + index
-      );
-      return { day: daysInWeek[current.getDay()], date: current.getDate() };
+      const current = new Date(startOfWeek);
+      current.setDate(current.getDate() + index);
+      return { day: daysInWeek[current.getDay()], date: current.getDate(), fullDate: current };
     });
   };
 
-  const weekDays = getWeekDays(new Date(currentDate));
+  const [weekDays, setWeekDays] = useState<Day[]>(getWeekDays(currentDate));
+
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, []);
 
   const handlePrevWeek = () => {
-    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 7)));
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 7);
+    setCurrentDate(newDate);
+    setWeekDays(getWeekDays(newDate));
   };
 
   const handleNextWeek = () => {
-    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 7)));
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 7);
+    setCurrentDate(newDate);
+    setWeekDays(getWeekDays(newDate));
   };
 
-  const handleDateSelect = (date: number) => {
-    const selected = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      date
-    );
-    setSelectedDate(selected);
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
   };
 
   return (
     <section className="w-full h-full bg-white rounded-lg shadow-md p-5">
       <section>
         <div className="flex justify-between items-center bg-c-grey-5 rounded-md px-4 py-3">
-          <button onClick={handlePrevWeek}>&lt;</button>
+          <button onClick={handlePrevWeek} aria-label="Previous Week">&lt;</button>
           <p className="text-p-rg font-semibold">
             {currentDate.toLocaleString("default", {
               month: "short",
               year: "numeric",
             })}
           </p>
-          <button onClick={handleNextWeek}>&gt;</button>
+          <button onClick={handleNextWeek} aria-label="Next Week">&gt;</button>
         </div>
         <section className="flex items-center justify-between mt-2">
-          <button>&lt;</button>
+          <button onClick={handlePrevWeek} aria-label="Previous Week">&lt;</button>
           <div className="grid grid-cols-7 gap-2">
             {weekDays.map((day, index) => (
               <div
@@ -65,16 +69,18 @@ const Calendar: React.FC = () => {
                 className={`flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer ${
                   selectedDate &&
                   selectedDate.getDate() === day.date &&
+                  selectedDate.getMonth() === day.fullDate.getMonth() &&
+                  selectedDate.getFullYear() === day.fullDate.getFullYear() &&
                   "bg-c-blue-50 text-white rounded"
                 }`}
-                onClick={() => handleDateSelect(day.date)}
+                onClick={() => handleDateSelect(day.fullDate)}
               >
                 <span className="text-sm text-c-grey-10">{day.day}</span>
                 <span className="font-semibold">{day.date}</span>
               </div>
             ))}
           </div>
-          <button>&gt;</button>
+          <button onClick={handleNextWeek} aria-label="Next Week">&gt;</button>
         </section>
       </section>
       <div className="flex-1 mt-5">
