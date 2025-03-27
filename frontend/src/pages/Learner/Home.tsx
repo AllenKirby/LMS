@@ -1,5 +1,4 @@
-import { CourseCard } from "../../Components";
-import { Calendar } from "../../Components/Trainee Components";
+import { Calendar, TraineeCourseCard } from "../../Components/Trainee Components";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 
@@ -84,8 +83,10 @@ const Home: React.FC = () => {
               </button>
             ))}
           </nav>
-          <div className="w-full h-full">
-            <CourseCard />
+          <div className="w-full h-full grid grid-cols-2 gap-5">
+              <TraineeCourseCard/>
+              <TraineeCourseCard/>
+              <TraineeCourseCard/>
           </div>
         </section>
       </section>
