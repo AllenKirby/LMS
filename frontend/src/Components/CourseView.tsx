@@ -66,7 +66,11 @@ const CourseView = () => {
   const editCourse = () => {
     navigate('../courseCreation/courseOverview')
     dispatch(setID((selectedCourse as CoursesState).id))
-    dispatch(setCourseData(selectedCourse))
+    dispatch(setCourseData(selectedCourse as CoursesState))
+  }
+
+  const takeCourse = () => {
+    navigate(`/trainee/mycourses/${id}/learn`)
   }
 
   return (
@@ -81,7 +85,7 @@ const CourseView = () => {
                 <section className='flex gap-2'>
                     {user.user.role === 'training_officer' && <button onClick={editCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Edit Course</button>}
                     {user.user.role === 'training_officer' && <button onClick={() => removeCourse((selectedCourse as CoursesState).id)} className='px-2 py-1 rounded-md bg-red-500 text-f-light text-p-sm'>Delete Course</button>}
-                    {user.user.role === 'trainee' && <button className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
+                    {user.user.role === 'trainee' && <button onClick={takeCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
                 </section>
             </nav>
             <article className='flex flex-col gap-5'>
