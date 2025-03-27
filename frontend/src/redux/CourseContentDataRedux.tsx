@@ -12,9 +12,12 @@ const CourseContentDataRedux = createSlice({
     setMenu: (state, action: PayloadAction<MenuDataState>) => {
       state.push(action.payload); 
     },
+    removeMenu: (state, action: PayloadAction<number>) => {
+      return state.filter(item => item.id !== action.payload); 
+    },
     resetCourseContent: () => initialState
   },
 });
 
-export const { setMenus, setMenu, resetCourseContent } = CourseContentDataRedux.actions;
+export const { setMenus, setMenu, resetCourseContent, removeMenu } = CourseContentDataRedux.actions;
 export default CourseContentDataRedux.reducer;

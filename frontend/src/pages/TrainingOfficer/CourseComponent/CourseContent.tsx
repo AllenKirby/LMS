@@ -39,7 +39,7 @@ const CourseContent = () => {
   const [selectedModule, setSelectedModule] = useState<string>('')
 
   //hooks
-  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, isLoading } = useTrainingOfficerHook()
+  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, isLoading } = useTrainingOfficerHook()
 
   const setMenuID = (id: number) => {
     setSelectedMenu(id)
@@ -97,6 +97,10 @@ const CourseContent = () => {
     dispatch(setFile({moduleID: id, fileID: fileID, value: value}))
   }
 
+  const removeMenu = async(id: number) => {
+    await deleteMenu(id)
+  }
+
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
 
@@ -119,6 +123,7 @@ const CourseContent = () => {
               modules={modules}
               setMenuID={setMenuID}
               setModuleID={setModuleID}
+              deleteMenu={removeMenu}
               deleteModule={DeleteModule}
               deleteModulePermanent={DeleteModulePermanent}
               />
