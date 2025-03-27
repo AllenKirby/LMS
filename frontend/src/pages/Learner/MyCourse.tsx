@@ -10,6 +10,9 @@ interface Filters {
   sort: string;
 }
 
+import { CourseCard } from '../../Components/'
+import { Outlet, useParams } from "react-router-dom";
+
 const MyCourse = () => {
   const [selectedFilters, setSelectedFilters] = useState<Filters>({
     course: false,
@@ -20,7 +23,8 @@ const MyCourse = () => {
     saved: false,
     sort: "Relevance",
   });
-  const [activeButtonCourse, setActiveButtonCourse] = useState<string>("All");
+  const [activeButtonCourse, setActiveButtonCourse] = useState<string>("");
+  const {id} = useParams()
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
@@ -32,109 +36,125 @@ const MyCourse = () => {
     setSelectedFilters((prev) => ({ ...prev, sort: value }));
   };
 
+  const formatKey = (key: string) => {
+    return key
+      .replace(/\s(.)/g, (match) => match.toUpperCase()) // Capitalize after space
+      .replace(/\s/g, "") // Remove spaces
+      .replace(/^(.)/, (match) => match.toLowerCase()); // Ensure first letter is lowercase
+  };
+  
+
   return (
-    <section className="w-full h-full flex flex-row gap-5 bg-content-bg">
-      <nav className="w-1/5 h-full border-r border-c-grey-20 px-10 py-8 flex flex-col gap-5">
-        <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>
-        <section className="w-full flex flex-col gap-3">
-          <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
-            <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
-            <p className="text-p-lg">Categories</p>
-          </header>
-          <div className="flex-1 flex flex-col">
-            {["All", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
-              <button
-                key={category}
-                className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
-                  activeButtonCourse === category
-                    ? "bg-c-blue-10 text-f-dark"
-                    : "bg-none text-c-grey-50"
-                }`}
-                onClick={() => setActiveButtonCourse(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+    <>
+      {!id ? (
+        <section className="w-full h-full flex flex-row gap-5 bg-content-bg">
+          <nav className="w-1/5 h-full border-r border-c-grey-20 px-10 py-8 flex flex-col gap-5">
+            <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>
+            <section className="w-full flex flex-col gap-3">
+              <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+                <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+                <p className="text-p-lg">Categories</p>
+              </header>
+              <div className="flex-1 flex flex-col">
+                {["", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
+                  <button
+                    key={category}
+                    className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
+                      activeButtonCourse === category
+                        ? "bg-c-blue-10 text-f-dark"
+                        : "bg-none text-c-grey-50"
+                    }`}
+                    onClick={() => setActiveButtonCourse(category)}
+                  >
+                    {!category ? 'All' : category}
+                  </button>
+                ))}
+              </div>
+            </section>
+            <section className="w-full flex flex-col gap-3">
+              <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+                <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+                <p className="text-p-lg">Filters</p>
+              </header>
+              <div className="flex-1 flex flex-col gap-2">
+                <div className="w-full flex flex-col">
+                  {["Course", "External Course"].map((category) => (
+                    <label
+                      key={category}
+                      htmlFor={category}
+                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        id={category}
+                        name={category.toLowerCase().replace(" ", "")}
+                        checked={
+                          selectedFilters[formatKey(category)  as keyof Filters] as boolean
+                        }
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      {category}
+                    </label>
+                  ))}
+                </div>
+    
+                {/* Status Filter */}
+                <div className="w-full flex flex-col">
+                  <p className="text-p-sm font-medium text-c-green-50">Status</p>
+                  {["All", "In Progress", "Completed", "Saved"].map((status) => (
+                    <label
+                      key={status}
+                      htmlFor={status}
+                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        id={status}
+                        name={status.toLowerCase().replace(" ", "")}
+                        checked={
+                          selectedFilters[formatKey(status) as keyof Filters] as boolean
+                        }
+                        onChange={handleCheckboxChange}
+                        className="mr-2"
+                      />
+                      {status}
+                    </label>
+                  ))}
+                </div>
+    
+                <div className="w-full flex flex-col">
+                  <p className="text-p-sm font-medium text-c-green-50">Sort By</p>
+                  {["Relevance", "Latest", "A-Z", "Z-A"].map((filter) => (
+                    <label
+                      key={filter}
+                      htmlFor={filter}
+                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="radio"
+                        id={filter}
+                        name="sort"
+                        value={filter}
+                        checked={selectedFilters.sort === filter}
+                        onChange={handleRadioChange}
+                        className="mr-2"
+                      />
+                      {filter}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </section>
+          </nav>
+          <section className="w-4/5 h-full">
+            <CourseCard selectedDepartment={activeButtonCourse}/>
+          </section>
         </section>
-        <section className="w-full flex flex-col gap-3">
-          <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
-            <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
-            <p className="text-p-lg">Filters</p>
-          </header>
-          <div className="flex-1 flex flex-col gap-2">
-            <div className="w-full flex flex-col">
-              {["Course", "External Course"].map((category) => (
-                <label
-                  key={category}
-                  htmlFor={category}
-                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    id={category}
-                    name={category.toLowerCase().replace(" ", "")}
-                    checked={
-                      selectedFilters[category.toLowerCase().replace(" ", "")]
-                    }
-                    onChange={handleCheckboxChange}
-                    className="mr-2"
-                  />
-                  {category}
-                </label>
-              ))}
-            </div>
-
-            {/* Status Filter */}
-            <div className="w-full flex flex-col">
-              <p className="text-p-sm font-medium text-c-green-50">Status</p>
-              {["All", "In Progress", "Completed", "Saved"].map((status) => (
-                <label
-                  key={status}
-                  htmlFor={status}
-                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    id={status}
-                    name={status.toLowerCase().replace(" ", "")}
-                    checked={
-                      selectedFilters[status.toLowerCase().replace(" ", "")]
-                    }
-                    onChange={handleCheckboxChange}
-                    className="mr-2"
-                  />
-                  {status}
-                </label>
-              ))}
-            </div>
-
-            <div className="w-full flex flex-col">
-              <p className="text-p-sm font-medium text-c-green-50">Sort By</p>
-              {["Relevance", "Latest", "A-Z", "Z-A"].map((filter) => (
-                <label
-                  key={filter}
-                  htmlFor={filter}
-                  className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    id={filter}
-                    name="sort"
-                    value={filter}
-                    checked={selectedFilters.sort === filter}
-                    onChange={handleRadioChange}
-                    className="mr-2"
-                  />
-                  {filter}
-                </label>
-              ))}
-            </div>
-          </div>
-        </section>
-      </nav>
-      <section className="w-4/5 h-full"> </section>
-    </section>
+      ): (
+        <Outlet/>
+      )}
+    </>
   );
 };
 

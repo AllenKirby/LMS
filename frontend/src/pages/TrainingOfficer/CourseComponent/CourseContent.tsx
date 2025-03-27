@@ -23,11 +23,11 @@ import {
   setFile
 } from '../../../redux/ModuleDataRedux';
 
-import { CourseContentState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
+import { MenuDataState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
   //redux
-  const courseContentData = useSelector((state: {courseContent: CourseContentState[]}) => state.courseContent)
+  const courseContentData = useSelector((state: {courseContent: MenuDataState[]}) => state.courseContent)
   const courseID = useSelector((state: {courseID: number}) => state.courseID)
   const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
   const dispatch = useDispatch()

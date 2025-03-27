@@ -72,12 +72,6 @@ const Header: React.FC = () => {
               Trainee
             </NavLink>
           )}
-          <NavLink to={"home"} className="text-f-gray">
-            Home
-          </NavLink>
-          <NavLink to={"mycourses"} className="text-f-gray">
-            My Courses
-          </NavLink>
           <NavLink to={"resources"} className="text-f-gray">
             Resources
           </NavLink>

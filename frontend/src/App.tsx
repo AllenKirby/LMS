@@ -38,7 +38,9 @@ function App() {
         // Learner
         <Route path="/trainee" element={<MainPage />}>
           <Route path="home" element={<Home />} />
-          <Route path="mycourses" element={<MyCourse />} />
+          <Route path="mycourses" element={<MyCourse />}>
+            <Route path=":id" element={<CourseView />} />
+          </Route>
           <Route path="resources" element={<ResourcesTrainee />} />
         </Route>
         // Training Officer
@@ -46,17 +48,11 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseContainer />}>
             <Route path="course" element={<Course />} />
-            <Route
-              path="externaltraining/:id"
-              element={<ExternalTrainingView />}
-            />
-            <Route path="CourseView" element={<CourseView />} />
+            <Route path="externaltraining/:id" element={<ExternalTrainingView />}/>
+            <Route path="courseview/:id" element={<CourseView />} />
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
-              <Route
-                path="courseParticipants"
-                element={<CourseParticipants />}
-              />
+              <Route path="courseParticipants"element={<CourseParticipants />}/>
               <Route path="courseContent" element={<CourseContent />} />
               <Route path="preview" element={<Preview />} />
             </Route>
