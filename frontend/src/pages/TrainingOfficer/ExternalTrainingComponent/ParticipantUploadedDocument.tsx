@@ -1,10 +1,12 @@
 import { ExternalParticipantState } from '../../../types/CourseCreationTypes';
+import { UserState } from '../../../types/UserTypes'
 
 import { useTrainingOfficerHook } from '../../../hooks';
 
 import FileIcon from '../../../assets/file.png'
 import { IoClose } from 'react-icons/io5';
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 type ParticipantUploadedDocumentProps = {
   onClose: () => void;
@@ -22,6 +24,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
   const openInput = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<FilesState>()
+  const user = useSelector((state: {user: UserState}) => state.user)
 
   const { uploadParticipantDocument, retrieveExternalDocuments, markComplete } = useTrainingOfficerHook()
 
@@ -74,7 +77,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
     onClose()
   } 
 
-  console.log(data.status)
+  console.log(user.user.role )
 
   return (
     <>
@@ -86,7 +89,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
             <button onClick={onClose}>&times;</button>
           </header>
           <div className='flex-1 overflow-y-auto p-4'>
-            {data.status !== 'completed' && (
+            {(data.status !== 'completed' && user.user.role === 'trainee') && (
               <button type='button' onClick={uploadDocs} className='h-52 w-full rounded-md flex items-center justify-center border-2 border-dashed'>
                 <div className='flex flex-col items-center justify-center'>
                   <h2 className='font-medium'>Upload Necessary Document</h2>
@@ -97,7 +100,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
             )}
             <div className='flex flex-col py-4'>
               {files.map((item, index) => (
-                <div className='flex items-center justify-center p-2 rounded-md border'>
+                <div className='flex items-center justify-center p-2 rounded-md border mb-1'>
                   <img src={FileIcon} alt="file" />
                   <div className='w-full flex flex-col'>
                     <h2>{item.name}</h2>

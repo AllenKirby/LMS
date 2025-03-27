@@ -2,7 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 
 import { useDispatch } from "react-redux";
-import { setMenus, setMenu } from "../redux/CourseContentDataRedux";
+import { setMenus, setMenu, removeMenu } from "../redux/CourseContentDataRedux";
 import { setID } from '../redux/CourseIDRedux'
 import { updateField, setCourseData } from "../redux/CourseDataRedux";
 
@@ -60,6 +60,26 @@ const useTrainingOfficer = () => {
         }
     }
 
+    const deleteCourse = async(id: number) => {
+        try {
+            const response = await axios.delete(`${API_URL}/course/courses/${id}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
     const getMenus = async(id: number) => {
         try {
             const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
@@ -80,6 +100,26 @@ const useTrainingOfficer = () => {
             }
         }
     } 
+
+    const deleteMenu = async(id: number) => {
+        try {
+            const response = await axios.delete(`${API_URL}/course/section/${id}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                dispatch(removeMenu(id))
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
 
     const handleUpdateCourse = async(id: number, data: CourseData) => {
         setIsLoading(true)
@@ -499,6 +539,8 @@ const useTrainingOfficer = () => {
     markComplete,
     publishCourse,
     retrieveCourses,
+    deleteCourse,
+    deleteMenu,
     isLoading, 
     error }
 }

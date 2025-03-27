@@ -1,13 +1,15 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from "react-router-dom";
 
 import { MenuDataState, CoursesState } from '../types/CourseCreationTypes'
 import { UserState } from '../types/UserTypes'
-import { useTraineeHook } from '../hooks/'
+import { useTraineeHook, useTrainingOfficerHook } from '../hooks/'
 
 import { CourseContentOverview, } from "./"
 import { CiSquareInfo } from "react-icons/ci";
 import { useEffect, useState } from 'react';
+import { setCourseData } from '../redux/CourseDataRedux';
+import { setID } from '../redux/CourseIDRedux';
 
 interface TraineeCourses {
     course: CoursesState;
@@ -16,6 +18,7 @@ interface TraineeCourses {
 
 const CourseView = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const { id } = useParams()
     const API_URL = import.meta.env.VITE_URL
     const user = useSelector((state: {user: UserState}) => state.user)
@@ -37,6 +40,7 @@ const CourseView = () => {
     }) 
     const [menus, setMenus] = useState<MenuDataState[]>([]) 
     const { getCourse } = useTraineeHook()
+    const { deleteCourse } = useTrainingOfficerHook()
 
   useEffect(() => {
     const getCourseDetails = async() => {
@@ -54,6 +58,17 @@ const CourseView = () => {
     getCourseDetails()
   }, [id, courses])
 
+  const removeCourse = async(id: number) => {
+    await deleteCourse(id)
+    window.history.back()
+  } 
+
+  const editCourse = () => {
+    navigate('../courseCreation/courseOverview')
+    dispatch(setID((selectedCourse as CoursesState).id))
+    dispatch(setCourseData(selectedCourse))
+  }
+
   return (
     <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">
         <div className='w-3/5 flex flex-col gap-5'>
@@ -63,8 +78,11 @@ const CourseView = () => {
                     <p>Course &gt;</p>
                     <p>Course Title</p>
                 </section>
-                {user.user.role === 'training_officer' && <button className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Edit Course</button>}
-                {user.user.role === 'trainee' && <button className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
+                <section className='flex gap-2'>
+                    {user.user.role === 'training_officer' && <button onClick={editCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Edit Course</button>}
+                    {user.user.role === 'training_officer' && <button onClick={() => removeCourse((selectedCourse as CoursesState).id)} className='px-2 py-1 rounded-md bg-red-500 text-f-light text-p-sm'>Delete Course</button>}
+                    {user.user.role === 'trainee' && <button className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
+                </section>
             </nav>
             <article className='flex flex-col gap-5'>
                 <h3 className='text-h-h3 font-medium'>{user.user.role === 'trainee' ? (selectedCourse as TraineeCourses).course.course_title : (selectedCourse as CoursesState).course_title}</h3>

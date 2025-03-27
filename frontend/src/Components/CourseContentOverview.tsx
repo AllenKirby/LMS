@@ -23,7 +23,7 @@ const CourseContentOverview: React.FC<CourseContentOverviewState> = (props) => {
 
   return (
     <>
-        {courseContent.map((item, index) => (
+        {courseContent && courseContent.map((item, index) => (
             <section key={index} className="flex flex-col w-full h-fit rounded-md border">
                 <header className={`flex flex-row justify-between items-center p-5 ${sectionTabCollapse && "border-b"}`}>
                 <article className='flex items-center gap-1'>
