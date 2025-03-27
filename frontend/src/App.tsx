@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import { NotFoundPage, MainPage } from "./pages";
-import { Home, MyCourse, ResourcesTrainee } from "./pages/Learner";
+import { Home, MyCourse, ResourcesTrainee, CourseTaking } from "./pages/Learner";
 import { SignupPage, LoginPage, AuthPage } from "./pages/Auth";
 import {
   Dashboard,
@@ -40,6 +40,7 @@ function App() {
           <Route path="home" element={<Home />} />
           <Route path="mycourses" element={<MyCourse />} />
           <Route path="resources" element={<ResourcesTrainee />} />
+          <Route path="ct" element={<CourseTaking/>}/>
         </Route>
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
