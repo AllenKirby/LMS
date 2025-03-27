@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { CourseContentState } from '../types/CourseCreationTypes'
+import { MenuDataState } from '../types/CourseCreationTypes'
 
-const initialState: CourseContentState[] = [];
+const initialState: MenuDataState[] = [];
 
 const CourseContentDataRedux = createSlice({
   name: "courseContent",
   initialState,
   reducers: {
-    setMenus: (_, action: PayloadAction<CourseContentState[]>) => action.payload, 
-    setMenu: (state, action: PayloadAction<CourseContentState>) => {
+    setMenus: (_, action: PayloadAction<MenuDataState[]>) => action.payload, 
+    setMenu: (state, action: PayloadAction<MenuDataState>) => {
       state.push(action.payload); 
     },
     resetCourseContent: () => initialState
