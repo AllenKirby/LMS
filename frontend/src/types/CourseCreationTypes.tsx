@@ -90,7 +90,8 @@ export interface TrainingDataState {
     training_title: string;
     start_date: string;
     end_date: string;
-    resource_speakers: {host_name: string}[];
+    // resource_speakers: {host_name: string}[];
+    training_provider: string;
     venue: string;
     participants?: (string | number)[];
     document_url?: string[]

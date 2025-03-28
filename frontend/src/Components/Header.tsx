@@ -50,44 +50,44 @@ const Header: React.FC = () => {
         <h1 className="text-p-lg font-medium">NIA-LMS</h1>
       </section>
       <nav className="p-3">
-        <ul className="flex gap-8">
+        <ul className="flex flex-row">
           {user.user.role === "trainee" && (
             <NavLink to={"home"} className={({ isActive }) =>
-              `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+              `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
             }>
               Home
             </NavLink>
           )}
           {user.user.role === "trainee" && (
             <NavLink to={"mycourses"} className={({ isActive }) =>
-            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
           }>
               Course Library
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"dashboard"} className={({ isActive }) =>
-            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
           }>
               Home
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"courses/course"} className={({ isActive }) =>
-            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
           }>
               My Courses
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"trainee"} className={({ isActive }) =>
-            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
           }>
               Trainee
-            </NavLink>
+            </NavLink> 
           )}
           <NavLink to={"resources"} className={({ isActive }) =>
-            `font-medium ${isActive ? "text-fuchsia-400" : "text-f-dark"}`
+            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
           }>
             Resources
           </NavLink>
