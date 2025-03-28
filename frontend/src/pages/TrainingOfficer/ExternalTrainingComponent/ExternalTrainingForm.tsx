@@ -18,7 +18,8 @@ interface TrainingDataState {
   training_title: string;
   start_date: string;
   end_date: string;
-  resource_speakers: {host_name: string}[];
+  // resource_speakers: {host_name: string}[];
+  training_provider: string;
   venue: string;
   participants: string[];
 }
@@ -45,7 +46,8 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     training_title: '',
     start_date: '',
     end_date: '',
-    resource_speakers: [],
+    // resource_speakers: [],
+    training_provider: '',
     venue: '',
     participants: []
   })
@@ -91,29 +93,29 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     await createExternalTraining(trainingData, formData)
   }
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputSpeaker(e.target.value)
-  }
+  // const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setInputSpeaker(e.target.value)
+  // }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      if(inputSpeaker.trim() !== "") {
-        setTrainingData(prevData => ({
-          ...prevData, 
-          resource_speakers: [...prevData.resource_speakers, { host_name: inputSpeaker.trim() }] // Append object
-        }));
-        setInputSpeaker("");
-      }
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault()
+  //     if(inputSpeaker.trim() !== "") {
+  //       setTrainingData(prevData => ({
+  //         ...prevData, 
+  //         resource_speakers: [...prevData.resource_speakers, { host_name: inputSpeaker.trim() }] // Append object
+  //       }));
+  //       setInputSpeaker("");
+  //     }
+  //   }
+  // };
 
-  const removeParticipant = (index: number) => {
-    setTrainingData(prevData => ({
-      ...prevData,
-      resource_speakers: prevData.resource_speakers.filter((_, i) => i !== index) // Remove item at index
-    }));
-  };
+  // const removeParticipant = (index: number) => {
+  //   setTrainingData(prevData => ({
+  //     ...prevData,
+  //     resource_speakers: prevData.resource_speakers.filter((_, i) => i !== index) // Remove item at index
+  //   }));
+  // };
 
   const uploadDocs = () => {
     inputClick.current?.click()
@@ -192,7 +194,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                       className={defaultSelect}/>
                   </div>
                 </div>
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-p-sm">Speaker</label>
                   <input
                     type="text"
@@ -207,9 +209,19 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                       </div>
                     ))}
                   </div>
+                </div> */}
+                <div className="flex flex-col">
+                  <label className="text-p-sm">Training Provider</label>
+                  <input 
+                    type="text"
+                    className={defaultInput}
+                    value={trainingData.training_provider}
+                    onChange={(e) => setTrainingData({...trainingData, training_provider: e.target.value})}>
+
+                  </input>
                 </div>
                 <div className="flex flex-col">
-                <label className="text-p-sm">Venue</label>
+                  <label className="text-p-sm">Venue</label>
                   <input 
                     type="text"
                     className={defaultInput}
