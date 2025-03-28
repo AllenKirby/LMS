@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ResourcesViewModal } from "../../Components";
+import { ResourcesViewModal } from "./";
 
 const Resources = () => {
   const [viewResource, setViewResource] = useState<boolean>(false);

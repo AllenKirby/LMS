@@ -6,13 +6,12 @@ import {
 } from "react-router-dom";
 
 import { NotFoundPage, MainPage } from "./pages";
-import { Home, MyCourse, ResourcesTrainee, CourseTaking } from "./pages/Learner";
+import { Home, MyCourse, CourseTaking } from "./pages/Learner";
 import { SignupPage, LoginPage, AuthPage } from "./pages/Auth";
 import {
   Dashboard,
   CourseCreation,
   Trainee,
-  Resources,
   Course,
   ExternalTrainingView,
   CourseContainer,
@@ -24,7 +23,7 @@ import {
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
 
-import { CourseView } from "./Components";
+import { CourseView, Resources } from "./Components";
 
 function App() {
   const router = createBrowserRouter(
@@ -43,6 +42,7 @@ function App() {
           </Route>
           <Route path="resources" element={<ResourcesTrainee />} />
           <Route path="ct" element={<CourseTaking/>}/>
+          <Route path="resources" element={<Resources />} />
         </Route>
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
