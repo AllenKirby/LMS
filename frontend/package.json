@@ -12,6 +12,9 @@
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
     "@reduxjs/toolkit": "^2.5.1",
+    "@tiptap/extension-text-align": "^2.11.5",
+    "@tiptap/react": "^2.11.5",
+    "@tiptap/starter-kit": "^2.11.5",
     "apexcharts": "^4.5.0",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",

@@ -40,7 +40,6 @@ function App() {
           <Route path="mycourses" element={<MyCourse />}>
             <Route path=":id" element={<CourseView />} />
           </Route>
-          <Route path="resources" element={<ResourcesTrainee />} />
           <Route path="ct" element={<CourseTaking/>}/>
           <Route path="resources" element={<Resources />} />
         </Route>

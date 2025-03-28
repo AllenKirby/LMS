@@ -11,6 +11,7 @@ import { defaultInput } from "../../../assets/Util/InputStyle";
 
 type ExternalTrainingForm = {
   modal: () => void;
+  data? : TrainingDataState
 };
 
 interface TrainingDataState {
@@ -38,7 +39,7 @@ interface Trainees {
 }
 
 const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
-  const { modal } = props;
+  const { modal, data = {} } = props;
   const [uploadedFile, setUploadedFile] = useState<File[] | []>([])
   const inputClick = useRef<HTMLInputElement>(null)
   const [trainingData, setTrainingData] = useState<TrainingDataState>({
@@ -140,6 +141,19 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
   useEffect(() => {
     console.log(uploadedFile)
   },[uploadedFile])
+
+  // useEffect(() => {
+  //   setTrainingData({
+  //     training_setup: data.training_setup,
+  //     training_title: '',
+  //     start_date: '',
+  //     end_date: '',
+  //   // resource_speakers: [],
+  //   training_provider: '',
+  //   venue: '',
+  //   participants: []
+  //   })
+  // },[data])
 
   return (
     <>

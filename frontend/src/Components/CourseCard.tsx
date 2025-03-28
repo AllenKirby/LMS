@@ -103,7 +103,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                       </p>
                       <h1 className="text-p-lg font-semibold w-full">{user.user.role === 'training_officer' ? (info as CoursesState).course_title  : (info as TraineeCourses).course.course_title}</h1>
                     </section>
-                    <p className="text-p-rg text-c-grey-70 w-full">
+                    <p className="text-p-rg text-c-grey-70 w-full h-20 truncate">
                       {user.user.role === 'training_officer' ? (info as CoursesState).course_description  : (info as TraineeCourses).course.course_description}
                     </p>
                     <article className="w-full flex items-center justify-between text-p-sm">
@@ -152,7 +152,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                       </p>
                       <h1 className="text-p-lg font-semibold w-full">{user.user.role === 'training_officer' ? (info as CoursesState).course_title  : (info as TraineeCourses).course.course_title}</h1>
                     </section>
-                    <p className="text-p-rg text-c-grey-70 w-full">
+                    <p className="text-p-rg text-c-grey-70 w-full h-20 truncate">
                       {user.user.role === 'training_officer' ? (info as CoursesState).course_description  : (info as TraineeCourses).course.course_description}
                     </p>
                     <article className="w-full flex items-center justify-between text-p-sm">
