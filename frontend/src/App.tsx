@@ -38,9 +38,9 @@ function App() {
         <Route path="/trainee" element={<MainPage />}>
           <Route path="home" element={<Home />} />
           <Route path="mycourses" element={<MyCourse />}>
-            <Route path=":id" element={<CourseView />} />
+            <Route path=":id" element={<CourseView />}/>
+            <Route path=":id/learn" element={<CourseTaking/>}/>
           </Route>
-          <Route path="resources" element={<ResourcesTrainee />} />
           <Route path="ct" element={<CourseTaking/>}/>
           <Route path="resources" element={<Resources />} />
         </Route>

@@ -38,7 +38,10 @@ export interface ModuleState {
     moduleID: string;
     title: string;
     content: ModuleContent[];
-    submitted: true | false
+    submitted?: true | false;
+    position?: number;
+    section?: number;
+    key_answer?: {[key: string]:string}[]
 }
 
 interface ModulePreview {
@@ -123,5 +126,8 @@ export interface CoursesState {
     cover_image_url: string;
     created_at: string;
     course_status: string;
-    participants_display: {id: number; first_name: string; last_name: string; email: string;}[]
+    participants_display: {id: number; first_name: string; last_name: string; email: string;}[];
+    cover_image_upload?: File | null;
+    participants?: (string | number)[];
+    submitted?: true | false
 }

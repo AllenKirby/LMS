@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 //import { useDispatch } from 'react-redux'
+//import { setMenus } from '../redux/CourseContentDataRedux'
 
 const useTraineeHook = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -47,7 +48,49 @@ const useTraineeHook = () => {
         }
     }
 
-  return {getTraineeCourses, getCourse, isLoading, error}
+    const getCourseContent = async(id: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    } 
+
+    const getSingleModule = async(id: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/modules/${id}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    } 
+
+  return {getTraineeCourses, getCourse, getCourseContent, getSingleModule, isLoading, error}
 }
 
 export default useTraineeHook
