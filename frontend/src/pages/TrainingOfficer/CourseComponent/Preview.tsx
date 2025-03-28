@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { CiSquareInfo } from "react-icons/ci";
 import { useSelector } from 'react-redux';
 
-import { CourseData } from '../../../types/CourseCreationTypes'
+import { CourseData, MenuDataState, ModuleState } from '../../../types/CourseCreationTypes'
 
 import { CourseContentOverview } from '../../../Components/index'
 
@@ -11,10 +11,13 @@ const Preview = () => {
   const[activeSection, setActiveSection] = useState<string>("Course");
 
   const courseOverview = useSelector((state: {courseData: CourseData}) => state.courseData)
+  const courseContent = useSelector((state: {courseContent: MenuDataState[]}) => state.courseContent)
+  const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
 
   const API_URL = import.meta.env.VITE_URL
 
-  console.log(courseOverview)
+  // console.log(courseContent)
+  // console.log(modules)
 
   return (
     <section className="w-full h-full p-8 flex justify-center">
@@ -66,7 +69,7 @@ const Preview = () => {
           {activeSection === "Content" &&
             <>
               <h5 className='text-h-h5'>Here's what you'll learn!</h5>
-              <CourseContentOverview />
+              <CourseContentOverview courseContent={courseContent} modules={modules} page='preview'/>
             </>
           }
         </section>

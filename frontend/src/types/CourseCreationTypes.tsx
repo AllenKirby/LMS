@@ -41,11 +41,18 @@ export interface ModuleState {
     submitted: true | false
 }
 
+interface ModulePreview {
+    id: number;
+    position: number;
+    section: number;
+    title: string;
+}
+
 export interface CourseContentState {
     id: number;
     title: string;
     position: number;
-    modules: string[];
+    modules: ModulePreview[];
     course: number;
 }
 

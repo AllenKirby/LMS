@@ -23,11 +23,11 @@ import {
   setFile
 } from '../../../redux/ModuleDataRedux';
 
-import { CourseContentState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
+import { MenuDataState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
   //redux
-  const courseContentData = useSelector((state: {courseContent: CourseContentState[]}) => state.courseContent)
+  const courseContentData = useSelector((state: {courseContent: MenuDataState[]}) => state.courseContent)
   const courseID = useSelector((state: {courseID: number}) => state.courseID)
   const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
   const dispatch = useDispatch()
@@ -39,7 +39,7 @@ const CourseContent = () => {
   const [selectedModule, setSelectedModule] = useState<string>('')
 
   //hooks
-  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, isLoading } = useTrainingOfficerHook()
+  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, isLoading } = useTrainingOfficerHook()
 
   const setMenuID = (id: number) => {
     setSelectedMenu(id)
@@ -97,6 +97,10 @@ const CourseContent = () => {
     dispatch(setFile({moduleID: id, fileID: fileID, value: value}))
   }
 
+  const removeMenu = async(id: number) => {
+    await deleteMenu(id)
+  }
+
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
 
@@ -119,6 +123,7 @@ const CourseContent = () => {
               modules={modules}
               setMenuID={setMenuID}
               setModuleID={setModuleID}
+              deleteMenu={removeMenu}
               deleteModule={DeleteModule}
               deleteModulePermanent={DeleteModulePermanent}
               />

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { FiChevronDown, FiPlus } from "react-icons/fi";
+import { AiOutlineDelete } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { HiMenuAlt2 } from "react-icons/hi";
 
@@ -12,12 +13,13 @@ type MenuState = {
   modules: ModuleState[];
   setMenuID: (id: number) => void;
   setModuleID: (id: string) => void;
+  deleteMenu: (id: number) => void;
   deleteModule: (id: string) => void;
   deleteModulePermanent: (id: number) => void
 }
 
 const Menu: React.FC<MenuState> = (props) => {
-  const { menuData, addModule, modules, setMenuID, setModuleID, deleteModule, deleteModulePermanent } = props
+  const { menuData, addModule, modules, setMenuID, setModuleID, deleteModule, deleteModulePermanent, deleteMenu } = props
   const [collapse, setCollapse] = useState<boolean>(false);
 
   const filteredModules = modules.filter((module) => module.menuID === menuData.id);
@@ -46,6 +48,7 @@ const Menu: React.FC<MenuState> = (props) => {
         </div>
         <div className="w-full flex items-center justify-center">
           <button onClick={() => {addModule(menuData.id)}} className="w-full h-fit py-1 flex items-center justify-center text-f-dark bg-white rounded-sm border"><FiPlus size={20}/></button>
+          <button onClick={() => {deleteMenu(menuData.id)}} className="w-full h-fit py-1 flex items-center justify-center text-red-500 bg-white rounded-sm border"><AiOutlineDelete size={20}/></button>
         </div>
       </div>
     </section>
