@@ -19,7 +19,7 @@ const useTrainingOfficer = () => {
     const handleAddCourse = async(data: CourseData) => {
         setIsLoading(true)
         setError(null)
-
+        
         const formData = new FormData();
         if (data.cover_image_upload) {
             formData.append("cover_image_upload", data.cover_image_upload);

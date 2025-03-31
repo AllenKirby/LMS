@@ -127,7 +127,7 @@ export interface CoursesState {
     created_at: string;
     course_status: string;
     participants_display: {id: number; first_name: string; last_name: string; email: string;}[];
-    cover_image_upload?: File | null;
+    cover_image_upload?: File;
     participants?: (string | number)[];
     submitted?: true | false
 }

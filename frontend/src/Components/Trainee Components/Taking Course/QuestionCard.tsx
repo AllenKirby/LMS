@@ -10,8 +10,8 @@ interface QuestionCardProps {
 const QuestionCard: React.FC<QuestionCardProps> = (props) => {
   const { content, addChoice, addMultipleChoice, data } = props;
 
-  const selectedAnswer = data[content.questionnaireID] ?? ""; // Default to empty string
-  const selectedAnswers = Array.isArray(data[content.questionnaireID]) ? data[content.questionnaireID] : []; // Default to empty array
+  const selectedAnswer = data.answers[content.questionnaireID] ?? ""; // Default to empty string
+  const selectedAnswers = Array.isArray(data.answers[content.questionnaireID]) ? data.answers[content.questionnaireID] : []; // Default to empty array
 
   return (
     <section className="w-full rounded-lg bg-white border border-c-grey-20 text-f-dark">

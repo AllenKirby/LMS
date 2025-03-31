@@ -22,6 +22,7 @@ import {
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
+import {Resources} from './pages'
 
 import { CourseView, Resources } from "./Components";
 
@@ -41,7 +42,6 @@ function App() {
             <Route path=":id" element={<CourseView />}/>
             <Route path=":id/learn" element={<CourseTaking/>}/>
           </Route>
-          <Route path="ct" element={<CourseTaking/>}/>
           <Route path="resources" element={<Resources />} />
         </Route>
         // Training Officer

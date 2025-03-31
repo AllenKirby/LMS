@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingForm";
+import store from "../../redux/store";
 import { ConfirmationModal } from "../../Components";
 import { useTrainingOfficerHook } from "../../hooks";
 
 import { useDispatch, useSelector } from "react-redux";
-import { resetCourseData } from "../../redux/CourseDataRedux";
+import { resetCourseData, updateField } from "../../redux/CourseDataRedux";
 import { resetCourseContent } from "../../redux/CourseContentDataRedux";
 import { resetCourseID } from "../../redux/CourseIDRedux";
 import { resetModuleData } from "../../redux/ModuleDataRedux";
@@ -64,12 +65,17 @@ const Courses: React.FC = () => {
   }
 
   const handleConfirmNavigation = async () => {
-    console.log(courseOverviewData)
     if (pendingNavigation) {
       if(courseOverviewData.submitted) {
         await handleUpdateCourse(courseID, courseOverviewData)
       } else {
-        await handleAddCourse(courseOverviewData);
+        dispatch(updateField({name: 'submitted', value: true}))
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Get the updated state from Redux
+        const updatedCourseOverviewData = store.getState().courseData;
+        await handleAddCourse(updatedCourseOverviewData);
       }
       navigate(pendingNavigation);
       setActiveState(pendingNavigation);
