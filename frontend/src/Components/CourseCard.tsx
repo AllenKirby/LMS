@@ -182,7 +182,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                 key={index}
               >
                 <div className="w-full h-full bg-f-dark opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"></div>
-                <button className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100"
+                <button className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 h-full w-full"
                         onClick={() => navigate('/trainingofficer/courses/CourseView')}>
                     View Course
                 </button>
@@ -201,9 +201,9 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                       </p>
                       <h1 className="text-p-lg font-semibold w-full">{user.user.role === 'training_officer' ? (info as CoursesState).course_title  : (info as TraineeCourses).course.course_title}</h1>
                     </section>
-                    <p className="text-p-rg text-c-grey-70 w-full">
+                    <pre className="text-p-rg text-c-grey-70 h-20 w-full truncate">
                       {user.user.role === 'training_officer' ? (info as CoursesState).course_description  : (info as TraineeCourses).course.course_description}
-                    </p>
+                    </pre>
                     <article className="w-full flex items-center justify-between text-p-sm">
                       <p className="text-c-grey-70 flex items-center justify-center gap-1">
                         <MdOutlineCalendarToday size={15} />
@@ -250,7 +250,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                       </p>
                       <h1 className="text-p-lg font-semibold w-full">{user.user.role === 'training_officer' ? (info as CoursesState).course_title  : (info as TraineeCourses).course.course_title}</h1>
                     </section>
-                    <p className="text-p-rg text-c-grey-70 w-full">
+                    <p className="text-p-rg text-c-grey-70 h-20 w-full truncate">
                       {user.user.role === 'training_officer' ? (info as CoursesState).course_description  : (info as TraineeCourses).course.course_description}
                     </p>
                     <article className="w-full flex items-center justify-between text-p-sm">

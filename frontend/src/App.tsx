@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import { NotFoundPage, MainPage } from "./pages";
-import { Home, MyCourse, ResourcesTrainee, CourseTaking } from "./pages/Learner";
+import { Home, MyCourse, CourseTaking } from "./pages/Learner";
 import { SignupPage, LoginPage, AuthPage } from "./pages/Auth";
 import {
   Dashboard,
@@ -24,7 +24,7 @@ import {
 } from "./pages/TrainingOfficer/CourseComponent";
 import {Resources} from './pages'
 
-import { CourseView } from "./Components";
+import { CourseView, Resources } from "./Components";
 
 function App() {
   const router = createBrowserRouter(
