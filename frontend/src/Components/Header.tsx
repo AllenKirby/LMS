@@ -29,7 +29,7 @@ interface UserState {
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const [activeSection, setActiveSection] = useState<string>(location.pathname);
+  //const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
   //hooks

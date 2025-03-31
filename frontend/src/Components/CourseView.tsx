@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from "react-router-dom";
 
-import { MenuDataState, CoursesState } from '../types/CourseCreationTypes'
+import { MenuDataState, CoursesState, CourseData } from '../types/CourseCreationTypes'
 import { UserState } from '../types/UserTypes'
 import { useTraineeHook, useTrainingOfficerHook } from '../hooks/'
 
@@ -13,7 +13,7 @@ import { setID } from '../redux/CourseIDRedux';
 
 interface TraineeCourses {
     course: CoursesState;
-    participants_status: string;
+    participant_status: 'in progress' | 'pending' | 'completed';
   }
 
 const CourseView = () => {
@@ -34,20 +34,21 @@ const CourseView = () => {
             cover_image_url: '', 
             created_at: '',
             course_status: '', 
-            participants_display: []
+            participants_display: [],
+            submitted: true
         },
-        participants_status: ''
+        participant_status: 'pending'
     }) 
     const [menus, setMenus] = useState<MenuDataState[]>([]) 
-    const { getCourse } = useTraineeHook()
+    const { getCourse, updateCourseStatus } = useTraineeHook()
     const { deleteCourse } = useTrainingOfficerHook()
 
   useEffect(() => {
     const getCourseDetails = async() => {
         if(id) {
             const response = await getCourse(Number(id))
-            console.log(response)
             setMenus(response)
+            console.log(courses)
             const filteredCourse = courses.find(item => user.user.role === 'trainee' ? (item as TraineeCourses).course.id === Number(id) : (item as CoursesState).id === Number(id))
             if(filteredCourse){
                 console.log(filteredCourse)
@@ -64,14 +65,19 @@ const CourseView = () => {
   } 
 
   const editCourse = () => {
+    console.log(selectedCourse)
     navigate('../courseCreation/courseOverview')
     dispatch(setID((selectedCourse as CoursesState).id))
-    dispatch(setCourseData(selectedCourse as CoursesState))
+    dispatch(setCourseData(selectedCourse as CourseData))
   }
 
-  const takeCourse = () => {
+  const takeCourse = async() => {
+    console.log((selectedCourse as TraineeCourses).course.id)
+    await updateCourseStatus((selectedCourse as TraineeCourses).course.id, user.user.id, {participant_status: 'in progress'})
     navigate(`/trainee/mycourses/${id}/learn`)
   }
+
+  console.log((selectedCourse as TraineeCourses).participant_status)
 
   return (
     <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">
@@ -85,7 +91,8 @@ const CourseView = () => {
                 <section className='flex gap-2'>
                     {user.user.role === 'training_officer' && <button onClick={editCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Edit Course</button>}
                     {user.user.role === 'training_officer' && <button onClick={() => removeCourse((selectedCourse as CoursesState).id)} className='px-2 py-1 rounded-md bg-red-500 text-f-light text-p-sm'>Delete Course</button>}
-                    {user.user.role === 'trainee' && <button onClick={takeCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
+                    {(user.user.role === 'trainee' && (selectedCourse as TraineeCourses).participant_status === 'pending') && <button onClick={takeCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Start Course</button>}
+                    {(user.user.role === 'trainee' && (selectedCourse as TraineeCourses).participant_status === 'in progress') && <button onClick={takeCourse} className='px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm'>Resume Course</button>}
                 </section>
             </nav>
             <article className='flex flex-col gap-5'>

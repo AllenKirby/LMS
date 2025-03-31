@@ -3,7 +3,7 @@ import { Header} from '../Components';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useTrainingOfficerHook, useTraineeHook } from '../hooks/'
+import { useTrainingOfficerHook, useTraineeHook, useAuthHook } from '../hooks/'
 import { setTrainees } from '../redux/TraineesAccountsRedux';
 import { setData } from '../redux/ExternalTrainingDataRedux';
 import { setCourses } from '../redux/CoursesRedux';
@@ -31,6 +31,7 @@ interface UserState {
 const MainPage: React.FC = () => {
   const user = useSelector((state: {user: UserState}) => state.user)
   const dispatch = useDispatch()
+  const { handleRefreshToken } = useAuthHook()
   const { retrieveTrainees, retrieveExternalTraining, retrieveCourses } = useTrainingOfficerHook()
   const { getTraineeCourses } = useTraineeHook()
 
@@ -64,6 +65,13 @@ const MainPage: React.FC = () => {
       getTraineeCourse()
     }
   }, [])
+
+  const refreshToken = async() => {
+    const response = await handleRefreshToken()
+    console.log(response)
+  }
+
+  setInterval(refreshToken, 60 * 60 * 1000)
 
   return (
     <section className="w-full h-screen flex flex-col">

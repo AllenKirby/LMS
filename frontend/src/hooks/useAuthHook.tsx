@@ -7,8 +7,6 @@ import { setUser } from '../redux/UserRedux'
 
 import { useNavigate } from 'react-router-dom'
 
-import api from '../instance/instanceAPI'
-
 interface LoginCredentials {
   email: string;
   password: string;
@@ -127,7 +125,9 @@ const useAuthHook = () => {
 
   const handleRefreshToken = async() => { 
     try {
-      const res = await api.post('/accounts/refresh/', null)
+      const res = await axios.get(`${API_URL}/accounts/refresh/`, {
+        withCredentials: true
+      })
       if(res.status === 200) {
         dispatch(setUser(res.data))
       }
