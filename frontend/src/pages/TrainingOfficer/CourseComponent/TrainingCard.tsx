@@ -4,7 +4,10 @@ import { useSelector } from "react-redux";
 import { SlOptions } from "react-icons/sl";
 
 import { TrainingDataState } from '../../../types/CourseCreationTypes'
+import { ExternalTrainingForm } from "../ExternalTrainingComponent";
+import { ConfirmationModal } from "../../../Components";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const TrainingCard: React.FC = () => {
   const navigate = useNavigate()
@@ -25,6 +28,9 @@ const TrainingCard: React.FC = () => {
     return date.toLocaleDateString(undefined, options);
   };
 
+  const [ menuOpen, setMenuOpen ] = useState<boolean>(false);
+  const [ editTraingForm, setEditTraingForm ] = useState<boolean>(false);
+  const [ confirmation , setConfirmation ] = useState<boolean>(false);
   return (
     <>
       {externalTrainings.map((info, index) => (
@@ -35,9 +41,33 @@ const TrainingCard: React.FC = () => {
           <div 
             className="w-full h-full bg-black opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"
           ></div>
-            <button className="absolute opacity-0 group-hover:opacity-100 top-3 right-3 bg-c-blue-5 w-10 h-5 rounded-full flex items-center justify-center z-30">
-              <SlOptions/>
-            </button>
+            <section 
+              className="absolute opacity-0 group-hover:opacity-100 top-3 right-3 z-30 flex flex-col items-end gap-2"
+              onMouseLeave={() => menuOpen && setMenuOpen(false)}
+            >
+              <button 
+                className="bg-c-blue-5 w-10 h-5 rounded-full flex items-center justify-center"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                <SlOptions/>
+              </button>
+              {menuOpen && (
+                  <div className="w-28 bg-white rounded-md flex flex-col p-1">
+                    <button 
+                      className="w-full text-p-sm rounded-md text-left pl-2 py-1 hover:bg-c-blue-5"
+                      onClick={() => setEditTraingForm(!editTraingForm)}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="w-full text-p-sm rounded-md text-left pl-2 py-1 hover:bg-red-500 hover:text-f-light hover:font-medium"
+                      onClick={() => setConfirmation(!confirmation)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+            </section>
             <button 
               className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 w-full h-full"
               onClick={() => navigate(`/trainingofficer/courses/externaltraining/${info.id}`)}
@@ -75,6 +105,19 @@ const TrainingCard: React.FC = () => {
           </div>
         </section>
       ))}
+      {editTraingForm && (
+        <ExternalTrainingForm 
+          modal={() => setEditTraingForm(!editTraingForm)}
+        />
+      )}
+      {confirmation && (
+        <ConfirmationModal 
+          onClose={() => setConfirmation(!confirmation)}
+          onConfirm={() => setConfirmation(!confirmation)}
+          title="Remove Training?"
+          label="Are You Sure? This Will Permanently Remove External Training"
+        />
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { ResourcesViewModal } from "./";
-
+import { TiptapEditor } from "../pages/TrainingOfficer/CourseComponent/CourseContentComponents";
 const Resources = () => {
   const [viewResource, setViewResource] = useState<boolean>(false);
     
@@ -21,6 +21,7 @@ const Resources = () => {
             <p>2 Video Links</p>
           </div>
       </article>
+      <TiptapEditor/>
       {viewResource && <ResourcesViewModal onClose={handleViewResources}/>}
     </section>
   )
