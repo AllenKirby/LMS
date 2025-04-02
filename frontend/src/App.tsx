@@ -22,9 +22,9 @@ import {
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
-import {Resources} from './pages'
+import { Resources } from './pages'
 
-import { CourseView, Resources } from "./Components";
+import { CourseView } from "./Components";
 
 function App() {
   const router = createBrowserRouter(
