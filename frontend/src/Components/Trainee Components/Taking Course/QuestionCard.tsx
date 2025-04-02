@@ -15,7 +15,14 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
 
   return (
     <section className="w-full rounded-lg bg-white border border-c-grey-20 text-f-dark">
-      <header className="w-full p-5 font-medium border-b">Question No.</header>
+      <header className="w-full p-5 border-b flex items-center justify-between">
+        <p className="font-medium ">Question No.</p>
+        {/* {correctAnswer ?  
+          <p className="text-green-500 text-p-sm font-medium">Correct Answer</p> 
+          :
+          <p className="text-red-500 text-p-sm font-medium">Wrong Answer</p>
+        } */}
+      </header>
       <div className="w-full h-fit p-5 flex flex-col gap-5">
         <p className="text-p-lg">{content.question}</p>
         <div className="flex flex-col gap-3">

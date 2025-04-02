@@ -22,12 +22,12 @@ const CourseTaking = () => {
     content: [], 
     position: 0,
     section: 0,
-    key_answer: []
+    key_answers: []
   });
 
   const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
   const user = useSelector((state: {user: UserState}) => state.user)
-  const { submitAnswers } = useTraineeHook()
+  const { submitAnswers, updateModuleStatus } = useTraineeHook()
 
   const handleRadioChange = (questionID: string, choice: string) => {
     setAnswers((prev) => ({
@@ -57,7 +57,13 @@ const CourseTaking = () => {
   const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
 
-  const handleClickNext = () => {
+  const handleClickNext = async() => {
+    const data = {
+      participant_module_progress: "completed",
+      module: Number(selectedModule.id),
+      participant: Number(user.user.id)
+    }
+    await updateModuleStatus(data)
     if (currentModuleIndex < menus[currentMenuIndex].modules.length - 1) {
       setCurrentModuleIndex(currentModuleIndex + 1);
     } else {
@@ -89,7 +95,7 @@ const CourseTaking = () => {
 
   useEffect(() => {
     const getModuleDetails = async() => {
-      const response = await getSingleModule(menus[currentMenuIndex]?.modules[currentModuleIndex]?.id)
+      const response = await getSingleModule(user.user.id ,menus[currentMenuIndex]?.modules[currentModuleIndex]?.id)
       console.log(response)
       setSelectedModule(response)
     }

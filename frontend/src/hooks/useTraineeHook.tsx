@@ -69,9 +69,9 @@ const useTraineeHook = () => {
         }
     } 
 
-    const getSingleModule = async(id: number) => {
+    const getSingleModule = async(userID: number, moduleID: number) => {
         try {
-            const response = await axios.get(`${API_URL}/course/modules/${id}/`, {
+            const response = await axios.get(`${API_URL}/course/module/${userID}/${moduleID}/`, {
                 withCredentials: true
             })
             if(response.status === 200){
@@ -137,6 +137,29 @@ const useTraineeHook = () => {
         }
     }
 
+    const updateModuleStatus = async(data: { participant_module_progress: string, module: number, participant: number }) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.post(`${API_URL}/course/module-update-progress/`, data,{
+                withCredentials: true
+            })
+            if(response.status === 200){
+                setIsLoading(false)
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
     const getUserResources = async(userID: number, courseID: number) => {
         try {
             const response = await axios.get(`${API_URL}/course/user/${userID}/documents/${courseID}/`, {
@@ -158,7 +181,17 @@ const useTraineeHook = () => {
         }
     } 
 
-  return {getTraineeCourses, getCourse, getCourseContent, getSingleModule, submitAnswers, updateCourseStatus, getUserResources, isLoading, error}
+  return {
+    getTraineeCourses, 
+    getCourse, 
+    getCourseContent, 
+    getSingleModule, 
+    submitAnswers, 
+    updateCourseStatus, 
+    getUserResources, 
+    updateModuleStatus,
+    isLoading, 
+    error}
 }
 
 export default useTraineeHook
