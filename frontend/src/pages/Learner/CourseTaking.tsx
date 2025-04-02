@@ -22,12 +22,67 @@ const CourseTaking = () => {
     content: [], 
     position: 0,
     section: 0,
-    key_answers: []
+    key_answers: [],
+    submitted_answers: {}
   });
 
   const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
+  const [result, setResult] = useState<{ [key: string]: string }>({}); 
+  const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
+  const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
+  const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
   const user = useSelector((state: {user: UserState}) => state.user)
   const { submitAnswers, updateModuleStatus } = useTraineeHook()
+
+  useEffect(() => {
+    if (selectedModule && selectedModule.submitted_answers) {
+      setAnswers({ answers: selectedModule.submitted_answers });
+      setResult(compareAnswers(selectedModule.submitted_answers));
+    }
+  }, [selectedModule]);  
+
+  useEffect(() => {
+    if(result) {
+      const questions = selectedModule.content.filter(item => item.type === 'questionnaire').length
+      const correctCount = Object.values(result).filter(value => value === "Correct").length;
+      //get percentage
+      const percentage = correctCount / questions * 100
+      //get total score
+      const scores = selectedModule.content.map(item => item.type === 'questionnaire' && Number(item.questionPoint))
+      const correctKeys = Object.entries(result).filter(([_, value]) => value === "Correct").map(([key]) => key);
+      const matchingPoints = selectedModule.content.filter(q => q.type === 'questionnaire' && correctKeys.includes(q.questionnaireID)).map(q => q.type === 'questionnaire' && Number(q.questionPoint));
+      const sumTotalScores = scores.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
+      const sumUserScores = matchingPoints.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
+
+      setScore({totalScore: sumTotalScores, userScore: sumUserScores, percentage: percentage.toString()})
+    }
+  }, [result])
+
+  const handleSubmit = async () => {
+    await submitAnswers(selectedModule.id, user.user.id, answers);
+    setResult(compareAnswers());
+  };
+
+  const compareAnswers = (answersData = answers.answers) => {
+    const keyAnswers = selectedModule?.key_answers?.reduce(
+      (acc, obj) => ({ ...acc, ...obj }),
+      {}
+    ) ?? {};
+  
+    const userAnswers = answersData ?? {};
+    const comparisonResult: { [key: string]: string } = {};
+  
+    Object.keys(keyAnswers).forEach((id) => {
+      if (id in userAnswers) {
+        comparisonResult[id] = keyAnswers[id] === userAnswers[id] ? "Correct" : "Incorrect";
+      } else {
+        comparisonResult[id] = "No answer provided";
+      }
+    });
+  
+    return comparisonResult;
+  };
+  
 
   const handleRadioChange = (questionID: string, choice: string) => {
     setAnswers((prev) => ({
@@ -52,10 +107,6 @@ const CourseTaking = () => {
       };
     });
   };
-  
-
-  const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
-  const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
 
   const handleClickNext = async() => {
     const data = {
@@ -95,9 +146,13 @@ const CourseTaking = () => {
 
   useEffect(() => {
     const getModuleDetails = async() => {
-      const response = await getSingleModule(user.user.id ,menus[currentMenuIndex]?.modules[currentModuleIndex]?.id)
+      const response = await getSingleModule(user.user.id, menus[currentMenuIndex]?.modules[currentModuleIndex]?.id)
       console.log(response)
-      setSelectedModule(response)
+      if(response.participant_module_progress === 'in progress') {
+        setSelectedModule(response)
+      } else {
+        handleClickNext()
+      }
     }
     getModuleDetails()
   }, [menus, currentMenuIndex, currentModuleIndex])
@@ -145,7 +200,8 @@ const CourseTaking = () => {
                         data={answers}
                         content={item}
                         addChoice={handleRadioChange}
-                        addMultipleChoice={handleCheckboxChange}/>
+                        addMultipleChoice={handleCheckboxChange}
+                        correctAnswer={result}/>
                     )
                   case 'separator':
                     return (
@@ -153,9 +209,31 @@ const CourseTaking = () => {
                     )
                 }
               })}
-              {selectedModule.content.some(item => item.type === "questionnaire") && (
+              {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([_, value]) => value === "Correct")) && (
+                <div className="w-full flex flex-col items-center justify-center">
+                  <div 
+                    className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
+                    ${parseFloat(score.percentage) < 30 ? "bg-red-500 border-red-200"
+                      : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                    ? "bg-amber-500 border-amber-200" : "bg-c-blue-50 border-c-blue-10"}`}
+                  >
+                    <p className="font-medium text-center">You Score</p>
+                    <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
+                  </div>
+                  {parseFloat(score.percentage) < 30
+                    ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
+                    : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                    ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
+                    : <p className="text-p-rg font-medium text-c-blue-50">Great job!</p>
+                  }
+                  <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
+                </div>
+              )}
+              {(selectedModule.content.some(item => item.type === "questionnaire") && Object.values(result).every(value => value !== "Correct" && value !== "Incorrect"))&& (
                 <div className="w-full flex items-center justify-center">
-                  <button onClick={() => submitAnswers(selectedModule.id,user.user.id, answers)} className="w-fit font-medium px-5 py-2 rounded-md bg-c-green-50 text-f-light">Submit</button>
+                  <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
+                    Submit Quiz
+                  </button>
                 </div>
               )}
               <div className="w-full flex items-center justify-between">

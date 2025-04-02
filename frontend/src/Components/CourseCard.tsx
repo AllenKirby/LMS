@@ -46,13 +46,23 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
     return date.toLocaleDateString("en-US", options);
   }
 
-  // const sortCourses = (array: CoursesState[]) => {
-  //   if(array.length > 0) {
-  //     return [...array].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-  //   } else {
-  //     return []
-  //   }
-  // };
+  const sortCourses = (array: CoursesState[] | TraineeCourses[]) => {
+    if (array.length === 0) return [];
+  
+    return [...array].sort((a, b) => {
+      let dateA = 0
+      let dateB = 0
+      if(user.user.role === 'training_officer'){
+        dateA = new Date((a as CoursesState).created_at).getTime() || 0;
+        dateB = new Date((b as CoursesState).created_at).getTime() || 0;
+      } else {
+        dateA = new Date((a as TraineeCourses).course.created_at).getTime() || 0;
+        dateB = new Date((b as TraineeCourses).course.created_at).getTime() || 0;
+      }
+      return dateB - dateA;
+    });
+  };
+  
 
   const draftsCourses = (array: CoursesState[] | TraineeCourses[]) => {
     return array.filter(item => 
@@ -70,7 +80,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
     );
   };
 
-  console.log(courses)
+  console.log(filteredCourses)
 
   return (
     <>
@@ -78,7 +88,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
         <>
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Course ({publishedCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-10">
-            {publishedCourses(filteredCourses).map((info, index) => (
+            {sortCourses(publishedCourses(filteredCourses) as CoursesState[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}
@@ -127,7 +137,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Drafts ({draftsCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-            {draftsCourses(filteredCourses).map((info, index) => (
+            {sortCourses(draftsCourses(filteredCourses) as CoursesState[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}
@@ -176,7 +186,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">In Progress ({draftsCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-            {draftsCourses(filteredCourses).map((info, index) => (
+            {sortCourses(draftsCourses(filteredCourses) as TraineeCourses[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}
@@ -225,7 +235,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Courses ({publishedCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-            {publishedCourses(filteredCourses).map((info, index) => (
+            {sortCourses(publishedCourses(filteredCourses) as TraineeCourses[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}

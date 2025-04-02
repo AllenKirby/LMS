@@ -9,21 +9,25 @@ import { useTrainingOfficerHook } from "../../../hooks";
 import { defaultSelect } from "../../../assets/Util/SelectStyle";
 import { defaultInput } from "../../../assets/Util/InputStyle";
 
+import {TrainingDataState} from '../../../types/CourseCreationTypes'
+
 type ExternalTrainingForm = {
   modal: () => void;
-  data? : TrainingDataState
+  data? : TrainingDataState;
+  flag: boolean
 };
 
-interface TrainingDataState {
-  training_setup: string;
-  training_title: string;
-  start_date: string;
-  end_date: string;
-  // resource_speakers: {host_name: string}[];
-  training_provider: string;
-  venue: string;
-  participants: string[];
-}
+// interface TrainingDataState {
+//   id?: number;
+//   training_setup: string;
+//   training_title: string;
+//   start_date: string;
+//   end_date: string;
+//   // resource_speakers: {host_name: string}[];
+//   training_provider: string;
+//   venue: string;
+//   participants: (string | number)[];
+// }
 
 interface Trainees {
   id: number;
@@ -39,7 +43,7 @@ interface Trainees {
 }
 
 const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
-  const { modal, data = {} } = props;
+  const { modal, data = {} as TrainingDataState, flag } = props;
   const [uploadedFile, setUploadedFile] = useState<File[] | []>([])
   const inputClick = useRef<HTMLInputElement>(null)
   const [trainingData, setTrainingData] = useState<TrainingDataState>({
@@ -53,11 +57,34 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     participants: []
   })
   const [counter, setCounter] = useState<number>(1);
-  const [inputSpeaker, setInputSpeaker] = useState<string>('')
+  const { createExternalTraining, retrieveExternalParticipants } = useTrainingOfficerHook()
+  //const [inputSpeaker, setInputSpeaker] = useState<string>('')
+
+  useEffect(() => {
+    const training = async() => {
+      if(data && flag) {
+        const response: TrainingDataState = await retrieveExternalParticipants(Number(data.id))
+        const emails = response.participants_display ? response.participants_display.map(item => item.email) : []
+        console.log(emails)
+        setTrainingData({
+          training_setup: data.training_setup || '',
+          training_title: data.training_title || '',
+          start_date: data?.start_date?.split("T")[0] || '',
+          end_date: data?.end_date?.split("T")[0] || '',
+          // resource_speakers: [],
+          training_provider: data.training_provider || '',
+          venue: data.venue || '',
+          participants: [...emails]
+        })
+      }
+    }
+    training()
+  }, [data, flag])
+
+  console.log(data)
 
   //redux
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
-  const { createExternalTraining } = useTrainingOfficerHook()
 
   const increment = () => {
     setCounter((prevCounter) => prevCounter + 1);

@@ -93,8 +93,9 @@ const useTraineeHook = () => {
     const submitAnswers = async(moduleID: number, userID: number, data: { answers: {[key: string]: string | string[]} }) => {
         setIsLoading(true)
         setError(null)
+        console.log(data)
         try {
-            const response = await axios.post(`${API_URL}/course/user_participant/${moduleID}/${userID}/   `, data,{
+            const response = await axios.post(`${API_URL}/course/user_participant/${moduleID}/${userID}/`, data,{
                 withCredentials: true
             })
             if(response.status === 200){
