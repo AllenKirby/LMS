@@ -42,7 +42,7 @@ function App() {
             <Route path=":id" element={<CourseView />}/>
             <Route path=":id/learn" element={<CourseTaking/>}/>
           </Route>
-          <Route path="resources" element={<Resource />} />
+          <Route path="resources" element={<Resources />} />
         </Route>
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
