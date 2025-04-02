@@ -1,0 +1,1 @@
+export const PageSpacing = "w-full h-full px-7 py-5 text-f-dark bg-content-bg flex";

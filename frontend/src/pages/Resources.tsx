@@ -21,11 +21,11 @@ const Resources = () => {
   };
 
   return (
-    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg grid grid-cols-5 gap-">
+    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg grid grid-cols-5 gap-10">
       {courses.map((item, index) => (
         <React.Fragment key={index}>
           <article
-            className="w-[400px] h-[160px] flex flex-col justify-between rounded-xl bg-white shadow-md group cursor-pointer p-3"
+            className="w-full h-[160px] flex flex-col justify-between rounded-xl bg-white shadow-md group cursor-pointer p-3"
             onClick={() => handleViewResources((item as TraineeCourses).course.id)}
           >
               <p className="text-p-rg text-f-dark font-semibold">{(item as TraineeCourses).course.course_title}</p>

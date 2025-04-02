@@ -100,11 +100,24 @@ const TiptapEditor: React.FC = () => {
     content: "",
   });
 
-  const handleSave = () => {
-    if (editor) {
-      setSavedContent(editor.getHTML());
-    }
-  };
+  // const handleSave = () => {
+  //   if (editor) {
+  //     setSavedContent(editor.getHTML());
+  //   }
+  // };
+
+  const handleSave = async () => {
+    if (!editor) return;
+
+    const contentJSON = editor.getJSON(); // Get JSON format
+    setSavedContent(JSON.stringify(contentJSON, null, 2)); // Display JSON
+
+    await fetch("/api/save-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "My Post", content: contentJSON }),
+    });
+};
 
   return (
     <div className="max-w-2xl mx-auto p-4 border rounded-md shadow-md bg-white">

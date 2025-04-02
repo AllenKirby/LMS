@@ -24,7 +24,7 @@ import {
 } from "./pages/TrainingOfficer/CourseComponent";
 import {Resources} from './pages'
 
-import { CourseView } from "./Components";
+import { CourseView, Resource } from "./Components";
 
 function App() {
   const router = createBrowserRouter(
@@ -42,7 +42,7 @@ function App() {
             <Route path=":id" element={<CourseView />}/>
             <Route path=":id/learn" element={<CourseTaking/>}/>
           </Route>
-          <Route path="resources" element={<Resources />} />
+          <Route path="resources" element={<Resource />} />
         </Route>
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
