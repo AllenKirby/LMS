@@ -71,7 +71,7 @@ const MainPage: React.FC = () => {
     console.log(response)
   }
 
-  setInterval(refreshToken, 60 * 60 * 1000)
+  setInterval(refreshToken, 40 * 60 * 1000);
 
   return (
     <section className="w-full h-screen flex flex-col">

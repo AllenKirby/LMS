@@ -15,8 +15,24 @@ const TrainingCard: React.FC = () => {
     (state: { externalTrainingData: TrainingDataState[] }) =>
       state.externalTrainingData
   );
+  const [trainingData, setTrainingData] = useState<TrainingDataState>({
+    training_title: '',
+    training_setup: '',
+    start_date: '',
+    end_date: '',
+    venue: '',
+    training_provider: '',
+    participants: []
+  })
 
   console.log(externalTrainings)
+
+  const isModalOpen = (data?: TrainingDataState) => {
+    setEditTraingForm(!editTrainingForm)
+    if(data) {
+      setTrainingData(data)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -29,7 +45,7 @@ const TrainingCard: React.FC = () => {
   };
 
   const [ menuOpen, setMenuOpen ] = useState<boolean>(false);
-  const [ editTraingForm, setEditTraingForm ] = useState<boolean>(false);
+  const [ editTrainingForm, setEditTraingForm ] = useState<boolean>(false);
   const [ confirmation , setConfirmation ] = useState<boolean>(false);
   return (
     <>
@@ -55,7 +71,7 @@ const TrainingCard: React.FC = () => {
                   <div className="w-28 bg-white rounded-md flex flex-col p-1">
                     <button 
                       className="w-full text-p-sm rounded-md text-left pl-2 py-1 hover:bg-c-blue-5"
-                      onClick={() => setEditTraingForm(!editTraingForm)}
+                      onClick={() => isModalOpen(info)}
                     >
                       Edit
                     </button>
@@ -105,9 +121,11 @@ const TrainingCard: React.FC = () => {
           </div>
         </section>
       ))}
-      {editTraingForm && (
+      {editTrainingForm && (
         <ExternalTrainingForm 
-          modal={() => setEditTraingForm(!editTraingForm)}
+          modal={() => setEditTraingForm(!editTrainingForm)}
+          data={trainingData}
+          flag={true}
         />
       )}
       {confirmation && (

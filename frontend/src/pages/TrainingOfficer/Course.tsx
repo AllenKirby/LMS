@@ -100,7 +100,7 @@ const Course: React.FC = () => {
           {activeTab === "External Training" && <TrainingCard />}
         </section>
       </main>
-      {isTrainingModalOpen && <ExternalTrainingForm modal={handleToggle} />}
+      {isTrainingModalOpen && <ExternalTrainingForm modal={handleToggle} flag={false}/>}
     </section>
   );
 };
