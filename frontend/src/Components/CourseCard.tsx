@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 
 interface TraineeCourses {
   course: CoursesState
+  participant_status: string
 }
 type CourseCardState = {
   selectedDepartment: string | "";
@@ -79,6 +80,11 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
         : (item as TraineeCourses)?.course?.course_status === 'published'
     );
   };
+
+  const InProgressCourses = (array:  TraineeCourses[]) => {
+    return array.filter(item => (item as TraineeCourses)?.participant_status === 'in progress'
+    );
+  }
 
   console.log(filteredCourses)
 
@@ -184,9 +190,9 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       }
       {(user.user.role === 'trainee' && filteredCourses) && 
         <> 
-          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">In Progress ({draftsCourses(filteredCourses).length})</h6>
+          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">In Progress ({InProgressCourses(filteredCourses as TraineeCourses[]).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-            {sortCourses(draftsCourses(filteredCourses) as TraineeCourses[]).map((info, index) => (
+            {sortCourses(InProgressCourses(filteredCourses as TraineeCourses[])).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}

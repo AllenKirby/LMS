@@ -182,6 +182,27 @@ const useTraineeHook = () => {
         }
     } 
 
+    const getTraineeExternalTraining = async(userID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/training/${userID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return {
     getTraineeCourses, 
     getCourse, 
@@ -191,6 +212,7 @@ const useTraineeHook = () => {
     updateCourseStatus, 
     getUserResources, 
     updateModuleStatus,
+    getTraineeExternalTraining,
     isLoading, 
     error}
 }
