@@ -31,7 +31,7 @@ const ModuleDataRedux = createSlice({
     setQuestion: (state, action: PayloadAction<{ 
             moduleID: string; 
             questionnaireID: string; 
-            field: keyof Pick<Extract<ModuleContent, { type: "questionnaire" }>, "choiceType" | "question" | "answer" | "questionPoint">; 
+            field: keyof Pick<Extract<ModuleContent, { type: "questionnaire" }>, "choiceType" | "question" | "questionPoint">; 
             value: string; 
         }>) => {
         const { moduleID, questionnaireID, field, value } = action.payload;
@@ -78,6 +78,25 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
+    setKeyAnswer: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string; value: string}>) => {
+        const { moduleID, questionnaireID, value } = action.payload;
+        const module = state.find((mod) => mod.moduleID === moduleID);
+        if(module){
+            if (module) {
+                if (!module.key_answers) {
+                    module.key_answers = [];
+                }
+    
+                const existingEntry = module.key_answers.find(entry => Object.keys(entry)[0] === questionnaireID);
+        
+                if (existingEntry) {
+                    existingEntry[questionnaireID] = value;
+                } else {
+                    module.key_answers.push({ [questionnaireID]: value });
+                }
+            }
+        }
+    },
     deleteModule: (state, action: PayloadAction<string>) => {
         return state.filter((item) => item.moduleID !== action.payload)
     },
@@ -95,6 +114,10 @@ const ModuleDataRedux = createSlice({
                     content.type === 'uploadedFile' && content.fileID === contentID
                 )
             );
+
+            if (module.key_answers) {
+                module.key_answers = module.key_answers.filter((item) => !Object.prototype.hasOwnProperty.call(item, contentID));
+            }
         }
     },
     deleteChoice: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string; choiceID: string;}>) => {
@@ -173,6 +196,21 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
+    deleteFile: (state, action: PayloadAction<{ moduleID: string; fileID: string }>) => {
+        const { moduleID, fileID } = action.payload;
+        const module = state.find((mod) => mod.moduleID === moduleID);
+    
+        if (module) {
+            const file = module.content.find(
+                (item) => item.type === "uploadedFile" && item.fileID === fileID
+            ) as Extract<ModuleContent, { type: "uploadedFile" }> | undefined;
+    
+            if (file) {
+                file.file = null; // Empty the file field instead of removing the object
+            }
+        }
+    },
+    
     replaceModule: (state, action: PayloadAction<{ moduleID: string; newModule: ModuleState }>) => {
         const { moduleID, newModule } = action.payload;
         const index = state.findIndex((mod) => mod.moduleID === moduleID);
@@ -201,6 +239,8 @@ export const {
     replaceModule,
     setSubmitted,
     deleteModulePermanent,
-    deleteAllChoicesFromQuestionnaire
+    deleteAllChoicesFromQuestionnaire,
+    deleteFile,
+    setKeyAnswer
 } = ModuleDataRedux.actions;
 export default ModuleDataRedux.reducer;

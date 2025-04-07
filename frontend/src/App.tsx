@@ -22,7 +22,7 @@ import {
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
-import {Resources} from './pages'
+import { Resources } from './pages'
 
 import { CourseView, Resource } from "./Components";
 

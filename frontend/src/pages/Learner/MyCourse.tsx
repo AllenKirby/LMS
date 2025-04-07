@@ -1,4 +1,10 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+
+import { CourseCard } from '../../Components/'
+import { Outlet, useParams } from "react-router-dom";
+import { TrainingCard } from "../TrainingOfficer/CourseComponent";
+import { TrainingDataState } from '../../types/CourseCreationTypes'
 
 interface Filters {
   course: boolean;
@@ -10,19 +16,20 @@ interface Filters {
   sort: string;
 }
 
-import { CourseCard } from '../../Components/'
-import { Outlet, useParams } from "react-router-dom";
-
 const MyCourse = () => {
   const [selectedFilters, setSelectedFilters] = useState<Filters>({
-    course: false,
-    externalCourse: false,
+    course: true,
+    externalCourse: true,
     all: false,
     inProgress: false,
     completed: false,
     saved: false,
     sort: "Relevance",
   });
+  const externalTrainings = useSelector(
+    (state: { externalTrainingData: TrainingDataState[] }) =>
+      state.externalTrainingData
+  );
   const [activeButtonCourse, setActiveButtonCourse] = useState<string>("");
   const {id} = useParams()
 
@@ -43,6 +50,7 @@ const MyCourse = () => {
       .replace(/^(.)/, (match) => match.toLowerCase()); // Ensure first letter is lowercase
   };
   
+  console.log(selectedFilters)
 
   return (
     <>
@@ -78,7 +86,7 @@ const MyCourse = () => {
               </header>
               <div className="flex-1 flex flex-col gap-2">
                 <div className="w-full flex flex-col">
-                  {["Course", "External Course"].map((category) => (
+                  {["Course", "External Training"].map((category) => (
                     <label
                       key={category}
                       htmlFor={category}
@@ -147,8 +155,16 @@ const MyCourse = () => {
               </div>
             </section>
           </nav>
-          <section className="w-4/5 h-full">
-            <CourseCard selectedDepartment={activeButtonCourse}/>
+          <section className="w-4/5 h-full flex-1 overflow-y-auto">
+            {selectedFilters.course && <CourseCard selectedDepartment={activeButtonCourse}/>}
+            {selectedFilters.externalCourse && 
+              <>
+                {/* <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">External Trainings ({externalTrainings.length})</h6> */}
+                <section className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 pt-5 gap-10">
+                  <TrainingCard/>
+                </section>
+              </>
+            }
           </section>
         </section>
       ): (

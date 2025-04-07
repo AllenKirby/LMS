@@ -20,8 +20,8 @@ const Preview = () => {
   // console.log(modules)
 
   return (
-    <section className="w-full h-full p-8 flex justify-center">
-      <div className="w-3/5 flex flex-col gap-5">
+    <section className="w-full h-full p-8 flex justify-center overflow-y-auto">
+      <div className="w-3/5 h-fit flex flex-col gap-5">
         <img src={`${API_URL}${courseOverview.cover_image_url}`} alt="Banner Image"
              className="w-full h-80 rounded-lg bg-c-grey-30" />
         <nav className="w-full h-fit flex flex-row gap-3 border-b">

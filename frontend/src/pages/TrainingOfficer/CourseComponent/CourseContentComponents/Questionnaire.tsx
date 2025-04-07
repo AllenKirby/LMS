@@ -20,7 +20,9 @@ type QuestionnaireDataState = {
     setChoice: (id: string, questionnaireID: string, choiceID: string, dataString: string) => void;
     deleteQuestionnaire: (id: string, contentID: string) => void;
     deleteChoice: (id: string, questionnaireID: string, choiceID: string) => void;
-    deleteAllChoices: (id: string, questionnaireID: string) => void
+    deleteAllChoices: (id: string, questionnaireID: string) => void;
+    setKeyAnswer: (id: string, questionnaireID: string, dataString: string) => void;
+    keyAnswers?: {[key: string]: string}[]
 }
 
 const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
@@ -32,8 +34,12 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         setChoice,
         deleteQuestionnaire,
         deleteChoice,
-        deleteAllChoices
+        deleteAllChoices,
+        setKeyAnswer,
+        keyAnswers
     } = props
+
+    console.log(keyAnswers)
 
     useEffect(() => {
         deleteAllChoices(moduleID, data.questionnaireID)
@@ -61,7 +67,9 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         }
     }, [data.choiceType])
 
-    console.log('choices', data.choices)
+    const foundItem = keyAnswers?.find(item => Object.keys(item).some(key => key === data.questionnaireID));
+    const value = foundItem ? foundItem[data.questionnaireID] : "";
+
 
   return (
     <section className="w-full h-fit border border-c-grey-20 rounded-lg">
@@ -178,8 +186,8 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
             <section className="flex items-center gap-3">
                 <p className="text-c-grey-50 font-medium text-p-sm">Correct Answer</p>
                 <select 
-                    value={data.answer} 
-                    onChange={(e) => setQuestion(moduleID, data.questionnaireID, "answer", e.target.value)}
+                    value={value} 
+                    onChange={(e) => setKeyAnswer(moduleID, data.questionnaireID, e.target.value)}
                     className="px-2 outline-none rounded-md bg-c-grey-5 h-10">
                     <option disabled value="">Correct Answer</option>
                     {data.choices.map((c) => (

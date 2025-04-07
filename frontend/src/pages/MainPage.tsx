@@ -33,7 +33,7 @@ const MainPage: React.FC = () => {
   const dispatch = useDispatch()
   const { handleRefreshToken } = useAuthHook()
   const { retrieveTrainees, retrieveExternalTraining, retrieveCourses } = useTrainingOfficerHook()
-  const { getTraineeCourses } = useTraineeHook()
+  const { getTraineeCourses, getTraineeExternalTraining } = useTraineeHook()
 
   useEffect(() => {
     const getTrainees = async() => {
@@ -57,21 +57,26 @@ const MainPage: React.FC = () => {
       dispatch(setCourses(response))
     }
 
+    const getTraineeTraining = async() => {
+      const response = await getTraineeExternalTraining(user.user.id)
+      dispatch(setData(response))
+    }
+
     if(user.user.role === 'training_officer') {
       getTrainees()
       getExternalTrainings()
       getCourses()
     } else if(user.user.role === 'trainee') {
       getTraineeCourse()
+      getTraineeTraining()
     }
   }, [])
 
   const refreshToken = async() => {
-    const response = await handleRefreshToken()
-    console.log(response)
+     await handleRefreshToken()
   }
 
-  setInterval(refreshToken, 60 * 60 * 1000)
+  setInterval(refreshToken, 40 * 60 * 1000);
 
   return (
     <section className="w-full h-screen flex flex-col">

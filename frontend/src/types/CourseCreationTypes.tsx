@@ -22,15 +22,14 @@ export interface QuestionnaireState {
     questionnaireID: string; 
     question: string; 
     choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; 
-    choices: ChoicesState[]; 
-    answer: string; 
+    choices: ChoicesState[];  
     questionPoint: number
 }
   
 export type ModuleContent = 
 | { type: "separator"; lessonID: string; title: string; content: string; }
 | { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
-| { type: "questionnaire"; questionnaireID: string; question: string; choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; choices: ChoicesState[]; answer: string; questionPoint: number };
+| { type: "questionnaire"; questionnaireID: string; question: string; choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; choices: ChoicesState[]; questionPoint: number };
 
 export interface ModuleState {
     menuID: number;
@@ -41,7 +40,8 @@ export interface ModuleState {
     submitted?: true | false;
     position?: number;
     section?: number;
-    key_answer?: {[key: string]:string}[]
+    key_answers?: {[key: string]:string}[]
+    submitted_answers?: {[key: string]:string}
 }
 
 interface ModulePreview {
@@ -100,7 +100,7 @@ export interface TrainingDataState {
     training_title: string;
     start_date: string;
     end_date: string;
-    // resource_speakers: {host_name: string}[];
+    //resource_speakers: {host_name: string}[];
     training_provider: string;
     venue: string;
     participants?: (string | number)[];

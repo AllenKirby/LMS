@@ -184,7 +184,7 @@ const Courses: React.FC = () => {
             </nav>
           </div>
         </section>
-        <div className="w-full h-1 flex gap-1 mt-4">
+        <div className="w-full h-1 flex gap-1">
           {steps.map((_, index) => (
             <div key={index} className={`flex-1 h-1 rounded-full ${index <= currentStepIndex ? "bg-c-green-50" : "bg-c-grey-10"}`}></div>
           ))}

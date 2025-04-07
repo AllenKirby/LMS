@@ -5,17 +5,35 @@ interface QuestionCardProps {
   addChoice: (questionID: string, choice: string) => void;
   addMultipleChoice: (questionID: string, choice: string) => void;
   data: { answers: {[key: string]: string | string[]} };
+  correctAnswer: {[key: string] : string}
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = (props) => {
-  const { content, addChoice, addMultipleChoice, data } = props;
+  const { content, addChoice, addMultipleChoice, data, correctAnswer } = props;
+
+  console.log(correctAnswer)
 
   const selectedAnswer = data.answers[content.questionnaireID] ?? ""; // Default to empty string
   const selectedAnswers = Array.isArray(data.answers[content.questionnaireID]) ? data.answers[content.questionnaireID] : []; // Default to empty array
 
   return (
-    <section className="w-full rounded-lg bg-white border border-c-grey-20 text-f-dark">
-      <header className="w-full p-5 font-medium border-b">Question No.</header>
+    <section className={`w-full rounded-lg bg-white text-f-dark border 
+      ${correctAnswer[content.questionnaireID] === "Correct" 
+        ? "border-green-600" 
+        : correctAnswer[content.questionnaireID] === "Incorrect" 
+        ? "border-red-600" 
+        : "border-c-grey-20"}`}
+    >
+      <header className="w-full p-5 border-b flex items-center justify-between">
+        <p className="font-medium ">Question No.</p>
+        {(Object.entries(correctAnswer).length !== 0 && correctAnswer[content.questionnaireID] !== 'No answer provided') && (
+          correctAnswer[content.questionnaireID] === 'Correct' ? 
+            <p className="text-green-500 text-p-sm font-medium">{`${correctAnswer[content.questionnaireID]} Answer`}</p>
+          : 
+            <p className="text-red-500 text-p-sm font-medium">{`${correctAnswer[content.questionnaireID]} Answer`}</p>
+          )
+        }
+      </header>
       <div className="w-full h-fit p-5 flex flex-col gap-5">
         <p className="text-p-lg">{content.question}</p>
         <div className="flex flex-col gap-3">

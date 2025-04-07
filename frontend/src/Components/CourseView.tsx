@@ -77,7 +77,7 @@ const CourseView = () => {
     navigate(`/trainee/mycourses/${id}/learn`)
   }
 
-  console.log((selectedCourse as TraineeCourses).participant_status)
+  console.log((selectedCourse as TraineeCourses))
 
   return (
     <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">

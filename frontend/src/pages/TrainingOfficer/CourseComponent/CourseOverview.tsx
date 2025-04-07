@@ -35,9 +35,9 @@ const CourseOverview = () => {
   useEffect(() => console.log(courseData), [courseData])
 
   return (
-    <section className="w-full h-full p-8">
-      <div className="w-full h-full flex items-center justify-center gap-5">
-        <section className="w-1/2 h-full p-5 border border-c-grey-500 rounded-md">
+    <section className="w-full h-full">
+      <div className="w-full h-full flex items-center justify-center overflow-y-auto">
+        <section className="w-1/2 h-fit p-5 border border-c-grey-500 rounded-md bg-white">
           <div>
             <h1 className="text-h-h6 font-medium pb-3">Course Overview</h1>
           </div>
@@ -48,7 +48,7 @@ const CourseOverview = () => {
                 <button onClick={uploadFile} className="absolute right-5 top-5 bg-white p-2 rounded-md"><FiUpload size={20}/></button>
               </div>
               : 
-              <div className="w-full h-full border-2 border-dashed border-c-blue-50 rounded-md">
+              <div className="w-full h-full border-2 border-dashed border-c-grey-20 rounded-md">
                 <button onClick={uploadFile} className="w-full h-full flex flex-col items-center justify-center">
                   <FiUpload size={44}/>
                   <p className="font-medium">Upload Cover Image</p>
@@ -61,7 +61,7 @@ const CourseOverview = () => {
               type="text" 
               value={courseData.course_title}
               onChange={(e) => dispatch(updateField({name: 'course_title', value: e.target.value}))} 
-              className="bg-transparent p-1 text-h-h6 font-medium outline-none" 
+              className="bg-transparent p-1 text-h-h6 outline-none border-b focus:border-c-green-20 w-full" 
               placeholder="Course Title"/>
             <FiEdit2 size={20}/>
           </div>
@@ -71,14 +71,14 @@ const CourseOverview = () => {
               value={courseData.course_description}
               onChange={(e) => dispatch(updateField({name: 'course_description', value: e.target.value}))} 
               placeholder="Input Course Description" 
-              className="h-24 border-2 rounded-md resize-none p-2"></textarea>
+              className="mt-1 h-24 border rounded-md resize-none p-2 hover:border-c-grey-10 outline-c-green-30"></textarea>
           </div>
           <div className="flex flex-col mt-5">
             <label className="text-c-grey-50">Category / Department</label>
             <select 
               value={courseData.department} 
               onChange={(e) => dispatch(updateField({name: 'department', value: e.target.value as "IT" | "EOD" | "AFD" | "RIM" | "EMU" | ""}))} 
-              className="border-2 rounded-md p-2">
+              className="mt-1 px-3 py-2 border rounded-md w-full h-fit hover:border-c-grey-10 outline-c-green-30">
               <option value="" disabled>Select Department</option>
               <option value="IT">IT</option>
               <option value="EOD">EOD</option>
@@ -91,7 +91,7 @@ const CourseOverview = () => {
             <select 
               value={courseData.visibility} 
               onChange={(e) => dispatch(updateField({name: 'visibility', value: e.target.value as 'public' | 'private'}))} 
-              className="border-2 rounded-md p-2">
+              className="mt-1 px-3 py-2 border rounded-md w-full h-fit hover:border-c-grey-10 outline-c-green-30">
               <option value="" disabled>Select Visibility</option>
               <option value="public">Public</option>
               <option value="private">Private</option>
