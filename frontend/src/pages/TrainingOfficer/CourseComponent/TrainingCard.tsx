@@ -5,7 +5,7 @@ import { SlOptions } from "react-icons/sl";
 
 import { TrainingDataState } from '../../../types/CourseCreationTypes'
 import { UserState } from '../../../types/UserTypes'
-import { ExternalTrainingForm } from "../ExternalTrainingComponent";
+import { ExternalTrainingForm, ParticipantUploadedDocument } from "../ExternalTrainingComponent";
 import { ConfirmationModal } from "../../../Components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import { useState } from "react";
 interface TraineeTrainings {
   training_details: TrainingDataState;
   training: number;
+  status: string;
 }
 
 const TrainingCard: React.FC = () => {
@@ -20,6 +21,7 @@ const TrainingCard: React.FC = () => {
   const [ menuOpen, setMenuOpen ] = useState<boolean>(false);
   const [ editTrainingForm, setEditTraingForm ] = useState<boolean>(false);
   const [ confirmation , setConfirmation ] = useState<boolean>(false);
+  const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
   const user = useSelector((state: {user: UserState}) => state.user)
   const externalTrainings = useSelector(
     (state: { externalTrainingData: TrainingDataState[] | TraineeTrainings[] }) =>
@@ -53,6 +55,12 @@ const TrainingCard: React.FC = () => {
     };
     return date.toLocaleDateString(undefined, options);
   };
+
+  const handleUploadToggle = (participantId: number) => {
+    setSelectedParticipantId(selectedParticipantId === participantId ? null : participantId);
+  };
+
+  console.log(user)
 
   return (
     <>
@@ -135,6 +143,7 @@ const TrainingCard: React.FC = () => {
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
             key={index}
+            onClick={() => handleUploadToggle(user.user.id)}
           >
             <div 
               className="w-full h-full bg-black opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"
@@ -168,7 +177,7 @@ const TrainingCard: React.FC = () => {
               </section>
               <button 
                 className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 w-full h-full"
-                onClick={() => navigate(`/trainingofficer/courses/externaltraining/${(info as TraineeTrainings).training_details.id}`)}
+                //onClick={() => navigate(`/trainingofficer/courses/externaltraining/${(info as TraineeTrainings).training_details.id}`)}
               >
                 View Training
               </button>
@@ -201,6 +210,24 @@ const TrainingCard: React.FC = () => {
                 </article>
               </main>
             </div>
+            {selectedParticipantId === user.user.id && (() => {
+              const data = {
+                id: user.user.id,
+                first_name: user.user.first_name,
+                last_name: user.user.last_name,
+                email: user.user.email,
+                status: (info as TraineeTrainings).status,
+              };
+
+              return (
+                <ParticipantUploadedDocument 
+                  onClose={() => setSelectedParticipantId(null)} 
+                  key={(info as TraineeTrainings).training_details.id} 
+                  data={data} 
+                  trainingID={Number((info as TraineeTrainings).training_details.id)}
+                />
+              );
+            })()}
           </section>
         ))
       )}

@@ -199,7 +199,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
               >
                 <div className="w-full h-full bg-f-dark opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"></div>
                 <button className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 h-full w-full"
-                        onClick={() => navigate('/trainingofficer/courses/CourseView')}>
+                        onClick={() => navigate(`/trainee/mycourses/${(info as TraineeCourses).course.id}`)}>
                     View Course
                 </button>
                 <div className="w-full h-full">

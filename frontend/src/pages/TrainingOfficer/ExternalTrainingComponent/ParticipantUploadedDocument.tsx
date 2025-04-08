@@ -129,7 +129,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
             </div>
           </div>
           <div className='w-full p-3'>
-            {data.status !== 'completed' && (<button type='submit' className='w-full rounded-md py-3 bg-c-green-50 text-f-light'>Mark As Complete</button>)}
+            {(data.status !== 'completed' && user.user.role === 'training_officer') && (<button type='submit' className='w-full rounded-md py-3 bg-c-green-50 text-f-light'>Mark As Complete</button>)}
             {data.status === 'completed' && (
               <div className='w-full rounded-md py-3 text-f-green text-center'>
                 <h1 className='font-medium'>Completed</h1>

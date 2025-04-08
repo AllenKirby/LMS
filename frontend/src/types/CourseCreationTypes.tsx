@@ -40,7 +40,7 @@ export interface ModuleState {
     submitted?: true | false;
     position?: number;
     section?: number;
-    key_answers?: {[key: string]:string}[]
+    key_answers?: {[key: string]:string | string[]}[]
     submitted_answers?: {[key: string]:string}
 }
 
