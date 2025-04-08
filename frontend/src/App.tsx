@@ -22,7 +22,8 @@ import {
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
-import { Resources } from './pages;
+import { Resources, UserProfile } from "./pages";
+
 import { CourseView } from "./Components";
 // import { useSelector } from "react-redux";
 // import { UserState } from './types/UserTypes'
@@ -63,6 +64,7 @@ function App() {
             </Route>
           </Route>
           <Route path="resources" element={<Resources />} />
+          <Route path="userprofile" element={<UserProfile />} />
           <Route path="trainee" element={<Trainee />} />
         </Route>
 

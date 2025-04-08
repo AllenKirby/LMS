@@ -158,7 +158,7 @@ const MyCourse = () => {
             {selectedFilters.externalCourse && 
               <>
                 <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">External Trainings ({externalTrainings && externalTrainings.length > 0 ? externalTrainings.length : 0})</h6>
-                <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+                <section className="grid lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 pt-5 gap-10">
                   <TrainingCard/>
                 </section>
               </>

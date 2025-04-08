@@ -6,10 +6,11 @@ interface QuestionCardProps {
   addMultipleChoice: (questionID: string, choice: string) => void;
   data: { answers: {[key: string]: string | string[]} };
   correctAnswer: {[key: string] : string}
+  index: number
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = (props) => {
-  const { content, addChoice, addMultipleChoice, data, correctAnswer } = props;
+  const { content, addChoice, addMultipleChoice, data, correctAnswer, index } = props;
 
   console.log(correctAnswer)
 
@@ -17,7 +18,7 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
   const selectedAnswers = Array.isArray(data.answers[content.questionnaireID]) ? data.answers[content.questionnaireID] : []; // Default to empty array
 
   return (
-    <section className={`w-full rounded-lg bg-white text-f-dark border 
+    <section className={`w-full rounded-xl bg-white shadow-md text-f-dark border 
       ${correctAnswer[content.questionnaireID] === "Correct" 
         ? "border-green-600" 
         : correctAnswer[content.questionnaireID] === "Incorrect" 
@@ -25,7 +26,7 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
         : "border-c-grey-20"}`}
     >
       <header className="w-full p-5 border-b flex items-center justify-between">
-        <p className="font-medium ">Question No.</p>
+        <p className="font-medium ">{`Question ${index +1}`}</p>
         {(Object.entries(correctAnswer).length !== 0 && correctAnswer[content.questionnaireID] !== 'No answer provided') && (
           correctAnswer[content.questionnaireID] === 'Correct' ? 
             <p className="text-green-500 text-p-sm font-medium">{`${correctAnswer[content.questionnaireID]} Answer`}</p>
@@ -47,6 +48,7 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
                     name={`choice-${content.questionnaireID}`}
                     onChange={() => addChoice(content.questionnaireID, item.choice)}
                     checked={selectedAnswer === item.choice} // Default prevents undefined errors
+                    className="cursor-pointer"
                   />
                   <label className={`p-3 border rounded-lg flex-1 ${selectedAnswer === item.choice ? "bg-c-blue-5" : ""}`}>
                     {item.choice}

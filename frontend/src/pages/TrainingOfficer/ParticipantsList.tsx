@@ -1,5 +1,5 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Trainees } from '../../types/CourseCreationTypes'
 import { useState } from "react";
@@ -44,6 +44,8 @@ type ParticipantsListState = {
   const startPage = Math.max(1, currentPage - pageRange);
   const endPage = Math.min(totalPages, currentPage + pageRange);
   const btnContentColor = "bg-c-blue-50";
+
+  const navigate = useNavigate();
 
   return (
     <section className="w-full h-full flex flex-col gap-3">
@@ -102,7 +104,13 @@ type ParticipantsListState = {
             </thead>
             <tbody>
               {currentTrainees.map((trainee, index) => (
-                <tr key={index} className="h-14 cursor-pointer">
+                <tr key={index} className="h-14 cursor-pointer"
+                    onClick={() => {
+                      if(location.pathname === '/trainingofficer/trainee') {
+                        navigate("/trainingofficer/userprofile");
+                      }
+                    }}
+                >
                   {location.pathname === '/trainingofficer/trainee' ?
                     <></> : 
                     <td 

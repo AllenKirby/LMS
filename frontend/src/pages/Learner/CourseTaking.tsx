@@ -8,6 +8,7 @@ import { useTraineeHook } from "../../hooks";
 import { CourseContentState, ModuleState } from '../../types/CourseCreationTypes'
 import { UserState } from '../../types/UserTypes'
 import { useSelector } from "react-redux";
+import { FaCircleCheck } from "react-icons/fa6";
 
 const CourseTaking = () => {
   const [collapse, setCollapse] = useState<boolean>(false);
@@ -200,6 +201,9 @@ const CourseTaking = () => {
               </div>
             </section>
           ))}
+          <button className="w-full px-3 py-2 bg-white rounded-md shadow-md mt-2 flex items-center justify-between font-medium text-f-dark">
+            Participation Survey <FaCircleCheck size={24} className="text-c-grey-10"/>
+          </button>
         </nav>
         {selectedModule && (
           <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
@@ -207,7 +211,7 @@ const CourseTaking = () => {
               <h6 className="text-f-light text-h-h6">{selectedModule.title}</h6>
             </div>
             <div className="flex flex-col items-end gap-5 p-10">
-              {selectedModule.content && selectedModule.content.map(item => {
+              {selectedModule.content && selectedModule.content.map((item, index) => {
                 switch(item.type) {
                   case 'questionnaire':
                     return (
@@ -216,7 +220,8 @@ const CourseTaking = () => {
                         content={item}
                         addChoice={handleRadioChange}
                         addMultipleChoice={handleCheckboxChange}
-                        correctAnswer={result}/>
+                        correctAnswer={result}
+                        index={index}/>
                     )
                   case 'separator':
                     return (

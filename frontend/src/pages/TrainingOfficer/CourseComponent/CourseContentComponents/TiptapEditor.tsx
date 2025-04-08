@@ -14,26 +14,6 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
 
   const buttons = [
     { 
-      label: "H1", 
-      action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(), 
-      active: editor.isActive("heading", { level: 1 }) 
-    },
-    { 
-      label: "H2", 
-      action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(), 
-      active: editor.isActive("heading", { level: 2 }) 
-    },
-    { 
-      label: "H3", 
-      action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(), 
-      active: editor.isActive("heading", { level: 3 }) 
-    },
-    { 
-      label: "P", 
-      action: () => editor.chain().focus().setParagraph().run(), 
-      active: editor.isActive("paragraph") 
-    },
-    { 
       label: "Bold", 
       action: () => editor.chain().focus().toggleBold().run(), 
       active: editor.isActive("bold") 
@@ -106,21 +86,38 @@ const TiptapEditor: React.FC = () => {
   //   }
   // };
 
-  const handleSave = async () => {
-    if (!editor) return;
+//   const handleSave = async () => {
+//     if (!editor) return;
 
-    const contentJSON = editor.getJSON(); // Get JSON format
-    setSavedContent(JSON.stringify(contentJSON, null, 2)); // Display JSON
+//     const contentJSON = editor.getJSON(); // Get JSON format
+//     setSavedContent(JSON.stringify(contentJSON, null, 2)); // Display JSON
 
-    await fetch("/api/save-content", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: "My Post", content: contentJSON }),
-    });
+//     await fetch("/api/save-content", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ title: "My Post", content: contentJSON }),
+//     });
+// };
+
+const displayEditor = useEditor({
+  extensions: [
+    StarterKit,
+    TextAlign.configure({ types: ["heading", "paragraph"] }),
+  ],
+  content: savedContent ? JSON.parse(savedContent) : "",
+  editable: false,
+});
+
+const handleSave = async () => {
+  if (!editor) return;
+
+  const contentJSON = editor.getJSON(); // Get JSON format
+  const stringified = JSON.stringify(contentJSON, null, 2);
+  setSavedContent(stringified);
 };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 border rounded-md shadow-md bg-white">
+    <div className="mx-auto p-4 border rounded-md shadow-md bg-white">
       <MenuBar editor={editor} />
       <div className="p-4 border rounded-md bg-gray-50">
         <EditorContent editor={editor} className="prose max-w-none" />
@@ -136,12 +133,22 @@ const TiptapEditor: React.FC = () => {
       </div>
       
       {savedContent && (
-        <div className="mt-6">
-          <h3 className="text-lg font-medium mb-2">Saved Content:</h3>
-          <pre className="p-4 bg-gray-100 rounded-md overflow-auto border border-gray-300">
-            {savedContent}
-          </pre>
-        </div>
+        <section className="flex flex-row gap-10">
+          {/*This is how were going to store it in database*/}
+          <div className="mt-6 w-80">
+            <h3 className="text-lg font-medium mb-2">JSON Store</h3>
+            <pre className="p-4 bg-gray-100 rounded-md overflow-auto border border-gray-300">
+              {savedContent}
+            </pre>
+          </div>
+          {/*Show here sample of how will it look after fetching the content from the database*/}
+          <div className="mt-6 w-80">
+            <h3 className="text-lg font-medium mb-2">Display Content</h3>
+            <div className="p-4 bg-gray-100 rounded-md overflow-auto border border-gray-300">
+            <EditorContent editor={displayEditor} />
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );
