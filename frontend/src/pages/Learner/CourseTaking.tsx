@@ -47,14 +47,15 @@ const CourseTaking = () => {
       const correctCount = Object.values(result).filter(value => value === "Correct").length;
       //get percentage
       const percentage = correctCount / questions * 100
+      const finalPercentage = percentage.toFixed(2)
       //get total score
       const scores = selectedModule.content.map(item => item.type === 'questionnaire' && Number(item.questionPoint))
       const correctKeys = Object.entries(result).filter(([_, value]) => value === "Correct").map(([key]) => key);
       const matchingPoints = selectedModule.content.filter(q => q.type === 'questionnaire' && correctKeys.includes(q.questionnaireID)).map(q => q.type === 'questionnaire' && Number(q.questionPoint));
       const sumTotalScores = scores.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
       const sumUserScores = matchingPoints.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
-
-      setScore({totalScore: sumTotalScores, userScore: sumUserScores, percentage: percentage.toString()})
+              
+      setScore({totalScore: sumTotalScores, userScore: sumUserScores, percentage: finalPercentage.toString()})
     }
   }, [result])
 
@@ -73,16 +74,30 @@ const CourseTaking = () => {
     const comparisonResult: { [key: string]: string } = {};
   
     Object.keys(keyAnswers).forEach((id) => {
-      if (id in userAnswers) {
-        comparisonResult[id] = keyAnswers[id] === userAnswers[id] ? "Correct" : "Incorrect";
-      } else {
+      const correct = keyAnswers[id];
+      const user = userAnswers[id];
+  
+      if (user === undefined) {
         comparisonResult[id] = "No answer provided";
+      } else if (Array.isArray(correct) && Array.isArray(user)) {
+        // Check if every correct answer is included in user's answers
+        const allIncluded = correct.every((item) => user.includes(item));
+        const sameLength = correct.length === user.length;
+  
+        comparisonResult[id] =
+          allIncluded && sameLength ? "Correct" : "Incorrect";
+      } else if (
+        typeof correct === "string" &&
+        typeof user === "string"
+      ) {
+        comparisonResult[id] = correct === user ? "Correct" : "Incorrect";
+      } else {
+        comparisonResult[id] = "Incorrect";
       }
     });
   
     return comparisonResult;
   };
-  
 
   const handleRadioChange = (questionID: string, choice: string) => {
     setAnswers((prev) => ({

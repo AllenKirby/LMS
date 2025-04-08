@@ -5,8 +5,9 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { CiImageOn } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { FiPlus } from "react-icons/fi";
+import { FaAngleDown } from "react-icons/fa";
 
-import { useEffect} from "react";
+import { useEffect, useState} from "react";
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -21,8 +22,8 @@ type QuestionnaireDataState = {
     deleteQuestionnaire: (id: string, contentID: string) => void;
     deleteChoice: (id: string, questionnaireID: string, choiceID: string) => void;
     deleteAllChoices: (id: string, questionnaireID: string) => void;
-    setKeyAnswer: (id: string, questionnaireID: string, dataString: string) => void;
-    keyAnswers?: {[key: string]: string}[]
+    setKeyAnswer: (id: string, questionnaireID: string, dataString: string, type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False") => void;
+    keyAnswers?: {[key: string]: string | string[]}[]
 }
 
 const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
@@ -70,7 +71,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
     const foundItem = keyAnswers?.find(item => Object.keys(item).some(key => key === data.questionnaireID));
     const value = foundItem ? foundItem[data.questionnaireID] : "";
 
-
+    const [customSelectOpen, setCustomSelectOpen] = useState<boolean>(false);
   return (
     <section className="w-full h-fit border border-c-grey-20 rounded-lg">
         <header className="w-full flex items-center justify-between border-b p-3 rounded-t-md">
@@ -185,15 +186,44 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         <footer className="w-full flex items-center gap-5 border-t border-c-grey-20 p-3 rounded-b-md">
             <section className="flex items-center gap-3">
                 <p className="text-c-grey-50 font-medium text-p-sm">Correct Answer</p>
-                <select 
-                    value={value} 
-                    onChange={(e) => setKeyAnswer(moduleID, data.questionnaireID, e.target.value)}
-                    className="px-2 outline-none rounded-md bg-c-grey-5 h-10">
-                    <option disabled value="">Correct Answer</option>
-                    {data.choices.map((c) => (
-                        c.choice && <option key={c.choiceID} value={c.choice}>{c.choice}</option>
-                    ))}
-                </select>
+                {data.choiceType === 'Check Box' ? 
+                    <div className="relative">
+                        <button 
+                            className="px-2 h-10 w-48 rounded-md bg-c-grey-5 flex items-center justify-between"
+                            onClick={() => setCustomSelectOpen(!customSelectOpen)}
+                        >
+                            <p className="text-c-grey-50">Choose Answers</p>
+                            <FaAngleDown size={20} className="text-f-dark cursor-pointer"/>
+                        </button>
+                        <div className={`${customSelectOpen ? "block" : "hidden"} px-2 pt-1 h-fit w-48 rounded-md bg-c-grey-5 absolute mt-1 shadow-sm`}>
+                            {data.choices.map((c) => (
+                                c.choice && 
+                                <label className="cursor-pointer w-full" key={c.choiceID}>
+                                    <input 
+                                        type="checkbox" 
+                                        className="peer hidden" 
+                                        value={c.choice}
+                                        name={`choice-${c.choiceID}`}
+                                        onChange={(e) => setKeyAnswer(moduleID, data.questionnaireID, e.target.value, data.choiceType )}
+                                    />
+                                    <div className="w-full px-2 py-1 rounded-md transition-all peer-checked:bg-blue-500 peer-checked:text-white mb-1">
+                                        {c.choice}
+                                    </div>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                    :
+                    <select 
+                        value={value} 
+                        onChange={(e) => setKeyAnswer(moduleID, data.questionnaireID, e.target.value, data.choiceType )}
+                        className="px-2 outline-none rounded-md bg-c-grey-5 h-10">
+                        <option disabled value="">Correct Answer</option>
+                        {data.choices.map((c) => (
+                            c.choice && <option key={c.choiceID} value={c.choice}>{c.choice}</option>
+                        ))}
+                    </select>
+                }
             </section>
             <section className="flex items-center gap-3">
                 <p className="text-c-grey-50 font-medium text-p-sm">Question Point</p>

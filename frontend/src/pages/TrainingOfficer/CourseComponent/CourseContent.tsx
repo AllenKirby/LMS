@@ -33,8 +33,6 @@ const CourseContent = () => {
   const courseID = useSelector((state: {courseID: number}) => state.courseID)
   const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
   const dispatch = useDispatch()
-  
-  console.log(courseContentData)
 
   //states
   const [selectedMenu, setSelectedMenu] = useState<number>(0)
@@ -71,8 +69,8 @@ const CourseContent = () => {
     dispatch(setChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID, value: dataString}))
   }
 
-  const SetKeyAnswers = (id: string, questionnaireID: string, dataString: string) => {
-    dispatch(setKeyAnswer({moduleID: id, questionnaireID: questionnaireID, value: dataString}))
+  const SetKeyAnswers = (id: string, questionnaireID: string, dataString: string, type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False") => {
+    dispatch(setKeyAnswer({moduleID: id, questionnaireID: questionnaireID, value: dataString, type: type}))
   }
 
   const DeleteContent = (id: string, contentID: string) => {
@@ -113,10 +111,6 @@ const CourseContent = () => {
 
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
-
-  useEffect(() => {
-    console.log(selectedModuleMap)
-  }, [selectedModuleMap])
   
   return (
     <section className="w-full h-full flex flex-row">

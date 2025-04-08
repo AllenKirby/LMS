@@ -78,23 +78,45 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
-    setKeyAnswer: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string; value: string}>) => {
-        const { moduleID, questionnaireID, value } = action.payload;
+    setKeyAnswer: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string; value: string; type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False"; }>) => {
+        const { moduleID, questionnaireID, value, type } = action.payload;
         const module = state.find((mod) => mod.moduleID === moduleID);
-        if(module){
-            if (module) {
-                if (!module.key_answers) {
-                    module.key_answers = [];
-                }
-    
-                const existingEntry = module.key_answers.find(entry => Object.keys(entry)[0] === questionnaireID);
-        
-                if (existingEntry) {
-                    existingEntry[questionnaireID] = value;
-                } else {
-                    module.key_answers.push({ [questionnaireID]: value });
-                }
+        if (!module) return;
+      
+        if (!module.key_answers) {
+          module.key_answers = [];
+        }
+      
+        const existingEntry = module.key_answers.find(
+          (entry) => Object.keys(entry)[0] === questionnaireID
+        );
+      
+        if (existingEntry) {
+          const currentValue = existingEntry[questionnaireID];
+      
+          if (type === 'Check Box') {
+            // Handle as string[]
+            if (Array.isArray(currentValue)) {
+              if (currentValue.includes(value)) {
+                existingEntry[questionnaireID] = currentValue.filter((v) => v !== value);
+              } else {
+                existingEntry[questionnaireID] = [...currentValue, value];
+              }
+            } else {
+              // Convert single string to array
+              existingEntry[questionnaireID] = [currentValue, value];
             }
+          } else {
+            // For text or radio: overwrite as string
+            existingEntry[questionnaireID] = value;
+          }
+        } else {
+          // No existing entry
+          if (type === 'Check Box') {
+            module.key_answers.push({ [questionnaireID]: [value] });
+          } else {
+            module.key_answers.push({ [questionnaireID]: value });
+          }
         }
     },
     deleteModule: (state, action: PayloadAction<string>) => {

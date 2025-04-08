@@ -17,18 +17,6 @@ type ExternalTrainingForm = {
   flag: boolean
 };
 
-// interface TrainingDataState {
-//   id?: number;
-//   training_setup: string;
-//   training_title: string;
-//   start_date: string;
-//   end_date: string;
-//   // resource_speakers: {host_name: string}[];
-//   training_provider: string;
-//   venue: string;
-//   participants: (string | number)[];
-// }
-
 interface Trainees {
   id: number;
   email: string;
@@ -119,6 +107,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
       formData.append("document", item);
     });
     await createExternalTraining(trainingData, formData)
+    modal()
   }
 
   // const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -129,7 +129,7 @@ const useAuthHook = () => {
         withCredentials: true
       })
       if(res.status === 200) {
-        dispatch(setUser(res.data))
+        return 
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
