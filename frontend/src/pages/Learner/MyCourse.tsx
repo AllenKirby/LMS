@@ -49,8 +49,6 @@ const MyCourse = () => {
       .replace(/\s/g, "") // Remove spaces
       .replace(/^(.)/, (match) => match.toLowerCase()); // Ensure first letter is lowercase
   };
-  
-  console.log(externalTrainings)
 
   return (
     <>

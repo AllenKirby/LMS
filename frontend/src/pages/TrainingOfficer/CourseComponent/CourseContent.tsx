@@ -111,10 +111,6 @@ const CourseContent = () => {
 
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
-
-  useEffect(() => {
-    console.log(courseContentData)
-  }, [courseContentData])
   
   return (
     <section className="w-full h-full flex flex-row">
@@ -145,12 +141,12 @@ const CourseContent = () => {
         {selectedModuleMap ? (
           <div className='w-full h-full border rounded-md overflow-hidden flex flex-col'>
             <div className='w-full h-fit flex items-center justify-between py-3 px-5 border-b'>
-              <div className='flex flex-row gap-2'>
+              <div className='flex flex-row gap-2 w-full'>
                 <input 
                   value={selectedModuleMap?.title} 
                   onChange={(e) => dispatch(setModuleTitle({moduleID: selectedModule, title: e.target.value}))} 
                   type="text" 
-                  className="bg-transparent p-1 text-h-h6 font-medium outline-none" 
+                  className="bg-transparent p-1 text-h-h6 font-medium outline-none w-full" 
                   placeholder="Module Title"/>
               </div>
               {selectedModuleMap?.submitted ? (

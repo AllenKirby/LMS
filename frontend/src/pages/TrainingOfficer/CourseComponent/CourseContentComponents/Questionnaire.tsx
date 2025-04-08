@@ -223,7 +223,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
                             c.choice && <option key={c.choiceID} value={c.choice}>{c.choice}</option>
                         ))}
                     </select>
-                }            
+                }
             </section>
             <section className="flex items-center gap-3">
                 <p className="text-c-grey-50 font-medium text-p-sm">Question Point</p>

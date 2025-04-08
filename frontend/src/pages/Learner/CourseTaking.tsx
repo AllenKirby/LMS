@@ -54,7 +54,7 @@ const CourseTaking = () => {
       const matchingPoints = selectedModule.content.filter(q => q.type === 'questionnaire' && correctKeys.includes(q.questionnaireID)).map(q => q.type === 'questionnaire' && Number(q.questionPoint));
       const sumTotalScores = scores.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
       const sumUserScores = matchingPoints.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
-
+              
       setScore({totalScore: sumTotalScores, userScore: sumUserScores, percentage: finalPercentage.toString()})
     }
   }, [result])
@@ -98,7 +98,6 @@ const CourseTaking = () => {
   
     return comparisonResult;
   };
-    
 
   const handleRadioChange = (questionID: string, choice: string) => {
     setAnswers((prev) => ({

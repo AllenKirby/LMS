@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { CourseCard } from "../../Components";
 import { TrainingCard } from "./CourseComponent";
 import { FiSearch } from "react-icons/fi";
-
 import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingForm";
 
 //Styling
-import { PrimaryRegularA } from "../../assets/Util/ButtonStyle";
+import { PrimaryRegularA, TabButton } from "../../assets/Util/ButtonStyle";
+import { PageSpacing } from "../../assets/Util/Spacing";
 import { SearchBar } from "../../assets/Util/InputStyle";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ const Course: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Course");
   const [activeTab, setActiveTab] = useState<string>(selectedTab);
   const [isTrainingModalOpen, setTrainingModalOpen] = useState<boolean>(false);
+  const { default: tabDefault, active: tabActive } = TabButton;
   const navigate = useNavigate()
 
   const handleToggle = () => {
@@ -35,7 +36,7 @@ const Course: React.FC = () => {
   }, [selectedTab]);
 
   return (
-    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg flex flex-col">
+    <section className={`${PageSpacing} flex-col`}>
       <header className="flex justify-between items-center">
         <h1 className="text-h-h6 font-medium">{selectedTab}</h1>
         <div className="flex gap-3">
@@ -74,18 +75,18 @@ const Course: React.FC = () => {
       </header>
       <nav className="w-full flex border-b">
         <button
-          className={`text-p-sm px-2 ${
+          className={`${tabDefault} ${
             selectedTab === "Course" &&
-            "border-b-2 border-c-green-50 text-c-green-50 font-medium"
+            tabActive
           }`}
           onClick={() => setSelectedTab("Course")}
         >
           Courses
         </button>
         <button
-          className={`text-p-sm px-2 ${
+         className={`${tabDefault} ${
             selectedTab === "External Training" &&
-            "border-b-2 border-c-green-50 text-c-green-50 font-medium"
+            tabActive
           }`}
           onClick={() => setSelectedTab("External Training")}
         >

@@ -78,15 +78,7 @@ const ModuleDataRedux = createSlice({
             }
         }
     },
-    setKeyAnswer: (
-        state,
-        action: PayloadAction<{
-          moduleID: string;
-          questionnaireID: string;
-          value: string;
-          type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False"; // or whatever types you use
-        }>
-      ) => {
+    setKeyAnswer: (state, action: PayloadAction<{ moduleID: string; questionnaireID: string; value: string; type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False"; }>) => {
         const { moduleID, questionnaireID, value, type } = action.payload;
         const module = state.find((mod) => mod.moduleID === moduleID);
         if (!module) return;

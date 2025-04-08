@@ -60,8 +60,6 @@ const TrainingCard: React.FC = () => {
     setSelectedParticipantId(selectedParticipantId === participantId ? null : participantId);
   };
 
-  console.log(user)
-
   return (
     <>
       {externalTrainings && user.user.role === 'training_officer' && (
@@ -177,7 +175,7 @@ const TrainingCard: React.FC = () => {
               </section>
               <button 
                 className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 w-full h-full"
-                //onClick={() => navigate(`/trainingofficer/courses/externaltraining/${(info as TraineeTrainings).training_details.id}`)}
+                onClick={() => navigate(`/trainingofficer/courses/externaltraining/${(info as TraineeTrainings).training_details.id}`)}
               >
                 View Training
               </button>

@@ -7,6 +7,8 @@ import { useState } from "react";
 //hooks
 import { useAuthHook } from "../hooks";
 import { useSelector } from "react-redux";
+//Style
+import { NavStyle } from "../assets/Util/ButtonStyle";
 
 interface User {
   id: number;
@@ -36,6 +38,8 @@ const Header: React.FC = () => {
   const { handleLogout, isLoading } = useAuthHook();
   //redux
   const user = useSelector((state: { user: UserState }) => state.user);
+  //Style
+  const { default: NavDefault, inactive: NavInactive, active: NavActive } = NavStyle;
 
   const logout = async () => {
     await handleLogout();
@@ -53,41 +57,41 @@ const Header: React.FC = () => {
         <ul className="flex flex-row">
           {user.user.role === "trainee" && (
             <NavLink to={"home"} className={({ isActive }) =>
-              `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
             }>
               Home
             </NavLink>
           )}
           {user.user.role === "trainee" && (
             <NavLink to={"mycourses"} className={({ isActive }) =>
-            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
           }>
               Course Library
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"dashboard"} className={({ isActive }) =>
-            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
           }>
               Home
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"courses/course"} className={({ isActive }) =>
-            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
           }>
               My Courses
             </NavLink>
           )}
           {user.user.role === "training_officer" && (
             <NavLink to={"trainee"} className={({ isActive }) =>
-            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
           }>
               Trainee
             </NavLink> 
           )}
           <NavLink to={"resources"} className={({ isActive }) =>
-            `hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full ${isActive ? "text-c-green-50 font-semibold" : "text-f-dark font-medium"}`
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
           }>
             Resources
           </NavLink>

@@ -41,7 +41,6 @@ const MainPage: React.FC = () => {
 
     const getTraineeTraining = async() => {
       const response = await getTraineeExternalTraining(user.user.id)
-      console.log(response)
       dispatch(setData(response))
     }
 
@@ -66,7 +65,6 @@ const MainPage: React.FC = () => {
   
     return () => clearInterval(interval);
   }, []);
-  
 
   return (
     <section className="w-full h-screen flex flex-col">
