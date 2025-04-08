@@ -28,7 +28,7 @@ const ExternalParticipantCard: React.FC = () => {
     setSelectedParticipantId(selectedParticipantId === participantId ? null : participantId);
   };
 
-  console.log(data?.participants_display)
+  console.log(data)
 
   return (
     <>

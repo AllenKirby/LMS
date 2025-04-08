@@ -81,6 +81,7 @@ const useTrainingOfficer = () => {
     }
 
     const getMenus = async(id: number) => {
+        console.log("get")
         try {
             const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
                 withCredentials: true
@@ -124,12 +125,14 @@ const useTrainingOfficer = () => {
     const handleUpdateCourse = async(id: number, data: CourseData) => {
         setIsLoading(true)
         setError(null)
+        console.log('update')
         try {
            const res = await axios.put(`${API_URL}/course/courses/${id}/`, data) 
-           if(res.status === 201){
+           if(res.status === 200){
                 setIsLoading(false)
                 const data = res.data
                 dispatch(setID(data.id))
+                dispatch(setCourseData(res.data))
                 await getMenus(data.id)
            }
         } catch (error) {

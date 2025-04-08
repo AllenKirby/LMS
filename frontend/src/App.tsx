@@ -25,8 +25,11 @@ import {
 import { Resources } from './pages'
 
 import { CourseView } from "./Components";
+// import { useSelector } from "react-redux";
+// import { UserState } from './types/UserTypes'
 
 function App() {
+  //const user = useSelector((state: {user: UserState}) => state.user)
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
@@ -35,6 +38,7 @@ function App() {
           <Route index element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
         </Route>
+
         // Learner
         <Route path="/trainee" element={<MainPage />}>
           <Route path="home" element={<Home />} />
@@ -44,6 +48,7 @@ function App() {
           </Route>
           <Route path="resources" element={<Resources />} />
         </Route>
+        
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -61,6 +66,7 @@ function App() {
           <Route path="resources" element={<Resources />} />
           <Route path="trainee" element={<Trainee />} />
         </Route>
+
         // Error
         <Route path="*" element={<NotFoundPage />} />
       </Route>
