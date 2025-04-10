@@ -175,7 +175,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     <>
       <div className="fixed inset-0 z-20 bg-black opacity-50 text-f-dark" />
       <div className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-end">
-        <form onSubmit={handleSubmit} className="w-2/5 h-full bg-f-light z-30 flex flex-col">
+        <form onSubmit={handleSubmit} className="w-full md:w-2/5 h-full bg-f-light z-30 flex flex-col">
           <div className="w-full p-5 flex items-center justify-between border-b">
             <h1 className="font-medium text-p-lg">External Training</h1>
             <button type="button" onClick={modal}>

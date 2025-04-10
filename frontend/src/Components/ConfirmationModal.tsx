@@ -16,7 +16,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return ReactDOM.createPortal(
     <>
       <div className="fixed inset-0 z-20 bg-black opacity-30"></div>
-      <section className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-center">
+      <section className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-center p-6">
         <div className="w-[400px] h-fit text-f-dark">
           <header className="w-full h-full rounded-t-lg bg-c-grey-5 flex items-center justify-between px-4 py-3">
             <h6 className="font-semibold">{title}</h6>

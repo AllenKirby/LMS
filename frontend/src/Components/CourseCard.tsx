@@ -13,11 +13,11 @@ interface TraineeCourses {
   participant_status: string
 }
 type CourseCardState = {
-  selectedDepartment: string | "";
+  selectedDepartment?: string | "";
 }
 
 const CourseCard: React.FC<CourseCardState> = (props) => {
-  const { selectedDepartment } = props
+  const { selectedDepartment = "" } = props
   const navigate = useNavigate();
   const user = useSelector((state: {user: UserState}) => state.user)
   const courses = useSelector((state: {courses: TraineeCourses[] | CoursesState[]}) => state.courses)
@@ -93,7 +93,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       {(user.user.role === 'training_officer' && filteredCourses) && 
         <>
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Course ({publishedCourses(filteredCourses).length})</h6>
-          <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-10">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-5 md:gap-10">
             {sortCourses(publishedCourses(filteredCourses) as CoursesState[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
@@ -142,7 +142,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       {(user.user.role === 'training_officer' && filteredCourses) && 
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Drafts ({draftsCourses(filteredCourses).length})</h6>
-          <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+          <section className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-5 md:gap-10">
             {sortCourses(draftsCourses(filteredCourses) as CoursesState[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
@@ -191,7 +191,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       {(user.user.role === 'trainee' && filteredCourses) && 
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">In Progress ({InProgressCourses(filteredCourses as TraineeCourses[]).length})</h6>
-          <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+          <section className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-5 md:gap-10">
             {sortCourses(InProgressCourses(filteredCourses as TraineeCourses[])).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
@@ -240,7 +240,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       {(user.user.role === 'trainee' && filteredCourses) && 
         <> 
           <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Courses ({publishedCourses(filteredCourses).length})</h6>
-          <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+          <section className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-5 md:gap-10">
             {sortCourses(publishedCourses(filteredCourses) as TraineeCourses[]).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"

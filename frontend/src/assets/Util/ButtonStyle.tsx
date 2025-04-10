@@ -13,7 +13,7 @@ export const TabButton = {
 
 //Navigation Bar
 export const NavStyle = {
-  default: "hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full",
+  default: "md:hover:bg-c-green-5 hover:text-c-green-70 px-3 rounded-full",
   inactive: "text-c-green-50 font-semibold",
   active: "text-f-dark font-medium",
 };

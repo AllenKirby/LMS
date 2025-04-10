@@ -37,7 +37,7 @@ const CourseOverview = () => {
   return (
     <section className="w-full h-full">
       <div className="w-full h-full flex items-center justify-center overflow-y-auto">
-        <section className="w-1/2 h-fit p-5 border border-c-grey-500 rounded-md bg-white">
+        <section className="w-full md:w-1/2 h-full md:h-fit p-5 border border-c-grey-500 rounded-md bg-white">
           <div>
             <h1 className="text-h-h6 font-medium pb-3">Course Overview</h1>
           </div>

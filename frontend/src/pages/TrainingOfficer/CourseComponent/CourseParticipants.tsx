@@ -39,14 +39,14 @@ const CourseParticipants = () => {
   }, [participants])
 
   return (
-    <section className="w-full h-full flex flex-row p-8">
-      <div className='w-2/3 h-full px-7'>
+    <section className="w-full h-full flex flex-row md:p-8">
+      <div className='w-full md:w-2/3 h-full px-7 bg-white md:bg-content-bg'>
         <ParticipantsList  
           trainees={trainees} 
           handleCheckBox={handleCheckboxChange}
           participants={participants}/>
       </div>
-      <div className='w-1/3 h-full'>
+      <div className='hidden md:block w-1/3 h-full'>
         <div className='w-full h-full bg-white rounded-md'>
           <div className='w-full h-fit p-5 border-b'>
             <h1 className='font-medium'>Selected Participants</h1>

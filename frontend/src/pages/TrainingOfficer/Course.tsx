@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CourseCard } from "../../Components";
 import { TrainingCard } from "./CourseComponent";
 import { FiSearch } from "react-icons/fi";
+
 import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingForm";
 
 //Styling
@@ -40,7 +41,7 @@ const Course: React.FC = () => {
       <header className="flex justify-between items-center">
         <h1 className="text-h-h6 font-medium">{selectedTab}</h1>
         <div className="flex gap-3">
-          <select
+          {/* <select
             name="Categories"
             className="px-3 py-2 border rounded-md h-fit w-40 truncate "
           >
@@ -50,7 +51,7 @@ const Course: React.FC = () => {
             <option value="FA">For All</option>
             <option value="EOD">EOD</option>
             <option value="EMU">EMU</option>
-          </select>
+          </select> */}
           <section className="flex items-center relative">
             <FiSearch size={20} className="absolute left-3 text-c-grey-50" />
             <input
@@ -93,11 +94,11 @@ const Course: React.FC = () => {
           External Training
         </button>
       </nav>
-      <main className="w-full flex-1  overflow-y-auto">
+      <main className="w-full flex-1 overflow-y-auto">
         <>
           {activeTab === "Course" && <CourseCard />}
         </>
-        <section className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+        <section className="w-full grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-5 md:gap-10">
           {activeTab === "External Training" && <TrainingCard />}
         </section>
       </main>

@@ -10,6 +10,8 @@ import { setCourses } from '../redux/CoursesRedux';
 
 import { UserState } from '../types/UserTypes'
 
+import { NavButton } from "../Components";
+
 const MainPage: React.FC = () => {
   const user = useSelector((state: {user: UserState}) => state.user)
   const dispatch = useDispatch()
@@ -72,6 +74,7 @@ const MainPage: React.FC = () => {
       <div className='w-full flex-1 overflow-hidden'>
         <Outlet/>
       </div>
+      <div className='flex md:hidden w-full items-center justify-center py-5'><NavButton/></div>
     </section>
   )
 }

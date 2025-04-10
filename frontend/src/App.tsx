@@ -22,7 +22,7 @@ import {
   CourseContent,
   Preview,
 } from "./pages/TrainingOfficer/CourseComponent";
-import { Resources } from './pages;
+import { Resources } from "./pages";
 import { CourseView } from "./Components";
 // import { useSelector } from "react-redux";
 // import { UserState } from './types/UserTypes'

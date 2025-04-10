@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
 import { useTrainingOfficerHook } from '../../../hooks'
+import { RxHamburgerMenu } from "react-icons/rx";
 
 import { FiPlus, FiUpload, FiSave } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
@@ -111,12 +112,15 @@ const CourseContent = () => {
 
   //map the questionnaire, separator and upload file
   const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
-  
+  const [hideMenu, setHideMenu] = useState<boolean>(false);
+
   return (
-    <section className="w-full h-full flex flex-row">
-      <div className="w-1/4 h-full p-8">
-        <div className="w-full pb-3">
-          <h1 className="font-medium text-h-h6">Course Menu</h1>
+    <section className="relative w-full h-full flex flex-row">
+      <button className='absolute md:hidden top-3 left-3' onClick={() => setHideMenu(!hideMenu)}><RxHamburgerMenu size={20}/></button>
+      <div className={`${hideMenu && "hidden"} absolute md:fixed w-1/2 md:w-1/4 h-full p-8 bg-white`}>
+        <div className="w-full pb-3 flex items-center justify-between">
+          <h1 className="font-medium text-p-lg md:text-h-h6">Course Menu</h1>
+          <button onClick={() => setHideMenu(!hideMenu)}>&times;</button>
         </div>
         <div className='w-full flex flex-col gap-3 items-center'>
           {courseContentData.map((item, index) => (
@@ -137,7 +141,7 @@ const CourseContent = () => {
           <button onClick={() => handleAddMenu(courseID)} disabled={isLoading}>Add Menu</button>
         </div>
       </div>
-      <div className="w-3/4 h-full bg-white">
+      <div className="w-full md:w-3/4 h-full bg-white">
         {selectedModuleMap ? (
           <div className='w-full h-full border rounded-md overflow-hidden flex flex-col'>
             <div className='w-full h-fit flex items-center justify-between py-3 px-5 border-b'>

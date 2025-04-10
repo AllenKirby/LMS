@@ -115,14 +115,14 @@ const Courses: React.FC = () => {
   return (
     <section className="w-full h-screen top-0 left-0 fixed inset-1 flex flex-col bg-content-bg">
       <header className="w-full h-fit">
-        <section className="w-full h-fit flex items-center justify-between px-10 py-4">
+        <section className="w-full h-fit flex items-center justify-between p-3 md:px-10 py-4">
           <div className="flex items-center gap-1">
             <button onClick={handleBack}>
               <IoIosArrowRoundBack size={24} />
             </button>
             <h6 className="text-p-lg font-medium">Create Course</h6>
           </div>
-          <div className="flex items-center gap-2 w-1/6">
+          <div className="hidden md:flex items-center gap-2 w-1/6">
             <p className="text-c-grey-50">Step {currentStepIndex + 1}:</p>
             <p className="flex items-center gap-1 font-medium text-c-green-50">
               <FaCircleCheck size={16} className="text-c-blue-50" />{" "}
@@ -130,7 +130,7 @@ const Courses: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center justify-end gap-3 w-2/5">
-            <p className="text-p-sm text-c-grey-50">
+            <p className="hidden md:block text-p-sm text-c-grey-50">
               {steps[currentStepIndex].next ? `Next: ${steps[currentStepIndex].next}` : ""}
             </p>
             <nav className="flex items-center gap-2 border-l border-c-grey-20 pl-3">
