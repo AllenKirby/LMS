@@ -11,11 +11,12 @@ import CourseContentDataReducer from "./CourseContentDataRedux";
 import CourseIDReducer from './CourseIDRedux'
 import ModuleDataReducer from './ModuleDataRedux'
 import CoursesReducer from './CoursesRedux'
+import CourseActionReducer from './CourseActionRedux'
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['user', 'courseData', 'trainees', 'courseContent', 'courseID', 'moduleData', 'courses']
+  whitelist: ['user', 'courseData', 'trainees', 'courseContent', 'courseID', 'moduleData', 'courses', 'courseAction']
 }
 
 const rootReducer = combineReducers({
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   courseContent: CourseContentDataReducer,
   courseID: CourseIDReducer,
   moduleData: ModuleDataReducer,
-  courses: CoursesReducer
+  courses: CoursesReducer,
+  courseAction: CourseActionReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

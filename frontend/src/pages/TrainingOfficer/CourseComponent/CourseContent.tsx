@@ -25,21 +25,34 @@ import {
   setKeyAnswer
 } from '../../../redux/ModuleDataRedux';
 
-import { MenuDataState, ModuleState, ChoicesState } from '../../../types/CourseCreationTypes'
+import { MenuDataState, ModuleState, ChoicesState, CourseActionType } from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
   //redux
   const courseContentData = useSelector((state: {courseContent: MenuDataState[]}) => state.courseContent)
   const courseID = useSelector((state: {courseID: number}) => state.courseID)
   const modules = useSelector((state: {moduleData: ModuleState[]}) => state.moduleData)
+  const courseAction = useSelector((state: {courseAction: CourseActionType}) => state.courseAction)
   const dispatch = useDispatch()
 
   //states
   const [selectedMenu, setSelectedMenu] = useState<number>(0)
   const [selectedModule, setSelectedModule] = useState<string>('')
-
+  const [selectedModuleMap, setSelectedModuleMap] = useState<ModuleState>({
+    menuID: 0,
+    id: 0,
+    moduleID: '',
+    title: '',
+    content: [],
+    submitted: true,
+    position: 0,
+    section: 0,
+    key_answers: []
+  });
   //hooks
-  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, isLoading } = useTrainingOfficerHook()
+  const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, getSpecificModule, isLoading } = useTrainingOfficerHook()
+
+  console.log(courseContentData)
 
   const setMenuID = (id: number) => {
     setSelectedMenu(id)
@@ -108,9 +121,50 @@ const CourseContent = () => {
   const removeMenu = async(id: number) => {
     await deleteMenu(id)
   }
+  useEffect(() => {
+    console.log(selectedMenu, selectedModule)
+  }, [selectedMenu, selectedModule])
 
-  //map the questionnaire, separator and upload file
-  const selectedModuleMap = modules.find(modules => modules.menuID === selectedMenu && modules.moduleID === selectedModule);
+  const getModule = async(id: number) => {
+    return await getSpecificModule(id)
+  }
+
+  // useEffect(() => {
+  //   const menuID = courseContentData[0].id
+  //   const moduleID = courseContentData[0].modules[0].id
+
+  //   const IDs = {
+  //     menuID,
+  //     moduleID
+  //   }
+  //   localStorage.setItem('IDs', JSON.stringify(IDs));
+  // }, []);
+
+  useEffect(() => {
+    const fetchModule = async () => {
+      // const storedData = localStorage.getItem('IDs');
+      // if (!storedData) return;
+  
+      // const parsedData = JSON.parse(storedData);
+      // const moduleID: number | string = parsedData.moduleID;
+  
+      if (courseAction === 'create') {
+        const module = modules.find(
+          module => module.menuID === selectedMenu && module.moduleID.toString() === selectedModule
+        );
+        if (module) {
+          setSelectedModuleMap(module);
+        }
+      } else {
+        const fetchedModule = await getModule(Number(selectedModule));
+        console.log(fetchedModule);
+        setSelectedModuleMap(fetchedModule);
+      }
+    };
+  
+    fetchModule();
+  }, [courseAction, selectedMenu, selectedModule, courseContentData]);
+  
   
   return (
     <section className="w-full h-full flex flex-row">
@@ -130,6 +184,7 @@ const CourseContent = () => {
               deleteMenu={removeMenu}
               deleteModule={DeleteModule}
               deleteModulePermanent={DeleteModulePermanent}
+              courseAction={courseAction}
               />
           ))}
         </div>

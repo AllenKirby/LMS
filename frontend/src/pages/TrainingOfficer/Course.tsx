@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { CourseCard } from "../../Components";
 import { TrainingCard } from "./CourseComponent";
 import { FiSearch } from "react-icons/fi";
@@ -8,13 +10,14 @@ import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingFo
 import { PrimaryRegularA, TabButton } from "../../assets/Util/ButtonStyle";
 import { PageSpacing } from "../../assets/Util/Spacing";
 import { SearchBar } from "../../assets/Util/InputStyle";
-import { useNavigate } from "react-router-dom";
+import { setAction } from "../../redux/CourseActionRedux";
 
 const Course: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Course");
   const [activeTab, setActiveTab] = useState<string>(selectedTab);
   const [isTrainingModalOpen, setTrainingModalOpen] = useState<boolean>(false);
   const { default: tabDefault, active: tabActive } = TabButton;
+  const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const handleToggle = () => {
@@ -34,6 +37,11 @@ const Course: React.FC = () => {
       setActiveTab(selectedTab);
     }
   }, [selectedTab]);
+  
+  const handleCreateCourse = () => {
+    dispatch(setAction('create'))
+    navigate('../courseCreation/courseOverview')
+  }
 
   return (
     <section className={`${PageSpacing} flex-col`}>
@@ -63,7 +71,7 @@ const Course: React.FC = () => {
             className={PrimaryRegularA}
             onClick={() => {
               if (activeTab === "Course") {
-                navigate('../courseCreation/courseOverview')
+                handleCreateCourse()
               } else if (activeTab === "External Training") {
                 handleToggle();
               }

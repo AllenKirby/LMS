@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FiChevronDown, FiPlus } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
 import { IoMdClose } from "react-icons/io";
 import { HiMenuAlt2 } from "react-icons/hi";
 
-import { ModuleState, MenuDataState } from '../../../../types/CourseCreationTypes'
+import { ModuleState, MenuDataState, CourseActionType, ModulePreview } from '../../../../types/CourseCreationTypes'
 
 type MenuState = {
   menuData: MenuDataState;
@@ -15,14 +15,15 @@ type MenuState = {
   setModuleID: (id: string) => void;
   deleteMenu: (id: number) => void;
   deleteModule: (id: string) => void;
-  deleteModulePermanent: (id: number) => void
+  deleteModulePermanent: (id: number) => void;
+  courseAction: CourseActionType;
 }
 
 const Menu: React.FC<MenuState> = (props) => {
-  const { menuData, addModule, modules, setMenuID, setModuleID, deleteModule, deleteModulePermanent, deleteMenu } = props
+  const { menuData, addModule, modules, setMenuID, setModuleID, deleteModule, deleteModulePermanent, deleteMenu, courseAction } = props
   const [collapse, setCollapse] = useState<boolean>(false);
 
-  const filteredModules = modules.filter((module) => module.menuID === menuData.id);
+  const filteredModules = courseAction === 'create' ? modules.filter((module) => module.menuID === menuData.id) : menuData.modules;
 
   return (
     <section className="w-full h-auto rounded-md border border-c-grey-20 cursor-pointer">
@@ -32,16 +33,16 @@ const Menu: React.FC<MenuState> = (props) => {
       </div>
       <div className={`px-4 py-2 flex flex-col items-center justify-center ${collapse === false? "block" : "hidden"}`}>
         <div className="w-full mb-2">
-          {filteredModules.map((m: ModuleState) => (
-            <div onClick={() => {setMenuID(menuData.id); setModuleID(m.moduleID)}} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
+          {filteredModules.map((m: ModuleState | ModulePreview) => (
+            <div onClick={() => {setMenuID(menuData.id); setModuleID(courseAction === 'create' ? m?.moduleID : m.id)}} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
               <section className="flex items-center gap-2 group-hover:text-c-grey-70 group-hover:font-medium">
                 <HiMenuAlt2 size={12}/>
                 <p>{m.title ? m.title : 'Untitled'}</p>
               </section>
-              {m.submitted ? (
+              {('submitted' in m && m?.submitted || courseAction === 'update' )? (
                 <button onClick={() => deleteModulePermanent(m.id)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               ) : (
-                <button onClick={() => deleteModule(m.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
+                <button onClick={() => deleteModule(m?.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               )}
             </div>
           ))}

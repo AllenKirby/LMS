@@ -10,6 +10,7 @@ import { defaultSelect } from "../../../assets/Util/SelectStyle";
 import { defaultInput } from "../../../assets/Util/InputStyle";
 
 import {TrainingDataState} from '../../../types/CourseCreationTypes'
+import { UserState } from '../../../types/UserTypes'
 
 type ExternalTrainingForm = {
   modal: () => void;
@@ -45,8 +46,12 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     participants: []
   })
   const [counter, setCounter] = useState<number>(1);
-  const { createExternalTraining, retrieveExternalParticipants } = useTrainingOfficerHook()
+  const { createExternalTraining, retrieveExternalParticipants, updateExternalTraining, retrieveExternalDocuments } = useTrainingOfficerHook()
   //const [inputSpeaker, setInputSpeaker] = useState<string>('')
+
+  //redux
+  const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
+  const user = useSelector((state: {user: UserState}) => state.user)
 
   useEffect(() => {
     const training = async() => {
@@ -69,10 +74,15 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     training()
   }, [data, flag])
 
-  console.log(data)
-
-  //redux
-  const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
+  useEffect(() => {
+    const retrieveFiles = async() => {
+      const res = await retrieveExternalDocuments(Number(data.id), user.user.id)
+      if(res) {
+        console.log(res)
+      } 
+    }
+    retrieveFiles()
+  }, [])
 
   const increment = () => {
     setCounter((prevCounter) => prevCounter + 1);
@@ -107,6 +117,18 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
       formData.append("document", item);
     });
     await createExternalTraining(trainingData, formData)
+    modal()
+  }
+
+  const handleUpdate = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData()
+
+    uploadedFile.forEach((item) => {
+      formData.append("document_name", item.name);
+      formData.append("document", item);
+    });
+    await updateExternalTraining(Number(data.id), trainingData, formData)
     modal()
   }
 
@@ -175,7 +197,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     <>
       <div className="fixed inset-0 z-20 bg-black opacity-50 text-f-dark" />
       <div className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-end">
-        <form onSubmit={handleSubmit} className="w-2/5 h-full bg-f-light z-30 flex flex-col">
+        <form onSubmit={flag ? handleUpdate : handleSubmit} className="w-2/5 h-full bg-f-light z-30 flex flex-col">
           <div className="w-full p-5 flex items-center justify-between border-b">
             <h1 className="font-medium text-p-lg">External Training</h1>
             <button type="button" onClick={modal}>

@@ -4,7 +4,7 @@ export interface ChoicesState {
 }
 
 export interface FileUploadState {
-    type: "uploadedFile"; 
+    type: "uploadedFile" | "document"; 
     fileID: string; 
     fileName: string; 
     file: File | null;
@@ -28,7 +28,7 @@ export interface QuestionnaireState {
   
 export type ModuleContent = 
 | { type: "separator"; lessonID: string; title: string; content: string; }
-| { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
+| { type: "uploadedFile" | "document"; fileID: string; fileName: string; file: File | null; }
 | { type: "questionnaire"; questionnaireID: string; question: string; choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; choices: ChoicesState[]; questionPoint: number };
 
 export interface ModuleState {
@@ -40,30 +40,23 @@ export interface ModuleState {
     submitted?: true | false;
     position?: number;
     section?: number;
+    participant_module_progress?: 'in progress' | 'completed' | ''
     key_answers?: {[key: string]:string | string[]}[]
     submitted_answers?: {[key: string]:string}
 }
 
-interface ModulePreview {
+export interface ModulePreview {
     id: number;
     position: number;
     section: number;
     title: string;
 }
 
-export interface CourseContentState {
-    id: number;
-    title: string;
-    position: number;
-    modules: ModulePreview[];
-    course: number;
-}
-
 export interface MenuDataState {
     id: number;
     title: string;
     position: number;
-    modules: string[];
+    modules: ModulePreview[];
     course: number;
 }
 
@@ -131,3 +124,5 @@ export interface CoursesState {
     participants?: (string | number)[];
     submitted?: true | false
 }
+
+export type CourseActionType = '' | 'create' | 'update';

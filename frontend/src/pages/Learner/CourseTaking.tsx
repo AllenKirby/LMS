@@ -19,7 +19,8 @@ const CourseTaking = () => {
     id: 0,
     moduleID: '',
     title: '',
-    content: [], 
+    content: [],
+    participant_module_progress: '',
     position: 0,
     section: 0,
     key_answers: [],
@@ -30,6 +31,7 @@ const CourseTaking = () => {
   const [result, setResult] = useState<{ [key: string]: string }>({}); 
   const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
+  const [firstLoad, setFirstLoad] = useState<boolean>(true)
   const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
   const user = useSelector((state: {user: UserState}) => state.user)
   const { submitAnswers, updateModuleStatus } = useTraineeHook()
@@ -139,14 +141,21 @@ const CourseTaking = () => {
   };
 
   const handleClickPrevious = () => {
-    if (currentModuleIndex < menus[currentMenuIndex].modules.length - 1) {
-      setCurrentModuleIndex(currentModuleIndex - 1);
+    if (currentModuleIndex > 0) {
+      setCurrentModuleIndex(currentModuleIndex - 1); // Go to previous module in current menu
     } else {
-      setCurrentModuleIndex(0);
-      setCurrentMenuIndex((prev) => (prev < menus.length - 1 ? prev - 1 : 0));
+      if (currentMenuIndex > 0) {
+        const previousMenuIndex = currentMenuIndex - 1;
+        const lastModuleIndex = menus[previousMenuIndex].modules.length - 1;
+  
+        setCurrentMenuIndex(previousMenuIndex); // Go to previous menu
+        setCurrentModuleIndex(lastModuleIndex); // Go to last module in previous menu
+      } else {
+        console.log("Already at the first module."); // Edge case: no previous module
+      }
     }
   };
-
+  
   useEffect(() => {
     const getCourseDetails = async() => {
       const response = await getCourseContent(Number(id))
@@ -156,21 +165,23 @@ const CourseTaking = () => {
   }, [id])
 
   useEffect(() => {
-    console.log(menus)
-  }, [menus])
-
-  useEffect(() => {
     const getModuleDetails = async() => {
-      const response = await getSingleModule(user.user.id, menus[currentMenuIndex]?.modules[currentModuleIndex]?.id)
-      console.log(response)
-      if(response.participant_module_progress === 'in progress') {
-        setSelectedModule(response)
+      const response = await getSingleModule(user.user.id, menus[currentMenuIndex]?.modules[currentModuleIndex]?.id) 
+      if(firstLoad) {
+        if(response.participant_module_progress === 'in progress') {
+          setSelectedModule(response)
+          setFirstLoad(false)
+        } else {
+          handleClickNext()
+        }
       } else {
-        handleClickNext()
+        setSelectedModule(response)
       }
     }
-    getModuleDetails()
-  }, [menus, currentMenuIndex, currentModuleIndex])
+    if(user.user.id && menus[currentMenuIndex]?.modules[currentModuleIndex]?.id) {
+      getModuleDetails()
+    }
+  }, [menus, currentModuleIndex])
 
   return (
      <section className="flex flex-row w-full h-full">
@@ -219,6 +230,10 @@ const CourseTaking = () => {
                         correctAnswer={result}/>
                     )
                   case 'separator':
+                    return (
+                      <CourseContentComponent content={item}/>
+                    )
+                  case 'document':
                     return (
                       <CourseContentComponent content={item}/>
                     )
