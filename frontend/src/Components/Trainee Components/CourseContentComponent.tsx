@@ -19,7 +19,7 @@ const CourseContentComponent: React.FC<CourseProps> = (props) => {
           </pre>
         </article>
       )}
-      {content.type === "uploadedFile" && (
+      {content.type === "document" && (
         <div className="flex items-center justify-center p-2 rounded-md border mx-10">
           <img src={FileIcon} alt="file" />
           <div className="w-full flex flex-col">

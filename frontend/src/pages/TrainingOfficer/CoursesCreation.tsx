@@ -193,7 +193,7 @@ const Courses: React.FC = () => {
       <div className="w-full flex-1 overflow-y-auto">
         <Outlet />
       </div>
-      {isModalOpen && <ExternalTrainingForm modal={modal} />}
+      {isModalOpen && <ExternalTrainingForm modal={modal} flag={false}/>}
       {isConfirmationOpen && (
         <ConfirmationModal
           onClose={handleConfirmToggle}

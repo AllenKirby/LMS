@@ -43,7 +43,6 @@ const useTrainingOfficer = () => {
            if(res.status === 201){
                 setIsLoading(false)
                 const data = res.data
-                console.log(data)
                 dispatch(setID(data.id))
                 dispatch(setCourseData(res.data))
                 await getMenus(data.id)
@@ -61,12 +60,14 @@ const useTrainingOfficer = () => {
     }
 
     const deleteCourse = async(id: number) => {
+        setIsLoading(true)
+        setError(null)
         try {
             const response = await axios.delete(`${API_URL}/course/courses/${id}/`, {
                 withCredentials: true
             })
             if(response.status === 204){
-                console.log(response.data)
+                setIsLoading(false)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -81,7 +82,6 @@ const useTrainingOfficer = () => {
     }
 
     const getMenus = async(id: number) => {
-        console.log("get")
         try {
             const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
                 withCredentials: true
@@ -103,11 +103,14 @@ const useTrainingOfficer = () => {
     } 
 
     const deleteMenu = async(id: number) => {
+        setIsLoading(true)
+        setError(null)
         try {
             const response = await axios.delete(`${API_URL}/course/section/${id}/`, {
                 withCredentials: true
             })
             if(response.status === 204){
+                setIsLoading(false)
                 dispatch(removeMenu(id))
             }
         } catch (error) {
@@ -125,7 +128,6 @@ const useTrainingOfficer = () => {
     const handleUpdateCourse = async(id: number, data: CourseData) => {
         setIsLoading(true)
         setError(null)
-        console.log('update')
         try {
            const res = await axios.put(`${API_URL}/course/courses/${id}/`, data) 
            if(res.status === 200){
@@ -178,14 +180,11 @@ const useTrainingOfficer = () => {
         newData.content = newData.content.filter(item => item.type !== 'uploadedFile')
         const withFile = data.content.filter(item => item.type === 'uploadedFile')
 
-        console.log(id,data)
-
         try {
             const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, newData) 
             if(res.status === 201){
                 setIsLoading(false)
                 const response = res.data
-                console.log(response)
                 if(withFile.length > 0) {
                     await uploadCourseFile(response.id, withFile)
                 } else {
@@ -209,8 +208,6 @@ const useTrainingOfficer = () => {
         setIsLoading(true)
         setError(null)
 
-        console.log(id)
-
         const formData = new FormData();
         if(data) {
             data.forEach((doc) => {
@@ -232,7 +229,6 @@ const useTrainingOfficer = () => {
            if(res.status === 201){
                 setIsLoading(false)
                 const response = res.data
-                console.log(response)
                 dispatch(replaceModule({moduleID: response.moduleID, newModule: response}))
                 dispatch(setSubmitted({moduleID: response.moduleID, value: true}))
            }
@@ -257,7 +253,6 @@ const useTrainingOfficer = () => {
             if(res.status === 200){
                 setIsLoading(false)
                 const data = res.data
-                console.log(data)
                 dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
             }
          } catch (error) {
@@ -279,8 +274,6 @@ const useTrainingOfficer = () => {
             const res = await axios.delete(`${API_URL}/course/modules/${id}/`) 
             if(res.status === 204){
                 setIsLoading(false)
-                const data = res.data
-                console.log(data)
                 dispatch(deleteModulePermanent(id))
             }
          } catch (error) {
@@ -326,7 +319,6 @@ const useTrainingOfficer = () => {
             if(response.status === 200) {
                 const data = response.data
                 setIsLoading(false)
-                console.log(data)
                 await uploadDocsExternalTraining(data.id, documents)
             }
         } catch (error) {
@@ -358,9 +350,7 @@ const useTrainingOfficer = () => {
                 }
             })
             if(response.status === 201) {
-                const data = response.data
                 setIsLoading(false)
-                console.log(data)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -386,7 +376,6 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
-                console.log(response.data)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -489,7 +478,6 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
-                console.log(response.data)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -512,7 +500,6 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
-                console.log(response.data)
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -525,6 +512,75 @@ const useTrainingOfficer = () => {
             }
         }
     }
+
+    const updateExternalTraining = async(id: number, data: TrainingDataState, documents: FormData) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.put(`${API_URL}/training/trainings/${id}/`, data, {
+                withCredentials: true
+            })
+            if(response.status === 200) {
+                setIsLoading(false)
+                console.log(response.data)
+                await uploadDocsExternalTraining(id, documents)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const getSpecificModule = async(moduleID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/modules/${moduleID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                console.log(data)
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    } 
+
+    const deleteTrainingDocument = async() => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.delete(`${API_URL}/course/courses/${id}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                setIsLoading(false)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
 
   return { 
     handleAddCourse, 
@@ -544,6 +600,8 @@ const useTrainingOfficer = () => {
     retrieveCourses,
     deleteCourse,
     deleteMenu,
+    updateExternalTraining,
+    getSpecificModule,
     isLoading, 
     error }
 }

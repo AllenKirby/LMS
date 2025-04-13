@@ -7,7 +7,7 @@ import FileIcon from '../../../../assets/file.png'
 import { useRef } from "react";
 
 interface UploadContentData { 
-    type: "uploadedFile"; 
+    type: "uploadedFile" | 'document'; 
     fileID: string; 
     fileName: string; 
     file: File | null; 

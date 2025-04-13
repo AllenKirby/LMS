@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 //icons
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -30,7 +30,7 @@ interface UserState {
 }
 
 const Header: React.FC = () => {
-  const location = useLocation();
+  //const location = useLocation();
   //const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
@@ -45,7 +45,7 @@ const Header: React.FC = () => {
     await handleLogout();
   };
 
-  console.log(location.pathname);
+  //console.log(location.pathname);
 
   return (
     <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b">
