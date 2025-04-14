@@ -15,6 +15,7 @@ import {
   Course,
   ExternalTrainingView,
   CourseContainer,
+  ViewUserProfile,
 } from "./pages/TrainingOfficer";
 import {
   CourseOverview,
@@ -47,7 +48,7 @@ function App() {
           </Route>
           <Route path="resources" element={<Resources />} />
         </Route>
-        
+        <Route path="user-profile/:id" element={<ViewUserProfile/>}/>
         // Training Officer
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
@@ -64,6 +65,7 @@ function App() {
           </Route>
           <Route path="resources" element={<Resources />} />
           <Route path="trainee" element={<Trainee />} />
+          <Route path="user-profile" element={<ViewUserProfile/>}/>
         </Route>
 
         // Error

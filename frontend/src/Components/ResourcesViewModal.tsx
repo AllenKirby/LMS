@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTraineeHook } from "../hooks";
 import { useSelector } from "react-redux";
 import { UserState } from '../types/UserTypes'
+import File from "../assets/file.png"
 
 interface Document {
   document_name: string;
@@ -58,21 +59,25 @@ interface ResourcesViewModalProps {
             &times;
           </button>
         </header>
-        <div className="p-4 flex-1 overflow-y-auto">
+        <div className="w-full p-4 flex-1 overflow-y-auto">
           {courseDocuments.map((documents, index) => (
-            <div key={index} className="mb-4">
+            <div key={index} className="w-full">
               {documents.map((document) => (
-                <div key={document.id} className="p-2 border rounded mb-2">
-                  <p className="font-medium">{document.document_name}</p>
-                  <a
-                    href={`${VITE_URL}/course${document.document_url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    View Document
-                  </a>
-                </div>
+                <a 
+                  href={`${VITE_URL}/course${document.document_url}`} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  key={document.id} 
+                  className="p-2 border rounded mb-4 flex items-center w-full hover:bg-c-grey-5"
+                >
+                  <img src={File} alt="file" className="w-12"/>
+                  <article className="w-full overflow-hidden">
+                    <p className="truncate">{document.document_name}</p>
+                    <p className="text-c-grey-50 text-p-sm">
+                      View Document
+                    </p>
+                  </article>
+                </a>
               ))}
             </div>
           ))}
