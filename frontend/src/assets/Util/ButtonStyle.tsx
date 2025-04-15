@@ -5,6 +5,12 @@ export const SecondaryRegularA =
 export const GhostRegularA =
   "h-fit w-fit text-f-dark font-medium px-4 py-2 rounded-md border hover:bg-f-light";
 
+//User Profile
+export const DPButton = {
+  tab: "h-fit w-fit text-f-light text-p-sm px-2 py-1 rounded-md bg-black hover:opacity-75",
+  section: "text-c-green-50 font-medium border-l-2 border-c-green-50 pl-2"
+};
+
 //Tabs Buttons
 export const TabButton = {
   default: "text-p-sm px-2",

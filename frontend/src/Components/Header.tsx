@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 //icons
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -45,6 +45,7 @@ const Header: React.FC = () => {
     await handleLogout();
   };
 
+  const navigate = useNavigate();
   //console.log(location.pathname);
 
   return (
@@ -120,7 +121,10 @@ const Header: React.FC = () => {
                   onClick={() => setDropDown(!dropDown)}
                 />
                 <div className="absolute right-0 bg-white rounded-md p-2 z-20">
-                  <button className="px-3 py-1 rounded-md hover:bg-gray-100">
+                  <button 
+                     onClick={() => navigate("/trainingofficer/user-profile")}
+                    className="px-3 py-1 rounded-md hover:bg-gray-100"
+                  >
                     Profile
                   </button>
                   <button
