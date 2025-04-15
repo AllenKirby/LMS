@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { FiChevronDown, FiPlus } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -11,19 +11,26 @@ type MenuState = {
   menuData: MenuDataState;
   addModule: (id: number) => void;
   modules: ModuleState[];
-  setMenuID: (id: number) => void;
-  setModuleID: (id: string) => void;
   deleteMenu: (id: number) => void;
   deleteModule: (id: string) => void;
   deleteModulePermanent: (id: number) => void;
   courseAction: CourseActionType;
+  setMenuID: (id: number) => void;
+  setModuleID: (id: number | string) => void;
 }
 
 const Menu: React.FC<MenuState> = (props) => {
-  const { menuData, addModule, modules, setMenuID, setModuleID, deleteModule, deleteModulePermanent, deleteMenu, courseAction } = props
+  const { menuData, addModule, modules, deleteModule, deleteModulePermanent, deleteMenu, courseAction, setMenuID, setModuleID } = props
   const [collapse, setCollapse] = useState<boolean>(false);
 
   const filteredModules = courseAction === 'create' ? modules.filter((module) => module.menuID === menuData.id) : menuData.modules;
+
+  const handleClickModule = (moduleID: string | number) => {
+      setMenuID(menuData.id)
+      setModuleID(moduleID)
+  }
+
+  console.log('filteredModules', filteredModules)
 
   return (
     <section className="w-full h-auto rounded-md border border-c-grey-20 cursor-pointer">
@@ -34,15 +41,15 @@ const Menu: React.FC<MenuState> = (props) => {
       <div className={`px-4 py-2 flex flex-col items-center justify-center ${collapse === false? "block" : "hidden"}`}>
         <div className="w-full mb-2">
           {filteredModules.map((m: ModuleState | ModulePreview) => (
-            <div onClick={() => {setMenuID(menuData.id); setModuleID(courseAction === 'create' ? m?.moduleID : m.id)}} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
+            <div onClick={() => handleClickModule(courseAction === 'update' ? m.id : m.moduleID)} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
               <section className="flex items-center gap-2 group-hover:text-c-grey-70 group-hover:font-medium">
                 <HiMenuAlt2 size={12}/>
                 <p>{m.title ? m.title : 'Untitled'}</p>
               </section>
-              {('submitted' in m && m?.submitted || courseAction === 'update' )? (
+              {('submitted' in m && m?.submitted || courseAction === 'update' ) ? (
                 <button onClick={() => deleteModulePermanent(m.id)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               ) : (
-                <button onClick={() => deleteModule(m?.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
+                <button onClick={() => deleteModule(m.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               )}
             </div>
           ))}

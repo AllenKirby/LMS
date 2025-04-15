@@ -11,6 +11,7 @@ import { resetCourseData, updateField } from "../../redux/CourseDataRedux";
 import { resetCourseContent } from "../../redux/CourseContentDataRedux";
 import { resetCourseID } from "../../redux/CourseIDRedux";
 import { resetModuleData } from "../../redux/ModuleDataRedux";
+import {resetIDs} from '../../redux/IDsRedux'
 
 import { FaCircleCheck } from "react-icons/fa6";
 
@@ -40,6 +41,8 @@ const Courses: React.FC = () => {
   const courseOverviewData = useSelector(
     (state: { courseData: CourseData }) => state.courseData
   );
+  const courseAction = useSelector(
+    (state: { courseAction: string }) => state.courseAction)
   const { handleAddCourse, handleUpdateCourse, publishCourse } = useTrainingOfficerHook();
 
   const modal = () => {
@@ -109,6 +112,7 @@ const Courses: React.FC = () => {
     dispatch(resetCourseContent())
     dispatch(resetCourseID())
     dispatch(resetModuleData())
+    dispatch(resetIDs())
     navigate('/trainingofficer/courses/course')
   }
 
@@ -120,7 +124,7 @@ const Courses: React.FC = () => {
             <button onClick={handleBack}>
               <IoIosArrowRoundBack size={24} />
             </button>
-            <h6 className="text-p-lg font-medium">Create Course</h6>
+            <h6 className="text-p-lg font-medium">{courseAction === 'create' ? 'Create Course' : 'Edit Course'}</h6>
           </div>
           <div className="flex items-center gap-2 w-1/6">
             <p className="text-c-grey-50">Step {currentStepIndex + 1}:</p>

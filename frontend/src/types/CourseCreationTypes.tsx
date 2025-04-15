@@ -10,6 +10,15 @@ export interface FileUploadState {
     file: File | null;
 }
 
+export interface DocumentState {
+    type: "document"; 
+    values: {
+        document_name: string; 
+        document_url: string;
+        document_id: number;
+    };
+}
+
 export interface LessonState {
     type: "separator"; 
     lessonID: string; 
@@ -38,6 +47,7 @@ export interface ModuleState {
     title: string;
     content: ModuleContent[];
     submitted?: true | false;
+    required: boolean;
     position?: number;
     section?: number;
     participant_module_progress?: 'in progress' | 'completed' | ''
@@ -50,6 +60,7 @@ export interface ModulePreview {
     position: number;
     section: number;
     title: string;
+    required: boolean;
 }
 
 export interface MenuDataState {
@@ -97,7 +108,7 @@ export interface TrainingDataState {
     training_provider: string;
     venue: string;
     participants?: (string | number)[];
-    document_url?: string[]
+    document_url?: {document_id: number ,doc_url: string, doc_name: string}[]
     participants_display?: {id: number; first_name: string; last_name: string; email: string; status: string; department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";}[]
 }
 
@@ -126,3 +137,8 @@ export interface CoursesState {
 }
 
 export type CourseActionType = '' | 'create' | 'update';
+
+export interface IDsState {
+    moduleID: string | number | null;
+    menuID: number | null;
+}

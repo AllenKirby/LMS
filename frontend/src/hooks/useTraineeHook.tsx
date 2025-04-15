@@ -203,6 +203,29 @@ const useTraineeHook = () => {
         }
     }
 
+    const deleteUserTrainingDocument = async(docID: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.delete(`${API_URL}/training/document/${docID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                console.log(response.data)
+                setIsLoading(false)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return {
     getTraineeCourses, 
     getCourse, 
@@ -213,6 +236,7 @@ const useTraineeHook = () => {
     getUserResources, 
     updateModuleStatus,
     getTraineeExternalTraining,
+    deleteUserTrainingDocument,
     isLoading, 
     error}
 }
