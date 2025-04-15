@@ -141,7 +141,6 @@ const TrainingCard: React.FC = () => {
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
             key={index}
-            onClick={() => handleUploadToggle(user.user.id)}
           >
             <div 
               className="w-full h-full bg-black opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"
@@ -150,12 +149,12 @@ const TrainingCard: React.FC = () => {
                 className="absolute opacity-0 group-hover:opacity-100 top-3 right-3 z-30 flex flex-col items-end gap-2"
                 onMouseLeave={() => menuOpen && setMenuOpen(false)}
               >
-                <button 
+                {user.user.role === 'training_officer' && (<button 
                   className="bg-c-blue-5 w-10 h-5 rounded-full flex items-center justify-center"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   <SlOptions/>
-                </button>
+                </button>)}
                 {menuOpen && (
                     <div className="w-28 bg-white rounded-md flex flex-col p-1">
                       <button 
@@ -175,7 +174,7 @@ const TrainingCard: React.FC = () => {
               </section>
               <button 
                 className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 w-full h-full"
-                onClick={() => navigate(`/trainingofficer/courses/externaltraining/${(info as TraineeTrainings).training_details.id}`)}
+                onClick={() => handleUploadToggle(user.user.id)}
               >
                 View Training
               </button>

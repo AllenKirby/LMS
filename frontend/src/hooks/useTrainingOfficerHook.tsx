@@ -178,7 +178,7 @@ const useTrainingOfficer = () => {
         const newData = { ...data, content: [...data.content] };
 
         newData.content = newData.content.filter(item => item.type !== 'uploadedFile')
-        const withFile = data.content.filter(item => item.type === 'uploadedFile')
+        const withFile = data.content.filter(item => (item as FileUploadState).type === 'uploadedFile')
 
         try {
             const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, newData) 
@@ -267,14 +267,18 @@ const useTrainingOfficer = () => {
         }
     }
 
-    const handleDeleteModule = async(id: number) => {
+    const handleDeleteModule = async(id: number, courseID: number) => {
         setIsLoading(true)
         setError(null)
         try {
-            const res = await axios.delete(`${API_URL}/course/modules/${id}/`) 
+            const res = await axios.delete(`${API_URL}/course/modules/${id}/`, {
+                withCredentials: true
+            }) 
             if(res.status === 204){
                 setIsLoading(false)
+                console.log(res.data)
                 dispatch(deleteModulePermanent(id))
+                await getMenus(courseID)
             }
          } catch (error) {
              if (axios.isAxiosError(error)) {
@@ -559,14 +563,15 @@ const useTrainingOfficer = () => {
         }
     } 
 
-    const deleteTrainingDocument = async() => {
+    const deleteTrainingDocument = async(docID: number) => {
         setIsLoading(true)
         setError(null)
         try {
-            const response = await axios.delete(`${API_URL}/course/courses/${id}/`, {
+            const response = await axios.delete(`${API_URL}/training/training-document/${docID}/`, {
                 withCredentials: true
             })
             if(response.status === 204){
+                console.log(response.data)
                 setIsLoading(false)
             }
         } catch (error) {
@@ -581,6 +586,28 @@ const useTrainingOfficer = () => {
         }
     }
 
+    const deleteUserCourseDocument = async(docID: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.delete(`${API_URL}/course/document/${docID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                console.log(response.data)
+                setIsLoading(false)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
 
   return { 
     handleAddCourse, 
@@ -602,6 +629,8 @@ const useTrainingOfficer = () => {
     deleteMenu,
     updateExternalTraining,
     getSpecificModule,
+    deleteTrainingDocument,
+    deleteUserCourseDocument,
     isLoading, 
     error }
 }

@@ -10,6 +10,7 @@ import { CiSquareInfo } from "react-icons/ci";
 import { useEffect, useState } from 'react';
 import { setCourseData } from '../redux/CourseDataRedux';
 import { setID } from '../redux/CourseIDRedux';
+import { setAction } from '../redux/CourseActionRedux';
 
 interface TraineeCourses {
     course: CoursesState;
@@ -69,6 +70,7 @@ const CourseView = () => {
     navigate('../courseCreation/courseOverview')
     dispatch(setID((selectedCourse as CoursesState).id))
     dispatch(setCourseData(selectedCourse as CourseData))
+    dispatch(setAction('update'))
   }
 
   const takeCourse = async() => {

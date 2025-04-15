@@ -1,7 +1,7 @@
 import { ExternalParticipantState } from '../../../types/CourseCreationTypes';
 import { UserState } from '../../../types/UserTypes'
 
-import { useTrainingOfficerHook } from '../../../hooks';
+import { useTraineeHook, useTrainingOfficerHook } from '../../../hooks';
 
 import FileIcon from '../../../assets/file.png'
 import { IoClose } from 'react-icons/io5';
@@ -27,6 +27,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
   const user = useSelector((state: {user: UserState}) => state.user)
 
   const { uploadParticipantDocument, retrieveExternalDocuments, markComplete } = useTrainingOfficerHook()
+  const { deleteUserTrainingDocument } = useTraineeHook()
 
   useEffect(() => {
     const retrieveFiles = async() => {
@@ -116,9 +117,11 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
               {uploadedFiles?.documents ? uploadedFiles?.documents.map((item) => (
                 <a href={item.doc_url} className='flex items-center justify-center p-2 rounded-md border my-1'>
                   <img src={FileIcon} alt="file" />
-                  <div className='w-full flex flex-col'>
+                  <div className='w-full flex items-start justify-between mx-5'>
                     <h2>{item.doc_name}</h2>
-                    {/* <h3 className='text-sm text-f-gray'>{`${bytesToMB(item.size).toFixed(2)}MB`}</h3> */}
+                    <button type="button" onClick={() => deleteUserTrainingDocument(item.doc_id)} className="ml-2 text-red-500 text-xl">
+                      &times;
+                    </button>
                   </div>
                 </a>
               )) : (

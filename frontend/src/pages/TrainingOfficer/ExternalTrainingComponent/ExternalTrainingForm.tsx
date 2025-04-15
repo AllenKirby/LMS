@@ -10,7 +10,7 @@ import { defaultSelect } from "../../../assets/Util/SelectStyle";
 import { defaultInput } from "../../../assets/Util/InputStyle";
 
 import {TrainingDataState} from '../../../types/CourseCreationTypes'
-import { UserState } from '../../../types/UserTypes'
+// import { UserState } from '../../../types/UserTypes'
 
 type ExternalTrainingForm = {
   modal: () => void;
@@ -34,6 +34,7 @@ interface Trainees {
 const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
   const { modal, data = {} as TrainingDataState, flag } = props;
   const [uploadedFile, setUploadedFile] = useState<File[] | []>([])
+  const [files, setFiles] = useState<{document_id: number, doc_name: string, doc_url: string}[]>([])
   const inputClick = useRef<HTMLInputElement>(null)
   const [trainingData, setTrainingData] = useState<TrainingDataState>({
     training_setup: '',
@@ -46,19 +47,23 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     participants: []
   })
   const [counter, setCounter] = useState<number>(1);
-  const { createExternalTraining, retrieveExternalParticipants, updateExternalTraining, retrieveExternalDocuments } = useTrainingOfficerHook()
-  //const [inputSpeaker, setInputSpeaker] = useState<string>('')
+  const { createExternalTraining, retrieveExternalParticipants, updateExternalTraining, deleteTrainingDocument} = useTrainingOfficerHook()
 
   //redux
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
-  const user = useSelector((state: {user: UserState}) => state.user)
+  //const user = useSelector((state: {user: UserState}) => state.user)
+
+  const VITE_URL = import.meta.env.VITE_URL
 
   useEffect(() => {
     const training = async() => {
       if(data && flag) {
         const response: TrainingDataState = await retrieveExternalParticipants(Number(data.id))
+        console.log(response)
+        if(response.document_url){
+          setFiles(response.document_url)
+        } 
         const emails = response.participants_display ? response.participants_display.map(item => item.email) : []
-        console.log(emails)
         setTrainingData({
           training_setup: data.training_setup || '',
           training_title: data.training_title || '',
@@ -72,17 +77,9 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
       }
     }
     training()
+    console.log(data)
   }, [data, flag])
 
-  useEffect(() => {
-    const retrieveFiles = async() => {
-      const res = await retrieveExternalDocuments(Number(data.id), user.user.id)
-      if(res) {
-        console.log(res)
-      } 
-    }
-    retrieveFiles()
-  }, [])
 
   const increment = () => {
     setCounter((prevCounter) => prevCounter + 1);
@@ -93,20 +90,16 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const valueArray  = event.target.value;
-    const checked  = event.target.checked;
-
-    if(Array.isArray(valueArray)) {
-      setTrainingData({...trainingData, participants: valueArray})
-    } else {
-      setTrainingData((prevData) => ({
-        ...prevData, // Spread existing properties
-        participants: checked
-          ? [...prevData.participants, valueArray]
-          : prevData.participants.filter((val) => val !== valueArray)
-      }));
-    }
-  };
+    const value = event.target.value;
+    const checked = event.target.checked;
+  
+    setTrainingData((prevData) => ({
+      ...prevData,
+      participants: checked
+        ? [...(prevData.participants || []), value]
+        : (prevData.participants || []).filter((val) => val !== value)
+    }));
+  };  
   
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -130,6 +123,11 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
     });
     await updateExternalTraining(Number(data.id), trainingData, formData)
     modal()
+  }
+
+  const handleDeleteDoc = async(docID: number) => {
+    const response = await deleteTrainingDocument(docID)
+    console.log(response)
   }
 
   // const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -296,6 +294,18 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                     <button type="button" onClick={() => removeFile(index)}>&times;</button>
                   </div>
                 ))}
+                <ul>
+                  {files?.map((item, index) => (
+                    <li key={index} className="w-full h-fit flex items-center justify-between">
+                      <a href={`${VITE_URL}${item.doc_url}`} className="text-blue-500 underline">
+                        {item.doc_name}
+                      </a>
+                      <button type="button" onClick={() => handleDeleteDoc(item.document_id)} className="ml-2 text-red-500 text-xl">
+                        &times;
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
             {counter === 2 && 

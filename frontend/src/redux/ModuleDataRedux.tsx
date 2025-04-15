@@ -20,6 +20,7 @@ const ModuleDataRedux = createSlice({
     },
     setModuleTitle: (state, action: PayloadAction<{ moduleID: string; title: string }>) => {
         const { moduleID, title } = action.payload;
+        console.log(moduleID, title)
         const module = state.find((mod) => mod.moduleID === moduleID);
         if(module) module.title = title
     },
@@ -27,6 +28,11 @@ const ModuleDataRedux = createSlice({
         const { moduleID, value } = action.payload;
         const module = state.find((mod) => mod.moduleID === moduleID);
         if(module) module.submitted = value
+    },
+    setRequired: (state, action: PayloadAction<{ moduleID: string; value: boolean }>) => {
+        const { moduleID, value } = action.payload;
+        const module = state.find((mod) => mod.moduleID === moduleID);
+        if(module) module.required = value
     },
     setQuestion: (state, action: PayloadAction<{ 
             moduleID: string; 
@@ -260,6 +266,7 @@ export const {
     resetModuleData,
     replaceModule,
     setSubmitted,
+    setRequired,
     deleteModulePermanent,
     deleteAllChoicesFromQuestionnaire,
     deleteFile,

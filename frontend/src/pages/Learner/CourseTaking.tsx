@@ -2,18 +2,25 @@ import { QuestionCard, CourseContentComponent } from "../../Components/Trainee C
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { TbAlignLeft } from "react-icons/tb";
+import { CiLock } from "react-icons/ci";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTraineeHook } from "../../hooks";
-import { CourseContentState, ModuleState } from '../../types/CourseCreationTypes'
+import { ModuleState, MenuDataState, ModulePreview } from '../../types/CourseCreationTypes'
 import { UserState } from '../../types/UserTypes'
 import { useSelector } from "react-redux";
 
 const CourseTaking = () => {
-  const [collapse, setCollapse] = useState<boolean>(false);
   const { id } = useParams()
-  const { getCourseContent, getSingleModule } = useTraineeHook()
-  const [menus, setMenus] = useState<CourseContentState[]>([])
+  //states
+  const [collapse, setCollapse] = useState<boolean>(false);
+  const [menus, setMenus] = useState<MenuDataState[]>([])
+  const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
+  const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
+  const [result, setResult] = useState<{ [key: string]: string }>({}); 
+  const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
+  const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
+  const [firstLoad, setFirstLoad] = useState<boolean>(true)
   const [selectedModule, setSelectedModule] = useState<ModuleState>({
     menuID: 0,
     id: 0,
@@ -26,15 +33,13 @@ const CourseTaking = () => {
     key_answers: [],
     submitted_answers: {}
   });
-
-  const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
-  const [result, setResult] = useState<{ [key: string]: string }>({}); 
-  const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
-  const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
-  const [firstLoad, setFirstLoad] = useState<boolean>(true)
-  const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
+  //redux
   const user = useSelector((state: {user: UserState}) => state.user)
+  //hooks
+  const { getCourseContent, getSingleModule } = useTraineeHook()
   const { submitAnswers, updateModuleStatus } = useTraineeHook()
+  //local storage
+  //const activeModule = JSON.parse(localStorage.getItem("IDs") || '{}');
 
   useEffect(() => {
     if (selectedModule && selectedModule.submitted_answers) {
@@ -52,7 +57,7 @@ const CourseTaking = () => {
       const finalPercentage = percentage.toFixed(2)
       //get total score
       const scores = selectedModule.content.map(item => item.type === 'questionnaire' && Number(item.questionPoint))
-      const correctKeys = Object.entries(result).filter(([_, value]) => value === "Correct").map(([key]) => key);
+      const correctKeys = Object.entries(result).filter(([, value]) => value === "Correct").map(([key]) => key);
       const matchingPoints = selectedModule.content.filter(q => q.type === 'questionnaire' && correctKeys.includes(q.questionnaireID)).map(q => q.type === 'questionnaire' && Number(q.questionPoint));
       const sumTotalScores = scores.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
       const sumUserScores = matchingPoints.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
@@ -183,6 +188,8 @@ const CourseTaking = () => {
     }
   }, [menus, currentModuleIndex])
 
+  console.log(menus)
+
   return (
      <section className="flex flex-row w-full h-full">
         <nav className="w-1/4 h-full flex flex-col px-10 py-5">
@@ -203,9 +210,9 @@ const CourseTaking = () => {
                 </button>
               </header>
               <div className={`w-full p-3 bg-white rounded-b-md ${!collapse ? "block" : "hidden"}`}>
-                {item.modules.map((module) => (
+                {item.modules.map((module: ModulePreview) => (
                   <section key={module.id} className="flex flex-row items-center gap-2">
-                    <TbAlignLeft/>{" "} {module.title}
+                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required ? <CiLock color="red"/> : ""}
                   </section>
                 ))}
               </div>
@@ -239,7 +246,7 @@ const CourseTaking = () => {
                     )
                 }
               })}
-              {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([_, value]) => value === "Correct")) && (
+              {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([, value]) => value === "Correct")) && (
                 <div className="w-full flex flex-col items-center justify-center">
                   <div 
                     className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
