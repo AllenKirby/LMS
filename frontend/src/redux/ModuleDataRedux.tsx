@@ -8,6 +8,9 @@ const ModuleDataRedux = createSlice({
   name: "moduleData",
   initialState,
   reducers: {
+    setModules: (state, action: PayloadAction<ModuleState[]>) => {
+      return action.payload; 
+    },
     setModule: (state, action: PayloadAction<ModuleState>) => {
       state.push(action.payload); 
     },
@@ -270,6 +273,7 @@ export const {
     deleteModulePermanent,
     deleteAllChoicesFromQuestionnaire,
     deleteFile,
-    setKeyAnswer
+    setKeyAnswer,
+    setModules
 } = ModuleDataRedux.actions;
 export default ModuleDataRedux.reducer;

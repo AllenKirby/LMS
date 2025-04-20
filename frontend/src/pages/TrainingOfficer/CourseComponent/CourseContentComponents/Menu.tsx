@@ -23,14 +23,13 @@ const Menu: React.FC<MenuState> = (props) => {
   const { menuData, addModule, modules, deleteModule, deleteModulePermanent, deleteMenu, courseAction, setMenuID, setModuleID } = props
   const [collapse, setCollapse] = useState<boolean>(false);
 
-  const filteredModules = courseAction === 'create' ? modules.filter((module) => module.menuID === menuData.id) : menuData.modules;
+  const filteredModules = modules.filter((module) => module.menuID === menuData.id);
+  console.log('filteredModules', filteredModules)
 
   const handleClickModule = (moduleID: string | number) => {
       setMenuID(menuData.id)
       setModuleID(moduleID)
   }
-
-  console.log('filteredModules', filteredModules)
 
   return (
     <section className="w-full h-auto rounded-md border border-c-grey-20 cursor-pointer">
@@ -41,7 +40,7 @@ const Menu: React.FC<MenuState> = (props) => {
       <div className={`px-4 py-2 flex flex-col items-center justify-center ${collapse === false? "block" : "hidden"}`}>
         <div className="w-full mb-2">
           {filteredModules.map((m: ModuleState | ModulePreview) => (
-            <div onClick={() => handleClickModule(courseAction === 'update' ? m.id : m.moduleID)} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
+            <div onClick={() => handleClickModule(m.moduleID)} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
               <section className="flex items-center gap-2 group-hover:text-c-grey-70 group-hover:font-medium">
                 <HiMenuAlt2 size={12}/>
                 <p>{m.title ? m.title : 'Untitled'}</p>

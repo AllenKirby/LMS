@@ -49,10 +49,10 @@ const useAuthHook = () => {
       if(response.status === 200){
         setIsLoading(false)
         console.log(response.data)
-        cookies.set("user", response.data, { 
-          path: "/", 
-          expires: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
-          secure: true
+        cookies.set("user", response.data, {
+          path: "/",
+          secure: true,
+          maxAge: 24 * 60 * 60
         });        
         dispatch(setUser(response.data))
         role(response.data.user.role)
@@ -70,8 +70,8 @@ const useAuthHook = () => {
 
   const role = (roleName: string) => {  
     if(!roleName) navigate('/')
-    if(roleName === 'trainee') navigate('/trainee/home')
-    if(roleName === 'training_officer') navigate('/trainingofficer/dashboard')
+    if(roleName === 'trainee') return navigate('/trainee/home')
+    if(roleName === 'training_officer') return navigate('/trainingofficer/dashboard')
   }
 
   const handleLogout = async() => {
@@ -84,6 +84,7 @@ const useAuthHook = () => {
         if(response.status === 200){
           setIsLoading(false)
           dispatch(setUser(null))
+          cookies.remove("user", { path: "/" });
           role('')
         }  
     } catch (error: unknown) {

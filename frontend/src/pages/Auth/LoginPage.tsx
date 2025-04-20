@@ -11,11 +11,6 @@ import { IoIosAt } from "react-icons/io";
 import { Input, Button } from "../../Components/UIComponents";
 import { useAuthHook } from "../../hooks";
 
-// interface Login {
-//   email: string;
-//   password: string;
-// }
-
 const loginSchema = yup.object({
   email: yup
     .string()
@@ -33,7 +28,6 @@ const LoginPage: React.FC = () => {
   const { handleLogin, isLoading } = useAuthHook();
   //states
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
 
   const { 
     register,

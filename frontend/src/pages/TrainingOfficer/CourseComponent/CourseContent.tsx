@@ -23,7 +23,8 @@ import {
   setFile,
   deleteFile,
   setKeyAnswer,
-  setRequired
+  setRequired,
+  setModules
 } from '../../../redux/ModuleDataRedux';
 import {setMenuID, setModuleID} from '../../../redux/IDsRedux'
 
@@ -55,20 +56,12 @@ const CourseContent = () => {
   const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, getSpecificModule, isLoading } = useTrainingOfficerHook()
 
   const MenuID = (id: number) => {
-    if(courseAction === 'update') {
-    
-    } else {
-      dispatch(setMenuID(id))
-    }
+    dispatch(setMenuID(id))
   }
 
   const ModuleID = (id: string | number) => {
     dispatch(setModuleID(id))
   }
-
-  useEffect(() => {
-    console.log(menuID, moduleID)
-  }, [menuID, moduleID]) 
 
   const AddModule = (id: number) => {
     dispatch(setModule({menuID: id, moduleID: uuidv4(), title: '', content: [], submitted: false, id: 0, required: false, position: 0}))
@@ -147,70 +140,42 @@ const CourseContent = () => {
         if (module) {
           setSelectedModuleMap(module);
         }
-      } else {
-        const fetchedModule = await getModule(Number(moduleID));
-        console.log(fetchedModule)
-        setSelectedModuleMap(fetchedModule);
+        return;
+      }
+
+      try {
+        if(modules.length === 0) {
+          const IDs = courseContentData.flatMap(menu => menu.modules.map(module => module.id));
+          const fetchedModules = [];
+
+          for (const id of IDs) {
+            const fetchedModule = await getModule(Number(id));
+            fetchedModules.push(fetchedModule);
+          }
+          console.log(fetchedModules)
+          dispatch(setModules(fetchedModules));
+        }
+        
+        const module = modules.find(
+          module => module.menuID === Number(menuID) && module.moduleID === moduleID
+        );
+        
+        if (module) {
+          setSelectedModuleMap(module);
+        }
+      } catch (error) {
+        console.error('Failed to fetch modules:', error);
       }
     };
+  
     fetchModule();
-  }, [courseAction, menuID, moduleID, courseContentData, modules]);
+  }, [menuID, moduleID, courseContentData, modules]);
 
   const deleteDocContent = async(id: number) => {
     setSelectedModuleMap((prevModule) => ({
       ...prevModule,
       content: prevModule.content.filter((item) => item.values.document_id !== id)
     }))
-  }
-
-  const SetModuleTitle = (ID: string, value: string) => {
-    if(courseAction === 'create') {
-      dispatch(setModuleTitle({moduleID: ID, title: value}))
-    } else {
-      setSelectedModuleMap((prevModule) => ({
-        ...prevModule,
-        title: value
-      }))
-    }
-  }
-
-  const addContent = (type: "questionnaire" | "separator" | "uploadedFile") => {
-    switch(type) {
-      case 'questionnaire':
-        if(courseAction === 'create') {
-          console.log('create')
-          dispatch(setContent({moduleID: String(moduleID), newContent: {type: "questionnaire", questionnaireID: uuidv4(), question: '', choices: [], choiceType: 'Multiple Choice', questionPoint: 0}}))
-        }
-        else { 
-          setSelectedModuleMap((prevModule) => ({
-            ...prevModule,
-            content: [...prevModule.content, {type: "questionnaire", questionnaireID: uuidv4(), question: '', choices: [], choiceType: 'Multiple Choice', questionPoint: 0}]
-          }));
-        }
-        break
-      case 'separator':
-        if(courseAction === 'create') {
-          dispatch(setContent({moduleID: String(moduleID), newContent: {type: "separator", lessonID: uuidv4(), title: '', content: ''}}))
-        } else {
-          setSelectedModuleMap((prevModule) => ({
-            ...prevModule,
-            content: [...prevModule.content,  {type: "separator", lessonID: uuidv4(), title: '', content: ''}]
-          }));
-        }
-        break
-      case 'uploadedFile':
-        if(courseAction === 'create') { 
-          dispatch(setContent({moduleID: String(moduleID), newContent: {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null}}))
-        } else {
-          setSelectedModuleMap((prevModule) => ({
-            ...prevModule,
-            content: [...prevModule.content, {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null}]
-          }));
-        }
-        break
-      default:
-        break
-    }
   }
   
   return (
@@ -246,7 +211,7 @@ const CourseContent = () => {
               <div className='flex flex-row gap-2 w-full'>
                 <input 
                   value={selectedModuleMap?.title} 
-                  onChange={(e) => SetModuleTitle(String(moduleID), e.target.value)} 
+                  onChange={(e) => dispatch(setModuleTitle({moduleID: String(moduleID), title: e.target.value}))} 
                   type="text" 
                   className="bg-transparent p-1 text-h-h6 font-medium outline-none w-full" 
                   placeholder="Module Title"/>
@@ -328,9 +293,9 @@ const CourseContent = () => {
                 }
               })}
               <div className='w-full flex items-center justify-center gap-3'>
-                <button onClick={() => addContent('questionnaire')} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
-                <button onClick={() => addContent('uploadedFile')} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
-                <button onClick={() => addContent('separator')} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "questionnaire", questionnaireID: uuidv4(), question: '', choices: [], choiceType: 'Multiple Choice', questionPoint: 0}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "separator", lessonID: uuidv4(), title: '', content: ''}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
               </div>
             </div>
           </div>

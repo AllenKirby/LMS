@@ -31,7 +31,8 @@ const CourseTaking = () => {
     position: 0,
     section: 0,
     key_answers: [],
-    submitted_answers: {}
+    submitted_answers: {},
+    required: false
   });
   //redux
   const user = useSelector((state: {user: UserState}) => state.user)
@@ -130,20 +131,27 @@ const CourseTaking = () => {
     });
   };
 
-  const handleClickNext = async() => {
+  const handleClickNext = async () => {
     const data = {
       participant_module_progress: "completed",
       module: Number(selectedModule.id),
       participant: Number(user.user.id)
-    }
-    await updateModuleStatus(data)
-    if (currentModuleIndex < menus[currentMenuIndex].modules.length - 1) {
+    };
+    await updateModuleStatus(data);
+  
+    const isLastModule = currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
+    const isLastMenu = currentMenuIndex >= menus.length - 1;
+  
+    if (!isLastModule) {
       setCurrentModuleIndex(currentModuleIndex + 1);
-    } else {
+    } else if (!isLastMenu) {
       setCurrentModuleIndex(0);
-      setCurrentMenuIndex((prev) => (prev < menus.length - 1 ? prev + 1 : 0));
+      setCurrentMenuIndex(currentMenuIndex + 1);
+    } else {
+      console.log("End of course reached.");
     }
   };
+  
 
   const handleClickPrevious = () => {
     if (currentModuleIndex > 0) {
@@ -170,25 +178,42 @@ const CourseTaking = () => {
   }, [id])
 
   useEffect(() => {
-    const getModuleDetails = async() => {
-      const response = await getSingleModule(user.user.id, menus[currentMenuIndex]?.modules[currentModuleIndex]?.id) 
-      if(firstLoad) {
-        if(response.participant_module_progress === 'in progress') {
-          setSelectedModule(response)
-          setFirstLoad(false)
+    const getModuleDetails = async () => {
+      const moduleID = menus[currentMenuIndex]?.modules[currentModuleIndex]?.id;
+      if (!moduleID) return;
+  
+      const response = await getSingleModule(user.user.id, moduleID);
+      
+      if (firstLoad) {
+        if (response.participant_module_progress === 'completed') {
+          const isLastModule = currentModuleIndex >= menus[currentMenuIndex].modules.length - 1;
+          const isLastMenu = currentMenuIndex >= menus.length - 1;
+  
+          if (!isLastModule) {
+            setCurrentModuleIndex(prev => prev + 1);
+          } else if (!isLastMenu) {
+            setCurrentMenuIndex(prev => prev + 1);
+            setCurrentModuleIndex(0);
+          } else {
+            setSelectedModule(response); // All modules completed
+            setFirstLoad(false);
+          }
         } else {
-          handleClickNext()
+          setSelectedModule(response);
+          setFirstLoad(false);
         }
       } else {
-        setSelectedModule(response)
+        setSelectedModule(response);
       }
+    };
+  
+    if (user.user.id && menus.length > 0) {
+      getModuleDetails();
     }
-    if(user.user.id && menus[currentMenuIndex]?.modules[currentModuleIndex]?.id) {
-      getModuleDetails()
-    }
-  }, [menus, currentModuleIndex])
+  }, [currentMenuIndex, currentModuleIndex, menus]);
+  
 
-  console.log(menus)
+  console.log(selectedModule)
 
   return (
      <section className="flex flex-row w-full h-full">
@@ -210,10 +235,10 @@ const CourseTaking = () => {
                 </button>
               </header>
               <div className={`w-full p-3 bg-white rounded-b-md ${!collapse ? "block" : "hidden"}`}>
-                {item.modules.map((module: ModulePreview) => (
-                  <section key={module.id} className="flex flex-row items-center gap-2">
+                {item.modules.map((module: ModulePreview, index) => (
+                  <div onClick={() => !module.required ? setCurrentModuleIndex(index) : null} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
                     <TbAlignLeft/>{" "} {module.title}{" "}{module.required ? <CiLock color="red"/> : ""}
-                  </section>
+                  </div>
                 ))}
               </div>
             </section>
@@ -274,8 +299,10 @@ const CourseTaking = () => {
                 </div>
               )}
               <div className="w-full flex items-center justify-between">
-                <button onClick={handleClickPrevious} className="w-fit font-medium px-5 py-2 rounded-md bg-c-green-50 text-f-light">Previous</button>
-                <button onClick={handleClickNext} className="w-fit font-medium px-5 py-2 rounded-md bg-c-green-50 text-f-light">Next</button>
+                <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
+                {(selectedModule.content.some(item => item.type !== "questionnaire") || score.userScore !== 0 && score.totalScore !== 0 && score.percentage) && (
+                  <button onClick={handleClickNext} disabled={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1} className={`${currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Next</button>
+                )}
               </div>
             </div>
           </div>
