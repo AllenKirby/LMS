@@ -175,9 +175,12 @@ const useTrainingOfficer = () => {
         setIsLoading(true)
         setError(null)
 
-        const newData = { ...data, content: [...data.content] };
-
-        newData.content = newData.content.filter(item => item.type !== 'uploadedFile')
+        const newData = {
+            ...data,
+            content: data.content.filter(item => item.type !== 'uploadedFile'),
+            submitted: true
+        };
+    
         const withFile = data.content.filter(item => (item as FileUploadState).type === 'uploadedFile')
 
         try {
