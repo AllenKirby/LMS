@@ -1,26 +1,12 @@
 import { Calendar, TraineeCourseCard } from "../../Components/Trainee Components";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-
-interface UserInfo {
-  id: number;
-  email: string;
-  role: string;
-}
-
-interface UserState {
-  message: string;
-  user: UserInfo;
-}
-
-interface RootState {
-  user: UserState | null;
-}
+import { UserState } from "../../redux/UserRedux";
 
 const Home: React.FC = () => {
   const [activeButtonCourse, setActiveButtonCourse] = useState<string>("All");
 
-  const user = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: {user: UserState}) => state.user);
   console.log(user);
   return (
     <section className="w-full h-full py-7 px-5 flex flex-row gap-5 bg-content-bg">
@@ -29,7 +15,7 @@ const Home: React.FC = () => {
           <article>
             <p className="text-p-sm font-medium text-f-gray">Good Evening</p>
             <h2 className="text-h-h5 font-medium text-f-black">
-              Welcome back, Dinnielle!
+              Welcome back, {user?.user.first_name}!
             </h2>
           </article>
           <section className="flex flex-row space-x-4">
