@@ -13,7 +13,7 @@ type ParticipantsListState = {
   participants?: (string | number)[]
 }
 
-  const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
+const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
   const { trainees, handleCheckBox = () => {}, participants= [] } = props
   const location= useLocation()
 
@@ -44,6 +44,7 @@ type ParticipantsListState = {
   const startPage = Math.max(1, currentPage - pageRange);
   const endPage = Math.min(totalPages, currentPage + pageRange);
   const btnContentColor = "bg-c-blue-50";
+  console.log(trainees)
 
   return (
     <section className="w-full h-full flex flex-col gap-3">
@@ -76,15 +77,20 @@ type ParticipantsListState = {
                     <input type="checkbox" 
                       checked={trainees.trainees.length === (participants?.length || 0)} 
                       onChange={() => {
+                        const traineesEmails = trainees.trainees.map((trainee) => trainee.email);
                         if (!props.handleCheckBox) return;
                         if (trainees.trainees.length !== (participants?.length || 0)) {
-                          props.handleCheckBox({
-                            target: { checked: true, value: trainees.trainees.map((t) => t.email) }
-                          } as unknown as React.ChangeEvent<HTMLInputElement>);
+                          traineesEmails.forEach((email) => {
+                            props.handleCheckBox?.({
+                              target: { checked: true, value: email }
+                            } as unknown as React.ChangeEvent<HTMLInputElement>);
+                          });
                         } else {
-                          props.handleCheckBox({
-                            target: { checked: false, value: [] }
-                          } as unknown as React.ChangeEvent<HTMLInputElement>);
+                          traineesEmails.forEach((email) => {
+                            props.handleCheckBox?.({
+                              target: { checked: false, value: email }
+                            } as unknown as React.ChangeEvent<HTMLInputElement>);
+                          });
                         }
                       }} 
                       className="scale-150"/>
