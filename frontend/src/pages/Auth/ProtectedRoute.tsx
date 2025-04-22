@@ -12,7 +12,11 @@ export const ProtectedRoute = ({
   userRole,
   redirectTo = "/",
 }: ProtectedRouteProps) => {
-  if (!userRole || !allowedRoles.includes(userRole)) {
+  if (!userRole) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  if (!allowedRoles.includes(userRole)) {
     return <Navigate to={redirectTo} replace />;
   }
 

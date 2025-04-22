@@ -1,38 +1,26 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import Cookies from 'universal-cookie';
-import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/UserRedux";
+import { Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoadingPage from "./LoadingPage";
+import { handleAuthNavigation, getAuthCookie } from "../../utils/AuthUtils";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/UserRedux";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
-  const cookies = new Cookies();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isChecking, setIsChecking] = useState(true); // Loading state
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    const user = cookies.get('user');
+    const user = getAuthCookie();
   
-    const roleRedirect = (roleName: string) => {
-      if (!isMounted) return;
-      if (!roleName) return navigate('/');
-      if (roleName === 'trainee') return navigate('/trainee/home');
-      if (roleName === 'training_officer') return navigate('/trainingofficer/dashboard');
-    };
-  
-    if (user && user.user?.role) {
+    if (user?.user?.role) {
       dispatch(setUser(user));
-      roleRedirect(user.user.role);
+      handleAuthNavigation(user.user.role, navigate);
     } else {
       setIsChecking(false);
     }
-  
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  }, [dispatch, navigate]);
 
   if (isChecking) return <LoadingPage/>;
 

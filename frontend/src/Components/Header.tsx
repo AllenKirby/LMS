@@ -59,7 +59,7 @@ const Header: React.FC = () => {
       </section>
       <nav className="p-3">
         <ul className="flex flex-row">
-          {user.user.role === "trainee" && (
+          {user?.user?.role === "trainee" && (
             <NavLink
               to={"home"}
               className={({ isActive }) =>
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
               Home
             </NavLink>
           )}
-          {user.user.role === "trainee" && (
+          {user?.user?.role === "trainee" && (
             <NavLink
               to={"mycourses"}
               className={({ isActive }) =>
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
               Course Library
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
+          {user?.user?.role === "training_officer" && (
             <NavLink
               to={"dashboard"}
               className={({ isActive }) =>
@@ -89,7 +89,7 @@ const Header: React.FC = () => {
               Home
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
+          {user?.user?.role === "training_officer" && (
             <NavLink
               to={"courses/course"}
               className={({ isActive }) =>
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
               My Courses
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
+          {user?.user?.role === "training_officer" && (
             <NavLink
               to={"trainee"}
               className={({ isActive }) =>
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
         </section>
         <section className="flex items-center justify-center gap-2">
           <div className="w-10 h-10 rounded-full bg-green-950"></div>
-          <h2>{user.user.first_name}</h2>
+          <h2>{user?.user?.first_name}</h2>
           <div className="relative">
             <button onClick={() => setDropDown(!dropDown)}>
               <IoIosArrowDown size={16} />

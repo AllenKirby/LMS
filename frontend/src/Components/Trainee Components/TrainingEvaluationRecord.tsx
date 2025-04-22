@@ -4,6 +4,7 @@ const TrainingEvaluationRecord = () => {
     {
       dateStarted: "2023-01-01",
       dateEnded: "2023-02-01",
+      name: "John Doe",
       completionStatus: "Completed",
       finalScore: 85,
       followupSurvey: "Completed",
@@ -11,6 +12,7 @@ const TrainingEvaluationRecord = () => {
     {
       dateStarted: "2023-03-01",
       dateEnded: "2023-04-01",
+      name: "Jane Smith",
       completionStatus: "In Progress",
       finalScore: null,
       followupSurvey: null,
@@ -19,7 +21,7 @@ const TrainingEvaluationRecord = () => {
   return (
     <section className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-center bg-black bg-opacity-10 ">
       <div className="w-2/3 h-2/3 z-40 rounded-md bg-white p-4 shadow-lg flex flex-col">
-        <header>
+        <header className="flex items-center justify-between">
           <p>Training Evaluation Record</p>
           <button className="p-3 rounded-md border">&times;</button>
         </header>
@@ -31,6 +33,9 @@ const TrainingEvaluationRecord = () => {
               </th>
               <th className="pl-4 flex-1 text-start font-medium border-r bg-white">
                 Date Ended
+              </th>
+              <th className="pl-4 flex-1 text-start font-medium border-r bg-white">
+                Name
               </th>
               <th className="pl-4 flex-1 text-start font-medium border-r bg-white">
                 Completion Status
@@ -59,6 +64,13 @@ const TrainingEvaluationRecord = () => {
                   }`}
                 >
                   {item.dateEnded}
+                </td>
+                <td
+                  className={`pl-4 flex-1 text-start font-medium border-r ${
+                    index % 2 === 0 ? "bg-c-grey-5" : "bg-white"
+                  }`}
+                >
+                  {item.name}
                 </td>
                 <td
                   className={`pl-4 flex-1 text-start font-medium border-r ${
