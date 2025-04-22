@@ -30,6 +30,7 @@ const UploadContent: React.FC<UploadContentState> = (props) => {
     }
 
     const handleDelete = async(fileID: string | number) => {
+        console.log('click')
         if(courseAction === 'update') {
             await deleteUserCourseDocument(Number(fileID))
             deleteFileContent(Number(fileID))

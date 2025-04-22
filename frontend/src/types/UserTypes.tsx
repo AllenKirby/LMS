@@ -13,7 +13,4 @@ export interface User {
   export interface UserState {
     message: string;
     user: User;
-    access_token?: string;
-    csrf_token?: string;
-    expiration: Date;
   }

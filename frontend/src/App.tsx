@@ -43,7 +43,7 @@ function App() {
         </Route>
 
         {/* Protected Routes - Trainee */}
-        <Route element={<ProtectedRoute allowedRoles={["trainee"]} userRole={userRoleString} />}>
+        {/* <Route element={<ProtectedRoute allowedRoles={["trainee"]} userRole={userRoleString} />}> */}
           <Route path="/trainee" element={<MainPage />}>
             <Route path="home" element={<Home />} />
             <Route path="mycourses" element={<MyCourse />}>
@@ -52,10 +52,10 @@ function App() {
             </Route>
             <Route path="resources" element={<Resources />} />
           </Route>
-        </Route>
+        {/* </Route> */}
 
         {/* Protected Routes - Training Officer */}
-        <Route element={<ProtectedRoute allowedRoles={["training_officer"]} userRole={userRoleString} />}>
+        {/* <Route element={<ProtectedRoute allowedRoles={["training_officer"]} userRole={userRoleString} />}> */}
           <Route path="/trainingofficer" element={<MainPage />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="courses" element={<CourseContainer />}>
@@ -73,7 +73,7 @@ function App() {
             <Route path="trainee" element={<Trainee />} />
             <Route path="user-profile" element={<ViewUserProfile />} />
           </Route>
-        </Route>
+        {/* </Route> */}
 
         {/* Shared (optional access control) */}
         <Route path="user-profile/:id" element={<ViewUserProfile />} />

@@ -128,8 +128,8 @@ const CourseContent = () => {
   }
 
   useEffect(() => {
-    console.log(courseContentData)
-  }, [courseContentData])
+    console.log(selectedModuleMap)
+  }, [selectedModuleMap])
 
   useEffect(() => {
     const fetchModule = async () => {
