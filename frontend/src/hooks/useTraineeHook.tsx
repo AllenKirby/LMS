@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
-//import { useDispatch } from 'react-redux'
-//import { setMenus } from '../redux/CourseContentDataRedux'
+import { SurveyAnswers } from '../types/CourseCreationTypes'
 
 const useTraineeHook = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -226,6 +225,30 @@ const useTraineeHook = () => {
         }
     }
 
+    const submitSurvey = async(courseID: number, userID: number, data: SurveyAnswers) => {
+        setIsLoading(true)
+        setError(null)
+        console.log(data)
+        try {
+            const response = await axios.patch(`${API_URL}/course/survey/${courseID}/${userID}/`, data, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                setIsLoading(false)
+                return true
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return {
     getTraineeCourses, 
     getCourse, 
@@ -237,6 +260,7 @@ const useTraineeHook = () => {
     updateModuleStatus,
     getTraineeExternalTraining,
     deleteUserTrainingDocument,
+    submitSurvey,
     isLoading, 
     error}
 }

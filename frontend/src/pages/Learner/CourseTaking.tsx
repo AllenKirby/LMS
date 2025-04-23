@@ -260,7 +260,7 @@ const CourseTaking = () => {
             </div>
             <div className="flex flex-col items-end gap-5 p-10">
               {showSurveyForm ? (
-                <SurveyForm/>
+                <SurveyForm courseID={Number(id)} userID={user.user.id} />
               ) : (
                 <>
                   {selectedModule.content && selectedModule.content.map(item => {

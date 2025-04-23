@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { IoIosArrowDown } from "react-icons/io";
+import { useTraineeHook } from '../../hooks';
+import { SurveyAnswers } from '../../types/CourseCreationTypes';
 
 type Question = {
   id: string;
@@ -110,13 +112,77 @@ const sections: Section[] = [
   },
 ];
 
-const SurveyForm: React.FC = () => {
-  const [responses, setResponses] = useState<Record<string, number>>({});
+type SurveyFormProps = {
+  courseID: number;
+  userID: number;
+}
+
+const SurveyForm: React.FC<SurveyFormProps> = (props) => {
+  const { courseID, userID } = props;
+  const [responses, setResponses] = useState<SurveyAnswers>({
+    survey: {
+      "1.1": 0,
+      "1.2": 0,
+      "1.3": 0,
+      "1.4": 0,
+      "1.5": 0,
+      "1.6": 0,
+      "1.7": 0,
+      "1.8": 0,
+      "1.9": 0,
+      "2.A.1": 0,
+      "2.A.2": 0,
+      "2.A.3": 0,
+      "2.A.4": 0,
+      "2.B.1": 0,
+      "2.B.2": 0,
+      "2.B.3": 0,
+      "2.B.4": 0,
+      "2.B.5": 0,
+      "2.B.6": 0,
+      "2.B.7": 0,
+      "2.B.8": 0,
+      "2.B.9": 0,
+      "2.B.10": 0,
+      "2.C.1": 0,
+      "2.C.2": 0,
+      "2.C.3": 0,
+      "2.C.4": 0,
+      "2.C.5": 0,
+      "2.C.6": 0,
+      "2.C.7": 0,
+      "2.D.1": 0,
+      "2.D.2": 0,
+      "3.1": 0,
+      "3.2": 0,
+      "3.3": 0,
+      "3.4": 0,
+      "3.5": 0,
+      "3.6": 0,
+      "3.7": 0,
+      "3.8": 0,
+      "3.9": 0,
+      "3.10": 0,
+      "4.1": 0,
+      "4.2": 0,
+      "4.3": 0,
+      "4.4": 0,
+      "4.5": 0,
+      "4.6": 0,
+      "5.1": 0,
+      "5.2": 0,
+      "5.3": 0,
+      "5.4": 0,
+      "5.5": 0,
+      "5.6": 0,
+    }
+  });
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
   const [missingAnswers, setMissingAnswers] = useState<Set<string>>(new Set());
+  const { submitSurvey } = useTraineeHook()
 
   const handleChange = (questionId: string, value: number) => {
-    setResponses((prev) => ({ ...prev, [questionId]: value }));
+    setResponses((prev) => ({ ...prev, survey:{...prev.survey, [questionId]: value} }));
     setMissingAnswers((prev) => {
       const newSet = new Set(prev);
       newSet.delete(questionId); 
@@ -134,7 +200,7 @@ const SurveyForm: React.FC = () => {
     const unanswered: Set<string> = new Set();
     sections.forEach((section) => {
       section.questions.forEach((q) => {
-        if (!responses[q.id]) {
+        if (!responses.survey[q.id as keyof SurveyAnswers["survey"]]) {
           unanswered.add(q.id);
         }
       });
@@ -147,7 +213,8 @@ const SurveyForm: React.FC = () => {
     }
 
     // All questions answered
-    console.log('Survey submitted:', responses);
+    console.log('submit')
+    submitSurvey(courseID, userID, responses)
     alert('Thank you for your feedback!');
   };
 
@@ -174,7 +241,7 @@ const SurveyForm: React.FC = () => {
                       } ${missingAnswers.has(q.id) ? 'border border-red-500' : ''}`}
                     >
                       <label className="block text-p-rg">
-                        {q.id}.) {q.label}
+                        {q.id}. {q.label}
                       </label>
                       <div className="flex gap-4">
                         {ratingOptions.map((num) => (
@@ -183,7 +250,7 @@ const SurveyForm: React.FC = () => {
                               type="radio"
                               name={q.id}
                               value={num}
-                              checked={responses[q.id] === num}
+                              checked={responses.survey[q.id as keyof SurveyAnswers['survey']] === num}
                               onChange={() => handleChange(q.id, num)}
                               className="accent-blue-500"
                             />
