@@ -152,8 +152,7 @@ const SurveyForm: React.FC = () => {
   };
 
   return (
-      <form className="w-2/4 h-full bg-white rounded-md p-6 overflow-y-auto" onSubmit={handleSubmit}>
-        <h1 className="text-3xl font-bold mb-6">Training Evaluation Survey</h1>
+      <form className="w-full h-full bg-white rounded-md overflow-y-auto" onSubmit={handleSubmit}>
         {sections.map((section) => {
           const isOpen = openSections[section.title];
           return (
@@ -162,7 +161,7 @@ const SurveyForm: React.FC = () => {
                 className={`w-full flex items-center justify-between px-5 p-3 cursor-pointer ${isOpen ? "border-b" : ""}`}
                 onClick={() => toggleSection(section.title)}
               >
-                <h2 className="text-p-rg text-c-green-50 font-medium">{section.title}</h2>
+                <h2 className="text-p-lg text-c-green-50 font-medium">{section.title}</h2>
                 <IoIosArrowDown className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
               </header>
               {isOpen && (
@@ -179,7 +178,7 @@ const SurveyForm: React.FC = () => {
                       </label>
                       <div className="flex gap-4">
                         {ratingOptions.map((num) => (
-                          <label key={num} className="flex items-center gap-1 font-medium">
+                          <label key={num} className="flex items-center gap-1 font-medium text-p-lg">
                             <input
                               type="radio"
                               name={q.id}

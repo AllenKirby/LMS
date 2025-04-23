@@ -1,5 +1,28 @@
 import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import LoadingPage from "./LoadingPage";
+import { handleAuthNavigation, getAuthCookie } from "../../utils/AuthUtils";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/UserRedux";
+import { useNavigate } from "react-router-dom";
+
 const AuthPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(() => {
+    const user = getAuthCookie();
+  
+    if (user?.user?.role) {
+      dispatch(setUser(user));
+      handleAuthNavigation(user.user.role, navigate);
+    } else {
+      setIsChecking(false);
+    }
+  }, [dispatch, navigate]);
+
+  if (isChecking) return <LoadingPage/>;
 
   return (
     <section className="w-full h-screen flex flex-row">

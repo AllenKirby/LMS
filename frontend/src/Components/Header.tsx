@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 //icons
 import { CiSettings } from "react-icons/ci";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -30,7 +30,7 @@ interface UserState {
 }
 
 const Header: React.FC = () => {
-  //const location = useLocation();
+  const location = useLocation();
   //const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
@@ -39,14 +39,17 @@ const Header: React.FC = () => {
   //redux
   const user = useSelector((state: { user: UserState }) => state.user);
   //Style
-  const { default: NavDefault, inactive: NavInactive, active: NavActive } = NavStyle;
+  const {
+    default: NavDefault,
+    inactive: NavInactive,
+    active: NavActive,
+  } = NavStyle;
 
   const logout = async () => {
     await handleLogout();
   };
 
-  const navigate = useNavigate();
-  //console.log(location.pathname);
+  console.log(location.pathname);
 
   return (
     <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b">
@@ -56,44 +59,62 @@ const Header: React.FC = () => {
       </section>
       <nav className="p-3">
         <ul className="flex flex-row">
-          {user.user.role === "trainee" && (
-            <NavLink to={"home"} className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-            }>
+          {user?.user?.role === "trainee" && (
+            <NavLink
+              to={"home"}
+              className={({ isActive }) =>
+                `${NavDefault} ${isActive ? NavInactive : NavActive}`
+              }
+            >
               Home
             </NavLink>
           )}
-          {user.user.role === "trainee" && (
-            <NavLink to={"mycourses"} className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-          }>
+          {user?.user?.role === "trainee" && (
+            <NavLink
+              to={"mycourses"}
+              className={({ isActive }) =>
+                `${NavDefault} ${isActive ? NavInactive : NavActive}`
+              }
+            >
               Course Library
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
-            <NavLink to={"dashboard"} className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-          }>
+          {user?.user?.role === "training_officer" && (
+            <NavLink
+              to={"dashboard"}
+              className={({ isActive }) =>
+                `${NavDefault} ${isActive ? NavInactive : NavActive}`
+              }
+            >
               Home
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
-            <NavLink to={"courses/course"} className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-          }>
+          {user?.user?.role === "training_officer" && (
+            <NavLink
+              to={"courses/course"}
+              className={({ isActive }) =>
+                `${NavDefault} ${isActive ? NavInactive : NavActive}`
+              }
+            >
               My Courses
             </NavLink>
           )}
-          {user.user.role === "training_officer" && (
-            <NavLink to={"trainee"} className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-          }>
+          {user?.user?.role === "training_officer" && (
+            <NavLink
+              to={"trainee"}
+              className={({ isActive }) =>
+                `${NavDefault} ${isActive ? NavInactive : NavActive}`
+              }
+            >
               Trainee
-            </NavLink> 
+            </NavLink>
           )}
-          <NavLink to={"resources"} className={({ isActive }) =>
+          <NavLink
+            to={"resources"}
+            className={({ isActive }) =>
               `${NavDefault} ${isActive ? NavInactive : NavActive}`
-          }>
+            }
+          >
             Resources
           </NavLink>
         </ul>
@@ -109,7 +130,7 @@ const Header: React.FC = () => {
         </section>
         <section className="flex items-center justify-center gap-2">
           <div className="w-10 h-10 rounded-full bg-green-950"></div>
-          <h2>{user.user.first_name}</h2>
+          <h2>{user?.user?.first_name}</h2>
           <div className="relative">
             <button onClick={() => setDropDown(!dropDown)}>
               <IoIosArrowDown size={16} />
@@ -121,10 +142,7 @@ const Header: React.FC = () => {
                   onClick={() => setDropDown(!dropDown)}
                 />
                 <div className="absolute right-0 bg-white rounded-md p-2 z-20">
-                  <button 
-                     onClick={() => navigate("/trainingofficer/user-profile")}
-                    className="px-3 py-1 rounded-md hover:bg-gray-100"
-                  >
+                  <button className="px-3 py-1 rounded-md hover:bg-gray-100">
                     Profile
                   </button>
                   <button

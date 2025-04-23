@@ -10,7 +10,7 @@ const CourseContentComponent: React.FC<CourseProps> = (props) => {
   return (
     <>
       {content.type === "separator" && (
-        <article className="w-full flex flex-col gap-3 px-10">
+        <article className="w-full flex flex-col gap-3">
           <h6 className="text-h-h6 font-medium text-f-dark">
             {content.title}
           </h6>
@@ -20,7 +20,7 @@ const CourseContentComponent: React.FC<CourseProps> = (props) => {
         </article>
       )}
       {content.type === "document" && (
-        <div className="flex items-center justify-center p-2 rounded-md border mx-10">
+        <div className="flex w-full items-center justify-center p-2 rounded-md border">
           <img src={FileIcon} alt="file" />
           <div className="w-full flex flex-col">
             <h2>Sample_fileName</h2>

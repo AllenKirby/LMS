@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
-import Cookies from "universal-cookie";
 
 import { useDispatch } from 'react-redux'
 import { setUser } from '../redux/UserRedux'
+import { handleAuthNavigation, setAuthCookie, removeAuthCookie } from '../utils/AuthUtils';
 
 import { useNavigate } from 'react-router-dom'
 
@@ -34,8 +34,6 @@ const useAuthHook = () => {
   const API_URL: string = import.meta.env.VITE_URL
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const cookies = new Cookies();
-
 
   const handleLogin = async(data: LoginCredentials) => {
     setError(null)
@@ -47,13 +45,9 @@ const useAuthHook = () => {
       if(response.status === 200){
         setIsLoading(false)
         console.log(response.data)
-        cookies.set("user", response.data, { 
-          path: "/", 
-          expires: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
-          secure: true
-        });        
+        setAuthCookie(response.data);        
         dispatch(setUser(response.data))
-        role(response.data.user.role)
+        handleAuthNavigation(response.data.user.role, navigate);
       }  
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -66,12 +60,6 @@ const useAuthHook = () => {
     }
   }
 
-  const role = (roleName: string) => {  
-    if(!roleName) navigate('/')
-    if(roleName === 'trainee') navigate('/trainee/home')
-    if(roleName === 'training_officer') navigate('/trainingofficer/dashboard')
-  }
-
   const handleLogout = async() => {
     setError(null)
     setIsLoading(true)
@@ -82,8 +70,8 @@ const useAuthHook = () => {
         if(response.status === 200){
           setIsLoading(false)
           dispatch(setUser(null))
-          role('')
-
+          removeAuthCookie();
+          handleAuthNavigation('', navigate);
         }  
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {

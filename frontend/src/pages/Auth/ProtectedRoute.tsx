@@ -1,19 +1,24 @@
 // components/ProtectedRoute.tsx
 import { Navigate, Outlet } from "react-router-dom";
-import React from "react";
 
 interface ProtectedRouteProps {
-  isAllowed: boolean;
-  redirectPath?: string;
-  children?: React.ReactNode;
+  allowedRoles: string[];
+  userRole: string | null;
+  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAllowed, redirectPath = "/", children}) => {
-  if (!isAllowed) {
-    return <Navigate to={redirectPath} replace />;
+export const ProtectedRoute = ({
+  allowedRoles,
+  userRole,
+  redirectTo = "/",
+}: ProtectedRouteProps) => {
+  if (!userRole) {
+    return <Navigate to={redirectTo} replace />;
   }
 
-  return children ? <>{children}</> : <Outlet />;
-};
+  if (!allowedRoles.includes(userRole)) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
-export default ProtectedRoute;
+  return <Outlet />;
+};

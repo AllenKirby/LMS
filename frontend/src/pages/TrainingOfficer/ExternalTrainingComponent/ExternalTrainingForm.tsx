@@ -175,8 +175,8 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
   };
 
   useEffect(() => {
-    console.log(uploadedFile)
-  },[uploadedFile])
+    console.log(trainingData)
+  },[trainingData])
 
   // useEffect(() => {
   //   setTrainingData({

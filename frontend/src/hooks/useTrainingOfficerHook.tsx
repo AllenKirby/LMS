@@ -176,10 +176,14 @@ const useTrainingOfficer = () => {
         setIsLoading(true)
         setError(null)
 
-        const newData = { ...data, content: [...data.content] };
-
-        newData.content = newData.content.filter(item => item.type !== 'uploadedFile')
+        const newData = {
+            ...data,
+            content: data.content.filter(item => item.type !== 'uploadedFile'),
+            submitted: true
+        };
+    
         const withFile = data.content.filter(item => (item as FileUploadState).type === 'uploadedFile')
+        console.log(withFile)
 
         try {
             const res = await axios.post(`${API_URL}/course/sections/${id}/module/`, newData) 
@@ -208,6 +212,7 @@ const useTrainingOfficer = () => {
     const uploadCourseFile = async(id: number, data: FileUploadState[]) => {
         setIsLoading(true)
         setError(null)
+        console.log(data)
 
         const formData = new FormData();
         if(data) {
@@ -249,12 +254,19 @@ const useTrainingOfficer = () => {
         console.log(id, data)
         setIsLoading(true)
         setError(null)
+
+        const withFile = data.content.filter(item => (item as FileUploadState).type === 'uploadedFile')
         try {
             const res = await axios.put(`${API_URL}/course/modules/${id}/`, data) 
             if(res.status === 200){
                 setIsLoading(false)
                 const data = res.data
-                dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
+                console.log(data)
+                if(withFile.length > 0) {
+                    await uploadCourseFile(data.id, withFile)
+                } else {
+                    dispatch(replaceModule({moduleID: data.moduleID, newModule: data}))
+                }
             }
          } catch (error) {
              if (axios.isAxiosError(error)) {
