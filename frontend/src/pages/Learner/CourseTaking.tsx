@@ -216,17 +216,26 @@ const CourseTaking = () => {
 
   console.log(selectedModule)
 
+  const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
+
   return (
      <section className="flex flex-row w-full h-full">
-        <nav className="w-1/4 h-full flex flex-col px-10 py-5">
-          <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
-            <IoArrowBackCircleOutline/>{" "} Go back
-          </button>
+      <nav
+        className={`transition-all duration-300 ${
+          collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
+        } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
+      >          
+        <section className="flex items-center justify-between gap-10 pb-3">
+            <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium text-nowrap">
+              <IoArrowBackCircleOutline/>{" "} Go back
+            </button>
+            <button className="bg-red-300 h-fit rounded-full p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
+          </section>
           {menus && menus.map((item) => (
             <section key={item.id} className="w-full rounded-md border my-2">
               <header className={`w-full p-3 flex flex-row items-center justify-between text-f-light bg-c-blue-50 
                       ${!collapse ? "rounded-t-md" : "rounded-md"}`}
-              >
+              > 
                 <p>{item.title}</p>
                 <button 
                   onClick={() => setCollapse(!collapse)}
@@ -255,7 +264,8 @@ const CourseTaking = () => {
         </nav>
         {selectedModule && (
           <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
-            <div className="w-full h-20 bg-c-green-50 flex items-center p-5">
+            <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
+              <button className="bg-red-400 p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
               <h6 className="text-f-light text-h-h6">{!showSurveyForm ? selectedModule.title : 'Survey Form'}</h6>
             </div>
             <div className="flex flex-col items-end gap-5 p-10">

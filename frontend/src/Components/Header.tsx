@@ -52,7 +52,7 @@ const Header: React.FC = () => {
   console.log(location.pathname);
 
   return (
-    <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b">
+    <header className="w-full h-auto py-4 px-14 flex items-center justify-between border-b z-50">
       <section className="flex items-center justify-center gap-2">
         <div className="w-12 h-12 rounded-full bg-gray-300"></div>
         <h1 className="text-p-lg font-medium">NIA-LMS</h1>

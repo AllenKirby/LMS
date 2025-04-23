@@ -100,9 +100,9 @@ const CourseView = () => {
   console.log(selectedCourse as TraineeCourses);
 
   return (
-    <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">
-      <div className="w-3/5 flex flex-col gap-5">
-        <nav className="flex items-center justify-between">
+    <section className="w-full h-full p-6 lg:px-14 lg:py-10 text-f-dark bg-content-bg flex flex-col md:flex-row gap-5 overflow-auto">
+      <div className="w-full md:w-3/5 flex flex-col gap-5">
+        <nav className="w-full flex items-center justify-between">
           <section className="flex items-center gap-1">
             <button onClick={() => window.history.back()}>&lt;</button>
             <p>Course &gt;</p>
@@ -149,7 +149,16 @@ const CourseView = () => {
               )}
           </section>
         </nav>
-        <article className="flex flex-col gap-5">
+        <img
+          src={`${API_URL}${
+            user.user.role === "trainee"
+              ? (selectedCourse as TraineeCourses).course.cover_image_url
+              : (selectedCourse as CoursesState).cover_image_url
+          }`}
+          alt="Banner Img"
+          className="w-full h-2/6 object-fill rounded-lg bg-c-grey-30 block md:hidden"
+        />
+        <article className="w-full flex flex-col gap-5">
           <h3 className="text-h-h3 font-medium">
             {user.user.role === "trainee"
               ? (selectedCourse as TraineeCourses).course.course_title
@@ -168,7 +177,7 @@ const CourseView = () => {
         <p className="font-medium text-p-lg">Course Content</p>
         <CourseContentOverview courseContent={menus} page="viewcourse" />
       </div>
-      <div className="w-2/5 flex flex-col gap-5">
+      <div className="w-full md:w-2/5 flex flex-col gap-5">
         <img
           src={`${API_URL}${
             user.user.role === "trainee"
@@ -176,7 +185,7 @@ const CourseView = () => {
               : (selectedCourse as CoursesState).cover_image_url
           }`}
           alt="Banner Img"
-          className="w-full h-2/6 object-fill rounded-lg bg-c-grey-30"
+          className="w-full h-2/6 object-fill rounded-lg bg-c-grey-30 md:block hidden"
         />
         <div className="w-full h-fit flex flex-row justify-between pr-10">
           <article className="w-fit flex flex-col gap-1">

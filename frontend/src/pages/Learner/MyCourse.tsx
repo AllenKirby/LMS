@@ -50,110 +50,128 @@ const MyCourse = () => {
       .replace(/^(.)/, (match) => match.toLowerCase()); // Ensure first letter is lowercase
   };
 
+  const [collapse, setCollapse] = useState<boolean>(false);
+  
   return (
     <>
       {!id ? (
         <section className="w-full h-full flex flex-row gap-5 bg-content-bg">
-          <nav className="w-1/5 h-full border-r border-c-grey-20 px-10 py-8 flex flex-col gap-5">
-            <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>
-            <section className="w-full flex flex-col gap-3">
-              <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
-                <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
-                <p className="text-p-lg">Categories</p>
+          <div className={`md:relative absolute ${collapse ? "border-none" : "border-r border-c-grey-20  z-30"} w-fit h-full `}>
+            {collapse && <button 
+              onClick={() => setCollapse(!collapse)}
+              className="bg-red-500 p-3 rounded-full h-fit mt-5 ml-2"
+            ></button>}
+            <nav
+              className={`${
+                collapse ? 'w-0 overflow-hidden' : 'w-fit px-10 py-5'
+              } h-full flex flex-col gap-5 bg-white`}
+            >
+              <header className="flex items-center justify-between gap-10">
+                <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>
+                <button 
+                  onClick={() => setCollapse(!collapse)}
+                  className="bg-red-500 p-3 rounded-full h-fit"
+                ></button>
               </header>
-              <div className="flex-1 flex flex-col">
-                {["", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
-                  <button
-                    key={category}
-                    className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
-                      activeButtonCourse === category
-                        ? "bg-c-blue-10 text-f-dark"
-                        : "bg-none text-c-grey-50"
-                    }`}
-                    onClick={() => setActiveButtonCourse(category)}
-                  >
-                    {!category ? 'All' : category}
-                  </button>
-                ))}
-              </div>
-            </section>
-            <section className="w-full flex flex-col gap-3">
-              <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
-                <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
-                <p className="text-p-lg">Filters</p>
-              </header>
-              <div className="flex-1 flex flex-col gap-2">
-                <div className="w-full flex flex-col">
-                  {["Course", "External Training"].map((category) => (
-                    <label
+              <section className="w-full flex flex-col gap-3">
+                <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+                  <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+                  <p className="text-p-lg">Categories</p>
+                </header>
+                <div className="flex-1 flex flex-col">
+                  {["", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
+                    <button
                       key={category}
-                      htmlFor={category}
-                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                      className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
+                        activeButtonCourse === category
+                          ? "bg-c-blue-10 text-f-dark"
+                          : "bg-none text-c-grey-50"
+                      }`}
+                      onClick={() => setActiveButtonCourse(category)}
                     >
-                      <input
-                        type="checkbox"
-                        id={category}
-                        name={category.toLowerCase().replace(" ", "")}
-                        checked={
-                          selectedFilters[formatKey(category)  as keyof Filters] as boolean
-                        }
-                        onChange={handleCheckboxChange}
-                        className="mr-2"
-                      />
-                      {category}
-                    </label>
+                      {!category ? 'All' : category}
+                    </button>
                   ))}
                 </div>
-    
-                {/* Status Filter */}
-                <div className="w-full flex flex-col">
-                  <p className="text-p-sm font-medium text-c-green-50">Status</p>
-                  {["All", "In Progress", "Completed", "Saved"].map((status) => (
-                    <label
-                      key={status}
-                      htmlFor={status}
-                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        id={status}
-                        name={status.toLowerCase().replace(" ", "")}
-                        checked={
-                          selectedFilters[formatKey(status) as keyof Filters] as boolean
-                        }
-                        onChange={handleCheckboxChange}
-                        className="mr-2"
-                      />
-                      {status}
-                    </label>
-                  ))}
+              </section>
+              <section className="w-full flex flex-col gap-3">
+                <header className="flex gap-2 items-center border-b pb-3 border-c-grey-20">
+                  <div className="p-3 rounded-md bg-c-grey-50 w-fit h-fit"></div>
+                  <p className="text-p-lg">Filters</p>
+                </header>
+                <div className="flex-1 flex flex-col gap-2">
+                  <div className="w-full flex flex-col">
+                    {["Course", "External Training"].map((category) => (
+                      <label
+                        key={category}
+                        htmlFor={category}
+                        className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          id={category}
+                          name={category.toLowerCase().replace(" ", "")}
+                          checked={
+                            selectedFilters[formatKey(category)  as keyof Filters] as boolean
+                          }
+                          onChange={handleCheckboxChange}
+                          className="mr-2"
+                        />
+                        {category}
+                      </label>
+                    ))}
+                  </div>
+      
+                  {/* Status Filter */}
+                  <div className="w-full flex flex-col">
+                    <p className="text-p-sm font-medium text-c-green-50">Status</p>
+                    {["All", "In Progress", "Completed", "Saved"].map((status) => (
+                      <label
+                        key={status}
+                        htmlFor={status}
+                        className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          id={status}
+                          name={status.toLowerCase().replace(" ", "")}
+                          checked={
+                            selectedFilters[formatKey(status) as keyof Filters] as boolean
+                          }
+                          onChange={handleCheckboxChange}
+                          className="mr-2"
+                        />
+                        {status}
+                      </label>
+                    ))}
+                  </div>
+      
+                  <div className="w-full flex flex-col">
+                    <p className="text-p-sm font-medium text-c-green-50">Sort By</p>
+                    {["Relevance", "Latest", "A-Z", "Z-A"].map((filter) => (
+                      <label
+                        key={filter}
+                        htmlFor={filter}
+                        className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          id={filter}
+                          name="sort"
+                          value={filter}
+                          checked={selectedFilters.sort === filter}
+                          onChange={handleRadioChange}
+                          className="mr-2"
+                        />
+                        {filter}
+                      </label>
+                    ))}
+                  </div>
                 </div>
-    
-                <div className="w-full flex flex-col">
-                  <p className="text-p-sm font-medium text-c-green-50">Sort By</p>
-                  {["Relevance", "Latest", "A-Z", "Z-A"].map((filter) => (
-                    <label
-                      key={filter}
-                      htmlFor={filter}
-                      className="w-full text-p-sm py-1 text-start flex items-center cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        id={filter}
-                        name="sort"
-                        value={filter}
-                        checked={selectedFilters.sort === filter}
-                        onChange={handleRadioChange}
-                        className="mr-2"
-                      />
-                      {filter}
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </section>
-          </nav>
-          <section className="w-4/5 h-full flex-1 overflow-y-auto">
+              </section>
+            </nav>
+          </div>
+          <section className="w-4/5 h-full flex-1 overflow-y-auto px-10 md:px-0">
             {selectedFilters.course && <CourseCard selectedDepartment={activeButtonCourse}/>}
             {selectedFilters.externalCourse && 
               <>
