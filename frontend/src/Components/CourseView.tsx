@@ -97,6 +97,10 @@ const CourseView = () => {
     navigate(`/trainee/mycourses/${id}/learn`);
   };
 
+  const openEvaluation = () => {
+    setViewEvaluation(!viewEvaluation);
+  }
+
   console.log(selectedCourse as TraineeCourses);
 
   return (
@@ -215,7 +219,7 @@ const CourseView = () => {
         </div>
         <section className="w-full flex items-center justify-between">
           <p className="text-p-lg font-medium">Paticipants (Number)</p>
-          <button onClick={() => setViewEvaluation(!viewEvaluation)}>
+          <button onClick={openEvaluation}>
             View Standing
           </button>
         </section>
@@ -240,7 +244,7 @@ const CourseView = () => {
           </tbody>
         </table>
       </div>
-      {viewEvaluation && <TrainingEvaluationRecord />}
+      {viewEvaluation && <TrainingEvaluationRecord modal={openEvaluation} courseID={(selectedCourse as CoursesState).id}/>}
     </section>
   );
 };

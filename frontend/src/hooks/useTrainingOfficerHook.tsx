@@ -622,6 +622,27 @@ const useTrainingOfficer = () => {
         }
     }
 
+    const getEvaluationRecord = async(courseID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/user-progress/${courseID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    } 
+
   return { 
     handleAddCourse, 
     retrieveTrainees, 
@@ -644,6 +665,7 @@ const useTrainingOfficer = () => {
     getSpecificModule,
     deleteTrainingDocument,
     deleteUserCourseDocument,
+    getEvaluationRecord,
     isLoading, 
     error }
 }

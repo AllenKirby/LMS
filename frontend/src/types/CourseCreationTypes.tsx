@@ -142,3 +142,62 @@ export interface IDsState {
     moduleID: string | number | null;
     menuID: number | null;
 }
+
+export interface SurveyAnswers {
+    survey: {
+        "1.1": number;
+        "1.2": number;
+        "1.3": number;
+        "1.4": number;
+        "1.5": number;
+        "1.6": number;
+        "1.7": number;
+        "1.8": number;
+        "1.9": number;
+        "2.A.1": number;
+        "2.A.2": number;
+        "2.A.3": number;
+        "2.A.4": number;
+        "2.B.1": number;
+        "2.B.2": number;
+        "2.B.3": number;
+        "2.B.4": number;
+        "2.B.5": number;
+        "2.B.6": number;
+        "2.B.7": number;
+        "2.B.8": number;
+        "2.B.9": number;
+        "2.B.10": number;
+        "2.C.1": number;
+        "2.C.2": number;
+        "2.C.3": number;
+        "2.C.4": number;
+        "2.C.5": number;
+        "2.C.6": number;
+        "2.C.7": number;
+        "2.D.1": number;
+        "2.D.2": number;
+        "3.1": number;
+        "3.2": number;
+        "3.3": number;
+        "3.4": number;
+        "3.5": number;
+        "3.6": number;
+        "3.7": number;
+        "3.8": number;
+        "3.9": number;
+        "3.10": number;
+        "4.1": number;
+        "4.2": number;
+        "4.3": number;
+        "4.4": number;
+        "4.5": number;
+        "4.6": number;
+        "5.1": number;
+        "5.2": number;
+        "5.3": number;
+        "5.4": number;
+        "5.5": number;
+        "5.6": number;
+    }
+  }
