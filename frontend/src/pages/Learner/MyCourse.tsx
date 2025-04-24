@@ -64,7 +64,7 @@ const MyCourse = () => {
             <nav
               className={`${
                 collapse ? 'w-0 overflow-hidden' : 'w-fit px-10 py-5'
-              } h-full flex flex-col gap-5 bg-white`}
+              } h-full flex flex-col overflow-auto gap-5 bg-white`}
             >
               <header className="flex items-center justify-between gap-10">
                 <h6 className="text-f-dark text-h-h6 font-semibold">Course Library</h6>

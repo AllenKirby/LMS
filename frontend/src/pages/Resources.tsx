@@ -21,7 +21,7 @@ const Resources = () => {
   };
 
   return (
-    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10">
+    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 overflow-auto">
       {courses.map((item, index) => (
         <React.Fragment key={index}>
           <article

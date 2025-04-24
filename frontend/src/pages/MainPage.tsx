@@ -8,6 +8,8 @@ import { setTrainees } from '../redux/TraineesAccountsRedux';
 import { setData } from '../redux/ExternalTrainingDataRedux';
 import { setCourses } from '../redux/CoursesRedux';
 
+import { NavButton } from "../Components";
+
 import { UserState } from '../types/UserTypes'
 
 const MainPage: React.FC = () => {
@@ -72,6 +74,7 @@ const MainPage: React.FC = () => {
       <div className='w-full flex-1 overflow-hidden'>
         <Outlet/>
       </div>
+      <div className='flex md:hidden w-full items-center justify-center py-5'><NavButton/></div>
     </section>
   )
 }
