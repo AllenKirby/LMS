@@ -139,21 +139,7 @@ const CourseTaking = () => {
       participant: Number(user.user.id)
     };
     await updateModuleStatus(data);
-
-    setMenus(prevMenus =>
-      prevMenus.map(menu =>
-        menu.id === menuID
-          ? {
-              ...menu,
-              modules: menu.modules.map(module =>
-                module.id === moduleID
-                  ? { ...module, module_progress: 'completed' }
-                  : module
-              ),
-            }
-          : menu
-      )
-    );
+    changeModuleProgress(menuID, moduleID)
   
     const isLastModule = currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
     const isLastMenu = currentMenuIndex >= menus.length - 1;
@@ -237,26 +223,27 @@ const CourseTaking = () => {
       };
 
       await updateModuleStatus(data);
-
-      setMenus(prevMenus =>
-        prevMenus.map(menu =>
-          menu.id === menuID
-            ? {
-                ...menu,
-                modules: menu.modules.map(module =>
-                  module.id === moduleID
-                    ? { ...module, module_progress: 'completed' }
-                    : module
-                ),
-              }
-            : menu
-        )
-      );
+      changeModuleProgress(menuID, moduleID)
     }
     setShowSurveyForm(true)
   }
-console.log()
-  console.log(currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1)
+
+  const changeModuleProgress = (menuID: number, moduleID: number) => {
+    setMenus(prevMenus =>
+      prevMenus.map(menu =>
+        menu.id === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.id === moduleID
+                  ? { ...module, module_progress: 'completed' }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
+  }
 
   return (
      <section className="flex flex-row w-full h-full">
@@ -288,13 +275,13 @@ console.log()
                         return null
                       }
                     }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
-                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' ? <CiLock color="red"/> : ""}
+                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <CiLock color="red"/> : ""}
                   </div>
                 ))}
               </div>
             </section>
           ))}
-          <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form <CiLock size={24}/></button>
+          <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form {!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) && <CiLock size={24}/>}</button>
         </nav>
         {selectedModule && (
           <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
