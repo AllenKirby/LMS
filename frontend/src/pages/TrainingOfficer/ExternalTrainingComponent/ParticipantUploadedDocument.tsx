@@ -24,10 +24,12 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
   const openInput = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<FilesState>()
+  const [necessaryDocs, setNecessaryDocs] = useState<{document_url: {document_id: number; doc_url: string; doc_name: string}[]}>({document_url: []})
   const user = useSelector((state: {user: UserState}) => state.user)
+  const API_URL = import.meta.env.VITE_URL
 
   const { uploadParticipantDocument, retrieveExternalDocuments, markComplete } = useTrainingOfficerHook()
-  const { deleteUserTrainingDocument } = useTraineeHook()
+  const { deleteUserTrainingDocument, getExternalTrainingDocuments } = useTraineeHook()
 
   useEffect(() => {
     const retrieveFiles = async() => {
@@ -36,6 +38,13 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
         setUploadedFiles(res)
       } 
     }
+    const getNecessaryTrainingDocs = async() => {
+      const res = await getExternalTrainingDocuments(trainingID)
+      if(res) {
+        setNecessaryDocs(res)
+      } 
+    }
+    getNecessaryTrainingDocs()
     retrieveFiles()
   }, [])
 
@@ -78,8 +87,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
     onClose()
   } 
 
-  console.log(user.user.role )
-
+  console.log(trainingID)
   return (
     <>
       <div className="fixed inset-0 z-20 bg-black opacity-20" />
@@ -89,6 +97,23 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
             <h6 className="text-p-lg font-medium">{`${data.first_name} ${data.last_name}`}</h6>
             <button onClick={onClose}>&times;</button>
           </header>
+          <div className='flex flex-col p-4'>
+            <h2 className='font-medium'>Necessary Training Documents</h2>
+            {necessaryDocs?.document_url ? 
+              necessaryDocs?.document_url.map((item) => (
+                <a href={`${API_URL}/${item.doc_url}`} className='flex items-center justify-center p-2 rounded-md border my-1'>
+                  <img src={FileIcon} alt="file" />
+                  <div className='w-full flex items-start justify-between mx-5'>
+                    <h2>{item.doc_name}</h2>
+                  </div>
+                </a>
+              )
+            ) : (
+                <div className='w-full h-52 flex items-center justify-center'>
+                  <h2>No Uploaded Documents Found</h2>
+                </div>
+              )}
+          </div>
           <div className='flex-1 overflow-y-auto p-4'>
             {(data.status !== 'completed' && user.user.role === 'trainee') && (
               <button type='button' onClick={uploadDocs} className='h-52 w-full rounded-md flex items-center justify-center border-2 border-dashed'>
@@ -119,7 +144,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
                   <img src={FileIcon} alt="file" />
                   <div className='w-full flex items-start justify-between mx-5'>
                     <h2>{item.doc_name}</h2>
-                    <button type="button" onClick={() => deleteUserTrainingDocument(item.doc_id)} className="ml-2 text-red-500 text-xl">
+                    <button onClick={(e) => {e.stopPropagation(); deleteUserTrainingDocument(item.doc_id)}} className="ml-2 text-red-500 text-xl">
                       &times;
                     </button>
                   </div>
