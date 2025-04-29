@@ -22,6 +22,7 @@ const TrainingCard: React.FC = () => {
   const [ editTrainingForm, setEditTraingForm ] = useState<boolean>(false);
   const [ confirmation , setConfirmation ] = useState<boolean>(false);
   const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
+  const [selectedTraining, setSelectedTraining] = useState<number | null>(null);
   const user = useSelector((state: {user: UserState}) => state.user)
   const externalTrainings = useSelector(
     (state: { externalTrainingData: TrainingDataState[] | TraineeTrainings[] }) =>
@@ -56,10 +57,16 @@ const TrainingCard: React.FC = () => {
     return date.toLocaleDateString(undefined, options);
   };
 
-  const handleUploadToggle = (participantId: number) => {
-    setSelectedParticipantId(selectedParticipantId === participantId ? null : participantId);
+  const handleUploadToggle = (participantId: number, trainingId: number) => {
+    if (selectedParticipantId === participantId && selectedTraining === trainingId) {
+      setSelectedParticipantId(null);
+      setSelectedTraining(null);
+    } else {
+      setSelectedParticipantId(participantId);
+      setSelectedTraining(trainingId);
+    }
   };
-
+  
   return (
     <>
       {externalTrainings && user.user.role === 'training_officer' && (
@@ -174,10 +181,11 @@ const TrainingCard: React.FC = () => {
               </section>
               <button 
                 className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 w-full h-full"
-                onClick={() => handleUploadToggle(user.user.id)}
+                onClick={() => handleUploadToggle(user.user.id, Number((info as TraineeTrainings).training_details.id))}
               >
                 View Training
               </button>
+
             <div className="w-full h-full">
               <figure className="w-full h-2/5">
                 <img
@@ -207,24 +215,23 @@ const TrainingCard: React.FC = () => {
                 </article>
               </main>
             </div>
-            {selectedParticipantId === user.user.id && (() => {
-              const data = {
-                id: user.user.id,
-                first_name: user.user.first_name,
-                last_name: user.user.last_name,
-                email: user.user.email,
-                status: (info as TraineeTrainings).status,
-              };
-
-              return (
-                <ParticipantUploadedDocument 
-                  onClose={() => setSelectedParticipantId(null)} 
-                  key={(info as TraineeTrainings).training_details.id} 
-                  data={data} 
-                  trainingID={Number((info as TraineeTrainings).training_details.id)}
-                />
-              );
-            })()}
+            {selectedParticipantId === user.user.id && selectedTraining === (info as TraineeTrainings).training_details.id && (
+              <ParticipantUploadedDocument 
+                onClose={() => {
+                  setSelectedParticipantId(null);
+                  setSelectedTraining(null);
+                }}
+                key={(info as TraineeTrainings).training_details.id}
+                data={{
+                  id: user.user.id,
+                  first_name: user.user.first_name,
+                  last_name: user.user.last_name,
+                  email: user.user.email,
+                  status: (info as TraineeTrainings).status
+                }} 
+                trainingID={Number((info as TraineeTrainings).training_details.id)}
+              />
+            )}
           </section>
         ))
       )}
