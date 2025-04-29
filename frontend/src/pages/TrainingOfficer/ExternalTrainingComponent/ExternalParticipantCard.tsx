@@ -1,34 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
 
 import { TrainingDataState } from '../../../types/CourseCreationTypes'
 import ParticipantUploadedDocument from './ParticipantUploadedDocument'
-import { useTrainingOfficerHook } from '../../../hooks/'
 
-const ExternalParticipantCard: React.FC = () => {
+type ExternalParticipantCardState = {
+  data: TrainingDataState | null;
+  id: number
+}
+
+const ExternalParticipantCard: React.FC<ExternalParticipantCardState> = (props) => {
+  const { data, id } = props
   const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
-  const [data, setData] = useState<TrainingDataState>()
-
-  const { retrieveExternalParticipants } = useTrainingOfficerHook()
-  const { id } = useParams()
-
-  useEffect(() => {
-    const retrieveParticipants = async() => {
-      if(!id) return
-      const numericId = Number(id)
-      const response = await retrieveExternalParticipants(numericId)
-      if(response) {
-        setData(response)
-      }
-    }
-    retrieveParticipants()
-  }, [id])
     
   const handleUploadToggle = (participantId: number) => {
     setSelectedParticipantId(selectedParticipantId === participantId ? null : participantId);
   };
-
-  console.log(data)
 
   return (
     <>
@@ -48,7 +34,7 @@ const ExternalParticipantCard: React.FC = () => {
               onClose={() => setSelectedParticipantId(null)} 
               key={info.id} 
               data={info} 
-              trainingID={Number(id)}
+              trainingID={id}
             />
           )}
         </section>

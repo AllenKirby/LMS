@@ -61,6 +61,7 @@ export interface ModulePreview {
     section: number;
     title: string;
     required: boolean;
+    module_progress?: string;
 }
 
 export interface MenuDataState {
