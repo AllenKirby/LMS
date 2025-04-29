@@ -34,7 +34,13 @@ const Menu: React.FC<MenuState> = (props) => {
   return (
     <section className="w-full h-auto rounded-md border border-c-grey-20 cursor-pointer">
       <div className={`w-full px-4 py-2 flex items-center justify-between text-f-dark ${collapse === false? "rounded-t-md border-b" : "rounded-md"}`}>
-        <p className="text-p-rg font-medium">{menuData.title}</p>
+        <input 
+          type="text" 
+          className="bg-transparent p-1 text-sm font-medium outline-none w-full" 
+          onBlur={() => {
+            console.log('Input lost focus!');
+          }}
+          placeholder="Menu Title"/>
         <button className="px-1"><FiChevronDown size={20}  onClick={() => setCollapse(!collapse)}/></button>
       </div>
       <div className={`px-4 py-2 flex flex-col items-center justify-center ${collapse === false? "block" : "hidden"}`}>
