@@ -36,6 +36,7 @@ const useTrainingOfficer = () => {
 
         try {
            const res = await axios.post(`${API_URL}/course/courses/`, formData, {
+                withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

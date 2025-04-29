@@ -40,9 +40,7 @@ const useAuthHook = () => {
     setIsLoading(true)
     try {
       const response = await axios.post(`${API_URL}/accounts/login/`, data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        withCredentials:true
       })
       if(response.status === 200){
         setIsLoading(false)

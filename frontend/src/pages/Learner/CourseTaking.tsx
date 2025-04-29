@@ -132,13 +132,28 @@ const CourseTaking = () => {
     });
   };
 
-  const handleClickNext = async () => {
+  const handleClickNext = async (menuID: number, moduleID: number) => {
     const data = {
       participant_module_progress: "completed",
       module: Number(selectedModule.id),
       participant: Number(user.user.id)
     };
     await updateModuleStatus(data);
+
+    setMenus(prevMenus =>
+      prevMenus.map(menu =>
+        menu.id === menuID
+          ? {
+              ...menu,
+              modules: menu.modules.map(module =>
+                module.id === moduleID
+                  ? { ...module, module_progress: 'completed' }
+                  : module
+              ),
+            }
+          : menu
+      )
+    );
   
     const isLastModule = currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
     const isLastMenu = currentMenuIndex >= menus.length - 1;
@@ -172,7 +187,7 @@ const CourseTaking = () => {
   
   useEffect(() => {
     const getCourseDetails = async() => {
-      const response = await getCourseContent(Number(id))
+      const response = await getCourseContent(Number(id), user.user.id)
       setMenus(response)
     }
     getCourseDetails()
@@ -213,8 +228,35 @@ const CourseTaking = () => {
     }
   }, [currentMenuIndex, currentModuleIndex, menus]);
   
+  const goToSurveyForm = async(flag: boolean, menuID: number = 0, moduleID: number = 0) => {
+    if(flag) {
+      const data = {
+        participant_module_progress: "completed",
+        module: Number(selectedModule.id),
+        participant: Number(user.user.id)
+      };
 
-  console.log(menus)
+      await updateModuleStatus(data);
+
+      setMenus(prevMenus =>
+        prevMenus.map(menu =>
+          menu.id === menuID
+            ? {
+                ...menu,
+                modules: menu.modules.map(module =>
+                  module.id === moduleID
+                    ? { ...module, module_progress: 'completed' }
+                    : module
+                ),
+              }
+            : menu
+        )
+      );
+    }
+    setShowSurveyForm(true)
+  }
+console.log()
+  console.log(currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1)
 
   return (
      <section className="flex flex-row w-full h-full">
@@ -222,7 +264,7 @@ const CourseTaking = () => {
           <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
             <IoArrowBackCircleOutline/>{" "} Go back
           </button>
-          {menus && menus.map((item) => (
+          {menus && menus.map((item, menuIndex) => (
             <section key={item.id} className="w-full rounded-md border my-2">
               <header className={`w-full p-3 flex flex-row items-center justify-between text-f-light bg-c-blue-50 
                       ${!collapse ? "rounded-t-md" : "rounded-md"}`}
@@ -238,20 +280,21 @@ const CourseTaking = () => {
               <div className={`w-full p-3 bg-white rounded-b-md ${!collapse ? "block" : "hidden"}`}>
                 {item.modules.map((module: ModulePreview, index) => (
                   <div onClick={() => {
-                      if(!module.required)  {
+                      if(!module.required || module.module_progress === 'completed')  {
+                        setCurrentMenuIndex(menuIndex)
                         setCurrentModuleIndex(index) 
                         setShowSurveyForm(false)
                       } else {
                         return null
                       }
                     }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
-                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required ? <CiLock color="red"/> : ""}
+                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' ? <CiLock color="red"/> : ""}
                   </div>
                 ))}
               </div>
             </section>
           ))}
-          <button onClick={() => setShowSurveyForm(true)} className="px-4 py-3 flex items-center justify-between rounded-md bg-c-grey-20 font-medium">Survey Form <CiLock size={24}/></button>
+          <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form <CiLock size={24}/></button>
         </nav>
         {selectedModule && (
           <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
@@ -314,7 +357,7 @@ const CourseTaking = () => {
                   <div className="w-full flex items-center justify-between">
                     <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
                     {(selectedModule.content.some(item => item.type !== "questionnaire") || score.userScore !== 0 && score.totalScore !== 0 && score.percentage) && (
-                      <button onClick={handleClickNext} disabled={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1} className={`${currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'End of the Course' : 'Next'}</button>
+                      <button onClick={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? () => goToSurveyForm(true, menus[currentMenuIndex].id, selectedModule.id) : () => handleClickNext(menus[currentMenuIndex].id, selectedModule.id)} className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'Survey Form' : 'Next' }</button>
                     )}
                   </div>
                 </>

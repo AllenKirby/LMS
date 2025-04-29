@@ -47,9 +47,9 @@ const useTraineeHook = () => {
         }
     }
 
-    const getCourseContent = async(id: number) => {
+    const getCourseContent = async(id: number, userID: number) => {
         try {
-            const response = await axios.get(`${API_URL}/course/courses/${id}/section-details/`, {
+            const response = await axios.get(`${API_URL}/course/courses/${id}/${userID}/section-details/`, {
                 withCredentials: true
             })
             if(response.status === 200){
