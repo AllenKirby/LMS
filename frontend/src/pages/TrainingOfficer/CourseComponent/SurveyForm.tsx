@@ -627,10 +627,7 @@ const SurveyForm = () => {
                 <br />2 = Disagree <br />1 = Strongly Disagree
               </p>
             </section>
-            <section className=" w-full h-fit px-8 py-5 border rounded-md shadow-sm">
-              <header className="w-full h-fit flex items-center justify-between mb-5">
-                <p>Title of the survey section</p>
-              </header>
+            <section className="w-full h-fit">
               <div className="w-full h-fit">
                 <SurveyCharts trainingSections={formattedSurveyData} />
               </div>
