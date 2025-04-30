@@ -15,7 +15,7 @@
     "@tiptap/extension-text-align": "^2.11.5",
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
-    "apexcharts": "^4.5.0",
+    "apexcharts": "^4.7.0",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "jwt-decode": "^4.0.0",
