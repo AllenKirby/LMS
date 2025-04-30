@@ -44,7 +44,7 @@ const CourseOverview = () => {
           <div className="w-full h-[200px] overflow-hidden relative"> 
             {(courseData.cover_image_upload || courseData.cover_image_url) ? 
               <div>
-                <img className="w-full h-full object-cover" src={courseData.cover_image_url ? `${API_URL}${courseData.cover_image_url}` : courseData.cover_image_upload ? URL.createObjectURL(courseData.cover_image_upload) : ""} alt="Base64 Image" />
+                <img className="w-full h-full object-cover" src={courseData.cover_image_upload instanceof File ? URL.createObjectURL(courseData.cover_image_upload) : courseData.cover_image_url ? `${API_URL}${courseData.cover_image_url}` : ""} alt="Base64 Image" />
                 <button onClick={uploadFile} className="absolute right-5 top-5 bg-white p-2 rounded-md"><FiUpload size={20}/></button>
               </div>
               : 

@@ -5,6 +5,7 @@ import { CourseData } from '../types/CourseCreationTypes'
 const initialState: CourseData = {
   id: 0,
   cover_image_upload: null,
+  cover_image_url: '',
   course_title: "",
   course_description: "",
   department: "",
@@ -20,7 +21,8 @@ type UpdateFieldPayload =
   | { name: "visibility"; value: "public" | "private" | "" }
   | { name: "participants"; value: string[] }
   | { name: "submitted"; value: true | false }
-  | { name: "cover_image_upload"; value: File | null};
+  | { name: "cover_image_upload"; value: File | null}
+  | { name: "cover_image_url"; value: string};
 
 const CourseDataSlice = createSlice({
   name: "courseData",

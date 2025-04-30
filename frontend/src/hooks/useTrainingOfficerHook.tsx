@@ -103,6 +103,28 @@ const useTrainingOfficer = () => {
         }
     } 
 
+    const SetMenuTitle = async(menuID: number, title: {title: string}) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.put(`${API_URL}/course/section/${menuID}/`, title, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                setIsLoading(false)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }       
+    }
+
     const deleteMenu = async(id: number) => {
         setIsLoading(true)
         setError(null)
@@ -650,6 +672,7 @@ const useTrainingOfficer = () => {
     createExternalTraining,
     retrieveExternalTraining,
     handleAddMenu,
+    SetMenuTitle,
     handleAddModule,
     handleUpdateCourse,
     handleUpdateModule,

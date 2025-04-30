@@ -12,6 +12,13 @@ const CourseContentDataRedux = createSlice({
     setMenu: (state, action: PayloadAction<MenuDataState>) => {
       state.push(action.payload); 
     },
+    setMenuTitle: (state, action: PayloadAction<{ id: number; title: string }>) => {
+      const { id, title } = action.payload;
+      const menu = state.find(item => item.id === id);
+      if (menu) {
+        menu.title = title; 
+      }
+    },
     removeMenu: (state, action: PayloadAction<number>) => {
       return state.filter(item => item.id !== action.payload); 
     },
@@ -19,5 +26,5 @@ const CourseContentDataRedux = createSlice({
   },
 });
 
-export const { setMenus, setMenu, resetCourseContent, removeMenu } = CourseContentDataRedux.actions;
+export const { setMenus, setMenu, resetCourseContent, removeMenu, setMenuTitle } = CourseContentDataRedux.actions;
 export default CourseContentDataRedux.reducer;

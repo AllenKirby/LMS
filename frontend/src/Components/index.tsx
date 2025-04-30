@@ -6,3 +6,4 @@ export { default as CourseView } from "./CourseView";
 export { default as CourseContentOverview } from "./CourseContentOverview";
 export { default as ResourcesViewModal } from "./ResourcesViewModal";
 export { default as Resource } from "./Resources";
+export { default as MessageBox } from "./MessageBox";
