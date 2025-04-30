@@ -6,6 +6,9 @@ import { IoMdClose } from "react-icons/io";
 import { HiMenuAlt2 } from "react-icons/hi";
 
 import { ModuleState, MenuDataState, CourseActionType, ModulePreview } from '../../../../types/CourseCreationTypes'
+import { useDispatch } from "react-redux";
+import { useTrainingOfficerHook } from "../../../../hooks/";
+import {setMenuTitle} from '../../../../redux/CourseContentDataRedux'
 
 type MenuState = {
   menuData: MenuDataState;
@@ -22,9 +25,10 @@ type MenuState = {
 const Menu: React.FC<MenuState> = (props) => {
   const { menuData, addModule, modules, deleteModule, deleteModulePermanent, deleteMenu, courseAction, setMenuID, setModuleID } = props
   const [collapse, setCollapse] = useState<boolean>(false);
+  const { SetMenuTitle } = useTrainingOfficerHook()
+  const dispatch = useDispatch()
 
   const filteredModules = modules.filter((module) => module.menuID === menuData.id);
-  console.log('filteredModules', filteredModules)
 
   const handleClickModule = (moduleID: string | number) => {
       setMenuID(menuData.id)
@@ -36,9 +40,15 @@ const Menu: React.FC<MenuState> = (props) => {
       <div className={`w-full px-4 py-2 flex items-center justify-between text-f-dark ${collapse === false? "rounded-t-md border-b" : "rounded-md"}`}>
         <input 
           type="text" 
+          value={menuData.title}
+          onChange={(e) => dispatch(setMenuTitle({ id: menuData.id, title: e.target.value }))}
           className="bg-transparent p-1 text-sm font-medium outline-none w-full" 
-          onBlur={() => {
-            console.log('Input lost focus!');
+          onBlur={async() => {
+            const menuTitle = {
+              title: menuData.title
+            }
+            await SetMenuTitle(menuData.id, menuTitle)
+            console.log('okay')
           }}
           placeholder="Menu Title"/>
         <button className="px-1"><FiChevronDown size={20}  onClick={() => setCollapse(!collapse)}/></button>

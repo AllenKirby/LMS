@@ -3,8 +3,9 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingForm";
 import store from "../../redux/store";
-import { ConfirmationModal } from "../../Components";
+import { ConfirmationModal, MessageBox } from "../../Components";
 import { useTrainingOfficerHook } from "../../hooks";
+import { MenuDataState, CourseData } from '../../types/CourseCreationTypes'
 
 import { useDispatch, useSelector } from "react-redux";
 import { resetCourseData, updateField } from "../../redux/CourseDataRedux";
@@ -17,16 +18,6 @@ import { FaCircleCheck } from "react-icons/fa6";
 
 import { IoIosArrowBack, IoIosArrowRoundBack } from "react-icons/io";
 
-interface CourseData {
-  cover_image_upload: File;
-  course_title: string;
-  course_description: string;
-  department: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
-  visibility: "public" | "private" | "";
-  participants: string[];
-  submitted: true | false
-}
-
 const Courses: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,13 +25,18 @@ const Courses: React.FC = () => {
   const [activeSection, setActiveState] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isConfirmationOpen, setConfirmationOpen] = useState<boolean>(false);
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(
     null
   );
   const courseID = useSelector((state: {courseID: number}) => state.courseID)
-  const courseOverviewData = useSelector(
-    (state: { courseData: CourseData }) => state.courseData
-  );
+  const courseContentData = useSelector((state: {courseContent: MenuDataState[]}) => state.courseContent)
+  const courseOverviewData = useSelector((state: { courseData: CourseData }) => state.courseData);
   const courseAction = useSelector(
     (state: { courseAction: string }) => state.courseAction)
   const { handleAddCourse, handleUpdateCourse, publishCourse } = useTrainingOfficerHook();
@@ -65,26 +61,49 @@ const Courses: React.FC = () => {
     dispatch(resetCourseID())
     dispatch(resetModuleData())
     navigate('/trainingofficer/courses/course')
+    // setShowMessageBox(true);
+    // setMessageInfo({
+    //   status: "success",
+    //   title: courseAction === 'create' ? "Course Published" : 'Course Updated',
+    //   message: courseAction === 'create' ? "The course has been published successfully." : "The course has been updated successfully.",
+    // }) 
+    // setTimeout(() => {
+    //   setShowMessageBox(false);
+    // }, 2000);
   }
 
   const handleConfirmNavigation = async () => {
-    if (pendingNavigation) {
-      if(courseOverviewData.submitted) {
-        await handleUpdateCourse(courseID, courseOverviewData)
-      } else {
-        dispatch(updateField({name: 'submitted', value: true}))
-
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-      // Get the updated state from Redux
-        const updatedCourseOverviewData = store.getState().courseData;
-        await handleAddCourse(updatedCourseOverviewData);
+    if(courseOverviewData.course_title !== "" && courseOverviewData.course_description !== "" && courseOverviewData.department !== "" && courseOverviewData.visibility !== "" && courseOverviewData.participants.length > 0 && (courseOverviewData.cover_image_upload || courseOverviewData.cover_image_url)) {
+      if (pendingNavigation) {
+        if(courseOverviewData.submitted) {
+          await handleUpdateCourse(courseID, courseOverviewData)
+        } else {
+          dispatch(updateField({name: 'submitted', value: true}))
+  
+          await new Promise((resolve) => setTimeout(resolve, 0));
+  
+        // Get the updated state from Redux
+          const updatedCourseOverviewData = store.getState().courseData;
+          await handleAddCourse(updatedCourseOverviewData);
+        }
+        navigate(pendingNavigation);
+        setActiveState(pendingNavigation);
+        setPendingNavigation(null);
       }
-      navigate(pendingNavigation);
-      setActiveState(pendingNavigation);
-      setPendingNavigation(null);
+      setConfirmationOpen(false);
+    } 
+    else {
+      handleConfirmToggle()
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Fields",
+        message: "Please fill in all required fields before continuing.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
     }
-    setConfirmationOpen(false);
   };
 
   useEffect(() => {
@@ -116,6 +135,24 @@ const Courses: React.FC = () => {
     navigate('/trainingofficer/courses/course')
   }
 
+  const NavigateTo = () => {
+    if(courseContentData.every(menu => menu.title !== 'Untitled') && courseContentData.every(menu => menu.title !== '') && courseContentData.every(menu => menu.modules.length > 0)) {
+      navigate('/trainingofficer/courses/courseCreation/preview')
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Menu Title",
+        message: "Please enter a title for the menu before proceeding.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    }
+  }
+
+  console.log(courseOverviewData)
+  
   return (
     <section className="w-full h-screen top-0 left-0 fixed inset-1 flex flex-col bg-content-bg">
       <header className="w-full h-fit">
@@ -171,9 +208,10 @@ const Courses: React.FC = () => {
                 }
                 {activeSection === "/trainingofficer/courses/courseCreation/courseContent" && 
                   <button 
+                  onClick={NavigateTo}
                     className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light"
                   >
-                    <NavLink to="preview">Continue</NavLink>
+                    Continue
                   </button>
                 }
                 {activeSection === "/trainingofficer/courses/courseCreation/preview" && 
@@ -206,6 +244,7 @@ const Courses: React.FC = () => {
           label="Your changes will be saved as a draft. You can continue editing later."
         />
       )}
+      {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </section>
   );
 };

@@ -29,7 +29,7 @@ const Separator: React.FC<SeparatorState> = (props) => {
                     value={data.title}
                     onChange={(e) => setContent(moduleID, data.lessonID, "title", e.target.value)}
                     className="w-full p-2 text-p-lg" 
-                    placeholder="Untitled" />
+                    placeholder="Untitled (Optional)" />
                 <textarea  
                     value={data.content}
                     onChange={(e) => setContent(moduleID, data.lessonID, "content", e.target.value)}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
 
 import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
+import { MessageBox } from '../../../Components'
 import { useTrainingOfficerHook } from '../../../hooks'
 
 import { FiPlus, FiUpload, FiSave } from "react-icons/fi";
@@ -28,7 +29,13 @@ import {
 } from '../../../redux/ModuleDataRedux';
 import {setMenuID, setModuleID} from '../../../redux/IDsRedux'
 
-import { MenuDataState, ModuleState, ChoicesState, CourseActionType, IDsState } from '../../../types/CourseCreationTypes'
+import { 
+  MenuDataState, 
+  ModuleState, 
+  ChoicesState, 
+  CourseActionType, 
+  IDsState
+} from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
   //redux
@@ -52,8 +59,91 @@ const CourseContent = () => {
     section: 0,
     key_answers: []
   });
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
   //hooks
   const { handleAddMenu, handleAddModule, handleUpdateModule, handleDeleteModule, deleteMenu, getSpecificModule, isLoading } = useTrainingOfficerHook()
+
+  const checkFields = (data: ModuleState): boolean => {
+    if (!data.title.trim() || data.content.length === 0) return false;
+  
+    return data.content.every(item => {
+      switch (item.type) {
+        case "questionnaire":
+          return (
+            item.question.trim() !== '' &&
+            item.questionPoint > 0 &&
+            item.choices.length > 0 &&
+            item.choices.every(choice => choice.choice.trim() !== '')
+          );
+  
+        case "uploadedFile":
+        case "document":
+          return item.fileName.trim() !== '' && item.file !== null;
+  
+        case "separator":
+          return item.content.trim() !== '';
+  
+        default:
+          return false;
+      }
+    });
+  };
+  
+
+  const HandleAddModule = async (menuID: number, data: ModuleState) => {
+    if(checkFields(data)) {
+      await handleAddModule(menuID, data)
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "success",
+        title: "Save Successful",
+        message: "Module has been saved successfully.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Fields",
+        message: "Please fill in all required fields before continuing.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    }
+  }
+
+  const HandleUpdateModule = async (moduleID: number, data: ModuleState) => {
+    if(checkFields(data)) {
+      await handleUpdateModule(moduleID, data)
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "success",
+        title: "Update Successful",
+        message: "Your changes have been saved successfully.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Fields",
+        message: "Please fill in all required fields before continuing.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    }
+  }
 
   const MenuID = (id: number) => {
     dispatch(setMenuID(id))
@@ -126,10 +216,6 @@ const CourseContent = () => {
   const getModule = async(id: number) => {
     return await getSpecificModule(id)
   }
-
-  useEffect(() => {
-    console.log(selectedModuleMap)
-  }, [selectedModuleMap])
 
   useEffect(() => {
     const fetchModule = async () => {
@@ -223,11 +309,11 @@ const CourseContent = () => {
                   <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-full"></div>
                 </label>
                 {selectedModuleMap?.submitted ? (
-                    <button onClick={() => handleUpdateModule(selectedModuleMap.id, selectedModuleMap)}>
+                    <button onClick={() => HandleUpdateModule(selectedModuleMap.id, selectedModuleMap)}>
                       <FiSave size={20} className='text-f-gray'/>
                     </button>
                   ) : (
-                    <button onClick={() => menuID && handleAddModule(menuID, selectedModuleMap)}>
+                    <button onClick={() => menuID && HandleAddModule(menuID, selectedModuleMap)}>
                       <FiSave size={20} className='text-f-gray'/>
                     </button>
                 )}
@@ -305,6 +391,7 @@ const CourseContent = () => {
           </div>
         )}
       </div>
+      {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </section>
   )
 }
