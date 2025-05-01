@@ -117,6 +117,14 @@ const Header: React.FC = () => {
           >
             Resources
           </NavLink>
+          <NavLink
+            to={"survey"}
+            className={({ isActive }) =>
+              `${NavDefault} ${isActive ? NavInactive : NavActive}`
+            }
+          >
+            gform
+          </NavLink>
         </ul>
       </nav>
       <div className="flex items-center justify-center gap-2">

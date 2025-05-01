@@ -23,6 +23,7 @@ import {
   CourseParticipants,
   CourseContent,
   Preview,
+  SurveyForm,
 } from "./pages/TrainingOfficer/CourseComponent";
 import { Resources } from "./pages";
 import { CourseView } from "./Components";
@@ -30,7 +31,7 @@ import { ProtectedRoute } from "./pages/Auth/ProtectedRoute";
 
 function App() {
   const cookies = new Cookie();
-  const user =  cookies.get("user")
+  const user = cookies.get("user");
   const userRoleString = user?.user?.role || null;
 
   const router = createBrowserRouter(
@@ -44,35 +45,42 @@ function App() {
 
         {/* Protected Routes - Trainee */}
         {/* <Route element={<ProtectedRoute allowedRoles={["trainee"]} userRole={userRoleString} />}> */}
-          <Route path="/trainee" element={<MainPage />}>
-            <Route path="home" element={<Home />} />
-            <Route path="mycourses" element={<MyCourse />}>
-              <Route path=":id" element={<CourseView />} />
-              <Route path=":id/learn" element={<CourseTaking />} />
-            </Route>
-            <Route path="resources" element={<Resources />} />
+        <Route path="/trainee" element={<MainPage />}>
+          <Route path="home" element={<Home />} />
+          <Route path="mycourses" element={<MyCourse />}>
+            <Route path=":id" element={<CourseView />} />
+            <Route path=":id/learn" element={<CourseTaking />} />
           </Route>
+          <Route path="resources" element={<Resources />} />
+        </Route>
         {/* </Route> */}
 
         {/* Protected Routes - Training Officer */}
         {/* <Route element={<ProtectedRoute allowedRoles={["training_officer"]} userRole={userRoleString} />}> */}
-          <Route path="/trainingofficer" element={<MainPage />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="courses" element={<CourseContainer />}>
-              <Route path="course" element={<Course />} />
-              <Route path="externaltraining/:id" element={<ExternalTrainingView />} />
-              <Route path="courseview/:id" element={<CourseView />} />
-              <Route path="courseCreation" element={<CourseCreation />}>
-                <Route path="courseOverview" element={<CourseOverview />} />
-                <Route path="courseParticipants" element={<CourseParticipants />} />
-                <Route path="courseContent" element={<CourseContent />} />
-                <Route path="preview" element={<Preview />} />
-              </Route>
+        <Route path="/trainingofficer" element={<MainPage />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="courses" element={<CourseContainer />}>
+            <Route path="course" element={<Course />} />
+            <Route
+              path="externaltraining/:id"
+              element={<ExternalTrainingView />}
+            />
+            <Route path="courseview/:id" element={<CourseView />} />
+            <Route path="courseCreation" element={<CourseCreation />}>
+              <Route path="courseOverview" element={<CourseOverview />} />
+              <Route
+                path="courseParticipants"
+                element={<CourseParticipants />}
+              />
+              <Route path="courseContent" element={<CourseContent />} />
+              <Route path="preview" element={<Preview />} />
             </Route>
-            <Route path="resources" element={<Resources />} />
-            <Route path="trainee" element={<Trainee />} />
-            <Route path="user-profile" element={<ViewUserProfile />} />
           </Route>
+          <Route path="resources" element={<Resources />} />
+          <Route path="survey" element={<SurveyForm />} />
+          <Route path="trainee" element={<Trainee />} />
+          <Route path="user-profile" element={<ViewUserProfile />} />
+        </Route>
         {/* </Route> */}
 
         {/* Shared (optional access control) */}
