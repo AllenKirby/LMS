@@ -27,7 +27,7 @@ interface Signup {
   affiliation: string;
   officeName: string;
   officeAddress: string;
-  division: string;
+  department: string;
   positionTitle: string;
 }
 
@@ -63,7 +63,7 @@ const SignupPage: React.FC = () => {
     affiliation: "",
     officeName: "",
     officeAddress: "",
-    division: "",
+    department: "",
     positionTitle: "",
   });
 
@@ -129,7 +129,7 @@ const SignupPage: React.FC = () => {
       affiliation: signupCredentials.affiliation,
       office_name: signupCredentials.officeName,
       office_address: signupCredentials.officeAddress,
-      division: signupCredentials.division,
+      division: signupCredentials.department,
       position_title: signupCredentials.positionTitle,
     };
     await handleSignup(data);
@@ -502,7 +502,7 @@ const SignupPage: React.FC = () => {
                 onChange={(e) =>
                   setSignupCredentials({
                     ...signupCredentials,
-                    division: e.target.value,
+                    department: e.target.value,
                   })
                 }
               />
@@ -542,7 +542,7 @@ const SignupPage: React.FC = () => {
               Back
             </button>
           )}
-          {counter === 3 ? (
+          {counter === 3 && (
             <button
               type="submit"
               disabled={isLoading}
@@ -550,7 +550,8 @@ const SignupPage: React.FC = () => {
             >
               Sign up
             </button>
-          ) : (
+          )}
+          {counter !== 3 && (
             <button
               type="button"
               onClick={increment}

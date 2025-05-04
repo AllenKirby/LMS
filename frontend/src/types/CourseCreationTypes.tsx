@@ -202,3 +202,20 @@ export interface SurveyAnswers {
         "5.6": number;
     }
   }
+
+export interface SurveyQuestion {
+    id: number; 
+    title: string; 
+    rates: {
+        5: number; 
+        4: number, 
+        3: number, 
+        2: number, 
+        1: number
+    }
+}
+
+export interface SurveyState {
+    title: string;
+    questions: SurveyQuestion[];
+}

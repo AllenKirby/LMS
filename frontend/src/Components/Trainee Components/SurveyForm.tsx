@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
 import { useTraineeHook } from '../../hooks';
 import { SurveyAnswers } from '../../types/CourseCreationTypes';
+
+import MessageBox from '../MessageBox';
 
 type Question = {
   id: string;
@@ -119,6 +122,13 @@ type SurveyFormProps = {
 
 const SurveyForm: React.FC<SurveyFormProps> = (props) => {
   const { courseID, userID } = props;
+  const navigate = useNavigate();
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
   const [responses, setResponses] = useState<SurveyAnswers>({
     survey: {
       "1.1": 0,
@@ -208,14 +218,31 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
 
     if (unanswered.size > 0) {
       setMissingAnswers(unanswered);
-      alert("Please answer all questions before submitting.");
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: 'Missing Answers',
+        message: "Please answer all the questions before submitting.",
+      }) 
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
       return;
     }
 
     // All questions answered
     console.log('submit')
     submitSurvey(courseID, userID, responses)
-    alert('Thank you for your feedback!');
+    setShowMessageBox(true);
+    setMessageInfo({
+      status: "success",
+      title: 'Survey Submitted',
+      message: "Your survey responses has been submitted successfully.",
+    }) 
+    setTimeout(() => {
+      setShowMessageBox(false);
+    }, 2000);
+    //navigate('/trainee/mycourses')
   };
 
   return (
@@ -268,6 +295,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
         <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 mt-4">
           Submit Survey
         </button>
+        {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
       </form>
   );
 };

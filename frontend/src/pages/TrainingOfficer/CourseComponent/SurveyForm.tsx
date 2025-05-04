@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SurveyCharts from "./SurveyCharts";
+import { useTrainingOfficerHook } from "../../../hooks";
+import { SurveyState } from '../../../types/CourseCreationTypes'
+import { useParams } from "react-router-dom";
+
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 const surveyResults = [
   {
@@ -320,6 +325,202 @@ const surveyResults = [
   },
 ];
 
+const questions = [
+  {
+    title: "Session",
+    questions: [
+      { id: "1.1", label: "The objectives were clearly explained" },
+      { id: "1.2", label: "The objectives were met" },
+      { id: "1.3", label: "It is substantial and extensive" },
+      {
+        id: "1.4",
+        label: "It provided information that is relevant to my actual job",
+      },
+      {
+        id: "1.5",
+        label:
+          "It provided activities that will help advance my professional skills",
+      },
+      {
+        id: "1.6",
+        label: "The activities were appropriate to the participants",
+      },
+      { id: "1.7", label: "The topics were properly sequenced" },
+      {
+        id: "1.8",
+        label: "The time allotted for each presentation was sufficient",
+      },
+      { id: "1.9", label: "The schedule was followed" },
+    ],
+  },
+  {
+    title: "Mastery of the subject Matter",
+    questions: [
+      {
+        id: "2.A.1",
+        label: "They were knowledgeable about the subject matter",
+      },
+      {
+        id: "2.A.2",
+        label: "They were confident in delivering the lecture",
+      },
+      {
+        id: "2.A.3",
+        label: "They were able to cover all the significant topics",
+      },
+      {
+        id: "2.A.4",
+        label: "They were able to address questions adequately",
+      },
+    ],
+  },
+  {
+    title: "Presentation skills",
+    questions: [
+      {
+        id: "2.B.1",
+        label: "They clearly explained the concepts discussed",
+      },
+      {
+        id: "2.B.2",
+        label: "They presented ideas and principles in an organized manner",
+      },
+      {
+        id: "2.B.3",
+        label:
+          "They gave substance to the discussion by mentioning other examples",
+      },
+      {
+        id: "2.B.4",
+        label: "Their discussions were stimulating and interesting",
+      },
+      {
+        id: "2.B.5",
+        label: "Their style of delivery was appropriate for the audience",
+      },
+      { id: "2.B.6", label: "They clearly gave instructions" },
+      {
+        id: "2.B.7",
+        label:
+          "They presented learning materials in clear and logical manner",
+      },
+      {
+        id: "2.B.8",
+        label:
+          "Their pace of discussion was just right (not too slow, not too fast)",
+      },
+      {
+        id: "2.B.9",
+        label:
+          "They spoke clearly, audibly, fluently and smoothly on the topic",
+      },
+      {
+        id: "2.B.10",
+        label: "They finished their presentation within the allotted time",
+      },
+    ],
+  },
+  {
+    title: "Audience relations",
+    questions: [
+      { id: "2.C.1", label: "They introduced themselves warmly" },
+      {
+        id: "2.C.2",
+        label:
+          "They were able to encourage participation from the participants",
+      },
+      {
+        id: "2.C.3",
+        label: "They were open to the ideas of the participants",
+      },
+      {
+        id: "2.C.4",
+        label: "They were responsive to the needs of the participants",
+      },
+      {
+        id: "2.C.5",
+        label:
+          "They were able to establish a relaxed rapport with their audience",
+      },
+      { id: "2.C.6", label: "They were accommodating and friendly" },
+      {
+        id: "2.C.7",
+        label: "They projected a professional but approachable image",
+      },
+    ],
+  },
+  {
+    title: "Appearance",
+    questions: [
+      { id: "2.D.1", label: "They are well groomed/neat" },
+      { id: "2.D.2", label: "They are properly dressed for the event" },
+    ],
+  },
+  {
+    title: "Facilities",
+    questions: [
+      { id: "3.1", label: "The session room was clean and orderly" },
+      {
+        id: "3.2",
+        label: "The room was comfortable and conducive to learning",
+      },
+      {
+        id: "3.3",
+        label: "The room temperature was neither too hot nor too cold",
+      },
+      {
+        id: "3.4",
+        label: "There was adequate and proper lighting at the session room",
+      },
+      { id: "3.5", label: "The computer was working well" },
+      { id: "3.6", label: "The equipment used helped enhance my learning" },
+      { id: "3.7", label: "The handouts were adequate" },
+      { id: "3.8", label: "I am satisfied with the quality of handouts" },
+      { id: "3.9", label: "The handouts were relevant to the course" },
+      { id: "3.10", label: "The training supplies were readily available" },
+    ],
+  },
+  {
+    title: "Food",
+    questions: [
+      { id: "4.1", label: "The food tasted good" },
+      { id: "4.2", label: "The amount of food served was adequate" },
+      { id: "4.3", label: "The food was balanced and nutritious" },
+      { id: "4.4", label: "The food was served at an appropriate time" },
+      { id: "4.5", label: "The menu served was varied" },
+      {
+        id: "4.6",
+        label: "The plates, utensils and other food containers were clean",
+      },
+    ],
+  },
+  {
+    title: "Training/Support Team",
+    questions: [
+      {
+        id: "5.1",
+        label: "They are effective in facilitating the program",
+      },
+      { id: "5.2", label: "They effectively managed the time" },
+      {
+        id: "5.3",
+        label: "They were responsive to the needs of the participants",
+      },
+      { id: "5.4", label: "They are courteous" },
+      { id: "5.5", label: "They are resourceful" },
+      { id: "5.6", label: "They are punctual" },
+    ],
+  },
+];
+
+const dummyName = [
+  "John Doe",
+  "Jane Smith",
+  "Alice Johnson",
+  "Bob Williams",
+  "Charlie Brown",
+];
+
 const transformData = (surveyResults) => {
   return surveyResults.map((section) => ({
     title: section.title,
@@ -332,207 +533,47 @@ const transformData = (surveyResults) => {
 };
 
 const SurveyForm = () => {
+  const { id } = useParams()
+
   const formattedSurveyData = transformData(surveyResults);
   const [activeSection, setActiveSection] = useState<string>("Questions");
+  const [surveyData, setSurveyData] = useState<SurveyState[]>([]);
+  const { getSurveyAnswers } = useTrainingOfficerHook()
+  const [participants, setParticipants] = useState<{participant:{id: number, first_name: string, last_name: string, email: string,}}[]>([])
 
-  const questions = [
-    {
-      title: "Session",
-      questions: [
-        { id: "1.1", label: "The objectives were clearly explained" },
-        { id: "1.2", label: "The objectives were met" },
-        { id: "1.3", label: "It is substantial and extensive" },
-        {
-          id: "1.4",
-          label: "It provided information that is relevant to my actual job",
-        },
-        {
-          id: "1.5",
-          label:
-            "It provided activities that will help advance my professional skills",
-        },
-        {
-          id: "1.6",
-          label: "The activities were appropriate to the participants",
-        },
-        { id: "1.7", label: "The topics were properly sequenced" },
-        {
-          id: "1.8",
-          label: "The time allotted for each presentation was sufficient",
-        },
-        { id: "1.9", label: "The schedule was followed" },
-      ],
-    },
-    {
-      title: "Mastery of the subject Matter",
-      questions: [
-        {
-          id: "2.A.1",
-          label: "They were knowledgeable about the subject matter",
-        },
-        {
-          id: "2.A.2",
-          label: "They were confident in delivering the lecture",
-        },
-        {
-          id: "2.A.3",
-          label: "They were able to cover all the significant topics",
-        },
-        {
-          id: "2.A.4",
-          label: "They were able to address questions adequately",
-        },
-      ],
-    },
-    {
-      title: "Presentation skills",
-      questions: [
-        {
-          id: "2.B.1",
-          label: "They clearly explained the concepts discussed",
-        },
-        {
-          id: "2.B.2",
-          label: "They presented ideas and principles in an organized manner",
-        },
-        {
-          id: "2.B.3",
-          label:
-            "They gave substance to the discussion by mentioning other examples",
-        },
-        {
-          id: "2.B.4",
-          label: "Their discussions were stimulating and interesting",
-        },
-        {
-          id: "2.B.5",
-          label: "Their style of delivery was appropriate for the audience",
-        },
-        { id: "2.B.6", label: "They clearly gave instructions" },
-        {
-          id: "2.B.7",
-          label:
-            "They presented learning materials in clear and logical manner",
-        },
-        {
-          id: "2.B.8",
-          label:
-            "Their pace of discussion was just right (not too slow, not too fast)",
-        },
-        {
-          id: "2.B.9",
-          label:
-            "They spoke clearly, audibly, fluently and smoothly on the topic",
-        },
-        {
-          id: "2.B.10",
-          label: "They finished their presentation within the allotted time",
-        },
-      ],
-    },
-    {
-      title: "Audience relations",
-      questions: [
-        { id: "2.C.1", label: "They introduced themselves warmly" },
-        {
-          id: "2.C.2",
-          label:
-            "They were able to encourage participation from the participants",
-        },
-        {
-          id: "2.C.3",
-          label: "They were open to the ideas of the participants",
-        },
-        {
-          id: "2.C.4",
-          label: "They were responsive to the needs of the participants",
-        },
-        {
-          id: "2.C.5",
-          label:
-            "They were able to establish a relaxed rapport with their audience",
-        },
-        { id: "2.C.6", label: "They were accommodating and friendly" },
-        {
-          id: "2.C.7",
-          label: "They projected a professional but approachable image",
-        },
-      ],
-    },
-    {
-      title: "Appearance",
-      questions: [
-        { id: "2.D.1", label: "They are well groomed/neat" },
-        { id: "2.D.2", label: "They are properly dressed for the event" },
-      ],
-    },
-    {
-      title: "Facilities",
-      questions: [
-        { id: "3.1", label: "The session room was clean and orderly" },
-        {
-          id: "3.2",
-          label: "The room was comfortable and conducive to learning",
-        },
-        {
-          id: "3.3",
-          label: "The room temperature was neither too hot nor too cold",
-        },
-        {
-          id: "3.4",
-          label: "There was adequate and proper lighting at the session room",
-        },
-        { id: "3.5", label: "The computer was working well" },
-        { id: "3.6", label: "The equipment used helped enhance my learning" },
-        { id: "3.7", label: "The handouts were adequate" },
-        { id: "3.8", label: "I am satisfied with the quality of handouts" },
-        { id: "3.9", label: "The handouts were relevant to the course" },
-        { id: "3.10", label: "The training supplies were readily available" },
-      ],
-    },
-    {
-      title: "Food",
-      questions: [
-        { id: "4.1", label: "The food tasted good" },
-        { id: "4.2", label: "The amount of food served was adequate" },
-        { id: "4.3", label: "The food was balanced and nutritious" },
-        { id: "4.4", label: "The food was served at an appropriate time" },
-        { id: "4.5", label: "The menu served was varied" },
-        {
-          id: "4.6",
-          label: "The plates, utensils and other food containers were clean",
-        },
-      ],
-    },
-    {
-      title: "Training/Support Team",
-      questions: [
-        {
-          id: "5.1",
-          label: "They are effective in facilitating the program",
-        },
-        { id: "5.2", label: "They effectively managed the time" },
-        {
-          id: "5.3",
-          label: "They were responsive to the needs of the participants",
-        },
-        { id: "5.4", label: "They are courteous" },
-        { id: "5.5", label: "They are resourceful" },
-        { id: "5.6", label: "They are punctual" },
-      ],
-    },
-  ];
+  console.log(formattedSurveyData)
 
-  const dummyName = [
-    "John Doe",
-    "Jane Smith",
-    "Alice Johnson",
-    "Bob Williams",
-    "Charlie Brown",
-  ];
+  useEffect(() => {
+    const getCourseSurveyAnswers = async () => {
+      const response = await getSurveyAnswers(Number(id))
+      if(response) {
+        console.log(response)
+        const finalSurveyData = formattedSurveyData.map((section) => ({
+          title: section.title,
+          questions: section.questions.map((question) => ({
+            id: question.id,
+            title: question.title,
+            rates: response.stats[question.id] || question.rates, // use existing rates if response missing
+          })),
+        }));
+        setSurveyData(finalSurveyData)
+        setParticipants(response.participants)
+        console.log(finalSurveyData)
+      }
+    }
+    getCourseSurveyAnswers()
+  }, [id])
+
+
+  console.log(participants)
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-between overflow-auto p-5 bg-content-bg">
+      <div className="w-3/4 h-fit py-3">
+        <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
+          <IoArrowBackCircleOutline/>{" "} Go back
+        </button>
+      </div>
       <div className="w-3/4 p-5 h-fit bg-white shadow-md rounded-lg">
         <nav className="w-full h-fit flex flex-row items-center justify-center border-b">
           <button
@@ -549,7 +590,7 @@ const SurveyForm = () => {
             }`}
             onClick={() => setActiveSection("Responses")}
           >
-            Responses (3)
+            Responses ({participants.length})
           </button>
         </nav>
         {activeSection === "Questions" && (
@@ -605,14 +646,14 @@ const SurveyForm = () => {
                 <h6 className="text-p-lg font-medium">Names</h6>
               </header>
               <div className="w-full overflow-auto">
-                {dummyName.map((name, index) => (
+                {participants.map((name, index) => (
                   <p
                     key={index}
                     className={`w-full px-8 py-4 ${
                       index % 2 === 0 ? "" : "bg-slate-50"
                     }`}
                   >
-                    {name}
+                    {name.participant.first_name} {name.participant.last_name}
                   </p>
                 ))}
               </div>
@@ -629,7 +670,7 @@ const SurveyForm = () => {
             </section>
             <section className="w-full h-fit">
               <div className="w-full h-fit">
-                <SurveyCharts trainingSections={formattedSurveyData} />
+                <SurveyCharts trainingSections={surveyData} />
               </div>
             </section>
           </article>

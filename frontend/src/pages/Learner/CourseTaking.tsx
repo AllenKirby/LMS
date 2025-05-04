@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 const CourseTaking = () => {
   const { id } = useParams()
   //states
-  const [collapse, setCollapse] = useState<boolean>(false);
+  const [collapse, setCollapse] = useState<boolean[]>([]);
   const [menus, setMenus] = useState<MenuDataState[]>([])
   const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
   const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
@@ -244,38 +244,51 @@ const CourseTaking = () => {
       )
     );
   }
+  console.log(menus)
+  const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
 
   return (
      <section className="flex flex-row w-full h-full">
-        <nav className="w-1/4 h-full flex flex-col px-10 py-5">
-          <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
-            <IoArrowBackCircleOutline/>{" "} Go back
-          </button>
+        <nav
+          className={`transition-all duration-300 ${
+            collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
+          } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
+        >  
+        <section className="flex items-center justify-between gap-10 pb-3">
+            <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
+              <IoArrowBackCircleOutline/>{" "} Go back
+            </button>
+            <button className="bg-red-300 h-fit rounded-full p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
+          </section>
           {menus && menus.map((item, menuIndex) => (
-            <section key={item.id} className="w-full rounded-md border my-2">
-              <header className={`w-full p-3 flex flex-row items-center justify-between text-f-light bg-c-blue-50 
-                      ${!collapse ? "rounded-t-md" : "rounded-md"}`}
+            <section key={item.id} className="w-full rounded-md my-2">
+              <header className={`w-full p-3 flex flex-row items-center justify-between bg-c-blue-5 text-c-blue-50 border border-c-blue-50
+                ${!collapse[menuIndex] ? "rounded-t-md" : "rounded-md"}`} // Use collapse state for each menu
               >
                 <p>{item.title}</p>
                 <button 
-                  onClick={() => setCollapse(!collapse)}
-                  className={`${!collapse ? "rotate-0" : "rotate-180"}`}
+                  onClick={() => {
+                    const newCollapse = [...collapse];
+                    newCollapse[menuIndex] = !newCollapse[menuIndex]; // Toggle the collapse state for this menu
+                    setCollapse(newCollapse); // Update the collapse state for this menu index
+                  }}
+                  className={`${!collapse[menuIndex] ? "rotate-0" : "rotate-180"}`}
                 >
-                    <FaAngleDown />
+                  <FaAngleDown />
                 </button>
               </header>
-              <div className={`w-full p-3 bg-white rounded-b-md ${!collapse ? "block" : "hidden"}`}>
+              <div className={`w-full p-3 bg-white rounded-b-md ${!collapse[menuIndex] ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50" : "hidden"}`}>
                 {item.modules.map((module: ModulePreview, index) => (
                   <div onClick={() => {
-                      if(!module.required || module.module_progress === 'completed')  {
-                        setCurrentMenuIndex(menuIndex)
-                        setCurrentModuleIndex(index) 
-                        setShowSurveyForm(false)
-                      } else {
-                        return null
-                      }
-                    }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
-                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <CiLock color="red"/> : ""}
+                    if(!module.required || module.module_progress === 'completed') {
+                      setCurrentMenuIndex(menuIndex)
+                      setCurrentModuleIndex(index)
+                      setShowSurveyForm(false)
+                    } else {
+                      return null
+                    }
+                  }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
+                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <div className="flex-1 flex items-center justify-end"><CiLock color="red"/></div> : ""}
                   </div>
                 ))}
               </div>
@@ -285,7 +298,8 @@ const CourseTaking = () => {
         </nav>
         {selectedModule && (
           <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
-            <div className="w-full h-20 bg-c-green-50 flex items-center p-5">
+            <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
+              <button className="bg-red-400 p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
               <h6 className="text-f-light text-h-h6">{!showSurveyForm ? selectedModule.title : 'Survey Form'}</h6>
             </div>
             <div className="flex flex-col items-end gap-5 p-10">

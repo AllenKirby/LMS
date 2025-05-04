@@ -125,7 +125,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
                     <article className="w-full flex items-center justify-between text-p-sm">
                       <p className="text-c-grey-70 flex items-center justify-center gap-1">
                         <MdOutlineCalendarToday size={15} />
-                        {convertDate(user.user.role === 'training_officer' ? (info as CoursesState).cover_image_url  : (info as TraineeCourses).course.created_at)}
+                        {convertDate(user.user.role === 'training_officer' ? (info as CoursesState).created_at  : (info as TraineeCourses).course.created_at)}
                       </p>
                       <p className="text-c-grey-70 flex items-center justify-center gap-1">
                         <LuUsers size={16} />

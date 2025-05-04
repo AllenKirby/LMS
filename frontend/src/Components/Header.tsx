@@ -1,9 +1,10 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 //icons
 import { IoIosArrowDown } from "react-icons/io";
 import { RiNotification2Line } from "react-icons/ri";
+import NIALogo from '../assets/NIAimg.png';
 
 //hooks
 import { useAuthHook } from "../hooks";
@@ -32,6 +33,7 @@ interface UserState {
 
 const Header: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   //const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
@@ -55,7 +57,7 @@ const Header: React.FC = () => {
   return (
     <header className="w-full h-auto py-4 px-4 md:px-14 flex items-center justify-between border-b">
       <section className="flex items-center justify-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-gray-300"></div>
+        <img src={NIALogo} alt="NIA Logo" className="w-12 h-12 rounded-full bg-gray-300" />
         <h1 className="text-p-lg font-medium">NIA-LMS</h1>
       </section>
       <nav className="p-3 hidden md:block">
@@ -118,14 +120,6 @@ const Header: React.FC = () => {
           >
             Resources
           </NavLink>
-          <NavLink
-            to={"survey"}
-            className={({ isActive }) =>
-              `${NavDefault} ${isActive ? NavInactive : NavActive}`
-            }
-          >
-            gform
-          </NavLink>
         </ul>
       </nav>
       <div className="flex items-center justify-center gap-2">
@@ -146,7 +140,7 @@ const Header: React.FC = () => {
                   onClick={() => setDropDown(!dropDown)}
                 />
                 <div className="absolute right-0 bg-white rounded-md p-2 z-20">
-                  <button className="px-3 py-1 rounded-md hover:bg-gray-100">
+                  <button onClick={() => navigate('/trainingofficer/user-profile')} className="px-3 py-1 rounded-md hover:bg-gray-100">
                     Profile
                   </button>
                   <button className="px-3 py-1 rounded-md hover:bg-gray-100">
