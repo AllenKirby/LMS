@@ -12,6 +12,7 @@ type ParticipantUploadedDocumentProps = {
   onClose: () => void;
   data: ExternalParticipantState;
   trainingID: number;
+  trainingTitle?: string; 
 };
 interface FilesState {
   document_status: 'pending' | 'incomplete' | 'completed';
@@ -19,7 +20,7 @@ interface FilesState {
 }
 
 const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = (props) => {
-  const { onClose, data, trainingID } = props
+  const { onClose, data, trainingID, trainingTitle = '' } = props
 
   const openInput = useRef<HTMLInputElement>(null)
   const [files, setFiles] = useState<File[]>([])
@@ -87,14 +88,14 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
     onClose()
   } 
 
-  console.log(trainingID)
+  console.log(data)
   return (
     <>
-      <div className="fixed inset-0 z-20 bg-black opacity-20" />
-      <div onClick={(e) => e.stopPropagation()} className="fixed z-30 left-0 top-0 w-full h-full flex items-center justify-end">
+      <div className="fixed inset-0 z-40 bg-black opacity-20" />
+      <div onClick={(e) => e.stopPropagation()} className="fixed z-50 left-0 top-0 w-full h-full flex items-center justify-end">
         <form onSubmit={markAsComplete} className="w-2/5 h-full bg-f-light z-30 flex flex-col text-f-dark">
           <header className="flex items-center justify-between px-5 py-3">
-            <h6 className="text-p-lg font-medium">{`${data.first_name} ${data.last_name}`}</h6>
+            <h6 className="text-p-lg font-medium">{user.user.role === 'training_officer' ? `${data.first_name} ${data.last_name}` : trainingTitle}</h6>
             <button onClick={onClose}>&times;</button>
           </header>
           <div className='flex flex-col p-4'>
@@ -114,7 +115,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
                 </div>
               )}
           </div>
-          <div className='flex-1 overflow-y-auto p-4'>
+          <div className='flex-1 overflow-y-auto'>
             {(data.status !== 'completed' && user.user.role === 'trainee') && (
               <button type='button' onClick={uploadDocs} className='h-52 w-full rounded-md flex items-center justify-center border-2 border-dashed'>
                 <div className='flex flex-col items-center justify-center'>

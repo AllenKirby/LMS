@@ -1,23 +1,9 @@
 import React from "react";
 import Chart from "react-apexcharts";
-
-type Rates = {
-  [rating: number]: number;
-};
-
-type Question = {
-  id: number;
-  title: string;
-  rates: Rates;
-};
-
-type TrainingSection = {
-  title: string;
-  questions: Question[];
-};
+import { SurveyState } from '../../../types/CourseCreationTypes'
 
 type Props = {
-  trainingSections: TrainingSection[];
+  trainingSections: SurveyState[];
 };
 
 const SurveyCharts: React.FC<Props> = ({ trainingSections }) => {

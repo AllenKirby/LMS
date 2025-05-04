@@ -59,9 +59,6 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
           {/* Check Box */}
           {content.choiceType === "Check Box" && (
             <>
-              <p className="text-p-sm font-medium text-c-grey-50">
-                3 Correct Answers <span className="text-red-500">*</span>
-              </p>
               {content.choices.map((item) => (
                 <div className="flex items-center gap-2 w-full" key={item.choiceID}>
                   <input

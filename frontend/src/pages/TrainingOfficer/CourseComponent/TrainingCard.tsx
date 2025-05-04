@@ -229,7 +229,8 @@ const TrainingCard: React.FC = () => {
                   email: user.user.email,
                   status: (info as TraineeTrainings).status
                 }} 
-                trainingID={Number((info as TraineeTrainings).training_details.id)}
+                trainingID={Number((info as TraineeTrainings).training_details.id)} 
+                trainingTitle={(info as TraineeTrainings).training_details.training_title}
               />
             )}
           </section>

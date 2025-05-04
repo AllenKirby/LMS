@@ -4,7 +4,7 @@ import {
   createRoutesFromElements,
   RouterProvider,
 } from "react-router-dom";
-import Cookie from "universal-cookie";
+//import Cookie from "universal-cookie";
 
 import { NotFoundPage, MainPage } from "./pages";
 import { Home, MyCourse, CourseTaking } from "./pages/Learner";
@@ -30,9 +30,9 @@ import { CourseView } from "./Components";
 import { ProtectedRoute } from "./pages/Auth/ProtectedRoute";
 
 function App() {
-  const cookies = new Cookie();
-  const user = cookies.get("user");
-  const userRoleString = user?.user?.role || null;
+  //const cookies = new Cookie();
+  //const user = cookies.get("user");
+  //const userRoleString = user?.user?.role || null;
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -44,7 +44,7 @@ function App() {
         </Route>
 
         {/* Protected Routes - Trainee */}
-        {/* <Route element={<ProtectedRoute allowedRoles={["trainee"]} userRole={userRoleString} />}> */}
+        <Route element={<ProtectedRoute allowedRoles={["trainee"]} />}>
         <Route path="/trainee" element={<MainPage />}>
           <Route path="home" element={<Home />} />
           <Route path="mycourses" element={<MyCourse />}>
@@ -53,10 +53,10 @@ function App() {
           </Route>
           <Route path="resources" element={<Resources />} />
         </Route>
-        {/* </Route> */}
+        </Route>
 
         {/* Protected Routes - Training Officer */}
-        {/* <Route element={<ProtectedRoute allowedRoles={["training_officer"]} userRole={userRoleString} />}> */}
+        <Route element={<ProtectedRoute allowedRoles={["training_officer"]} />}>
         <Route path="/trainingofficer" element={<MainPage />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseContainer />}>
@@ -66,6 +66,7 @@ function App() {
               element={<ExternalTrainingView />}
             />
             <Route path="courseview/:id" element={<CourseView />} />
+            <Route path="survey/:id" element={<SurveyForm />}/>
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
               <Route
@@ -77,11 +78,10 @@ function App() {
             </Route>
           </Route>
           <Route path="resources" element={<Resources />} />
-          <Route path="survey" element={<SurveyForm />} />
           <Route path="trainee" element={<Trainee />} />
           <Route path="user-profile" element={<ViewUserProfile />} />
         </Route>
-        {/* </Route> */}
+        </Route>
 
         {/* Shared (optional access control) */}
         <Route path="user-profile/:id" element={<ViewUserProfile />} />

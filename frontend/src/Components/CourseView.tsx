@@ -101,7 +101,11 @@ const CourseView = () => {
     setViewEvaluation(!viewEvaluation);
   }
 
-  console.log(selectedCourse as TraineeCourses);
+  const isTraineeCourse = (course: TraineeCourses | CoursesState): course is TraineeCourses => {
+    return (course as TraineeCourses).course !== undefined;
+  };
+  
+  console.log(selectedCourse);
 
   return (
     <section className="w-full h-full px-14 py-10 text-f-dark bg-content-bg flex gap-5">
@@ -109,14 +113,16 @@ const CourseView = () => {
         <nav className="flex items-center justify-between">
           <section className="flex items-center gap-1">
             <button onClick={() => window.history.back()}>&lt;</button>
-            <p>Course &gt;</p>
-            <p>Course Title</p>
+            <p>Course /</p>
+            <p>{user.user.role === "trainee"
+              ? (selectedCourse as TraineeCourses).course.course_title
+              : (selectedCourse as CoursesState).course_title}</p>
           </section>
           <section className="flex gap-2">
             {user.user.role === "training_officer" && (
               <button
                 onClick={editCourse}
-                className="px-2 py-1 rounded-md bg-f-dark text-f-light text-p-sm"
+                className="p-2 rounded-md bg-c-blue-50 text-f-light text-p-sm"
               >
                 Edit Course
               </button>
@@ -126,7 +132,7 @@ const CourseView = () => {
                 onClick={() =>
                   removeCourse((selectedCourse as CoursesState).id)
                 }
-                className="px-2 py-1 rounded-md bg-red-500 text-f-light text-p-sm"
+                className="px-2 py-1 rounded-md border border-red-500 text-red-500 text-p-sm"
               >
                 Delete Course
               </button>
@@ -218,10 +224,22 @@ const CourseView = () => {
           </article>
         </div>
         <section className="w-full flex items-center justify-between">
-          <p className="text-p-lg font-medium">Paticipants (Number)</p>
-          <button onClick={openEvaluation}>
-            View Standing
-          </button>
+          <p className="text-p-lg font-medium">Participants ({isTraineeCourse(selectedCourse) ? selectedCourse.course.participants_display.length : selectedCourse.participants_display.length})</p>
+          <div className="flex gap-2">
+            <button className="px-2 py-1 rounded-md border" onClick={openEvaluation}>
+              Standings
+            </button>
+            {user.user.role === "training_officer" &&
+                <button
+                  onClick={() =>
+                    navigate(`/trainingofficer/courses/survey/${(selectedCourse as CoursesState).id}`)
+                  }
+                  className="px-2 py-1 rounded-md bg-green-500 text-f-light text-p-sm"
+                >
+                  Survey Responses
+                </button>
+            }
+          </div>
         </section>
         <table>
           <thead className="bg-white">

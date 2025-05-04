@@ -85,7 +85,7 @@ const useAuthHook = () => {
   }
 
   const handleSignup = async(data: SignupData) => {
-    console.log(JSON.stringify(data))
+    console.log(data)
     setIsLoading(true)
     setError(null)
     try {
@@ -97,6 +97,9 @@ const useAuthHook = () => {
       if(response.status === 200) {
         setIsLoading(false)
         console.log(response.data)
+        setAuthCookie(response.data);        
+        dispatch(setUser(response.data))
+        handleAuthNavigation(response.data.user.role, navigate);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

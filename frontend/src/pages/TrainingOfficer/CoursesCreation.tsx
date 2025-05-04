@@ -135,8 +135,10 @@ const Courses: React.FC = () => {
     navigate('/trainingofficer/courses/course')
   }
 
+  console.log(courseContentData)
+
   const NavigateTo = () => {
-    if(courseContentData.every(menu => menu.title !== 'Untitled') && courseContentData.every(menu => menu.title !== '') && courseContentData.every(menu => menu.modules.length > 0)) {
+    if(courseContentData.every(menu => menu.title !== 'Untitled') && courseContentData.every(menu => menu.title !== '')) {
       navigate('/trainingofficer/courses/courseCreation/preview')
     } else {
       setShowMessageBox(true);
@@ -151,7 +153,7 @@ const Courses: React.FC = () => {
     }
   }
 
-  console.log(courseOverviewData)
+  console.log(courseContentData)
   
   return (
     <section className="w-full h-screen top-0 left-0 fixed inset-1 flex flex-col bg-content-bg">
