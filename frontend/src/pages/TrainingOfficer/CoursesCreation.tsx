@@ -73,7 +73,7 @@ const Courses: React.FC = () => {
   }
 
   const handleConfirmNavigation = async () => {
-    if(courseOverviewData.course_title !== "" && courseOverviewData.course_description !== "" && courseOverviewData.department !== "" && courseOverviewData.visibility !== "" && courseOverviewData.participants.length > 0 && (courseOverviewData.cover_image_upload || courseOverviewData.cover_image_url)) {
+    if(courseOverviewData.course_title !== "" && courseOverviewData.course_description !== "" && courseOverviewData.department.length > 0 && courseOverviewData.visibility !== "" && courseOverviewData.participants.length > 0) {
       if (pendingNavigation) {
         if(courseOverviewData.submitted) {
           await handleUpdateCourse(courseID, courseOverviewData)

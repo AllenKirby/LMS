@@ -8,7 +8,7 @@ const initialState: CourseData = {
   cover_image_url: '',
   course_title: "",
   course_description: "",
-  department: "",
+  department: [],
   visibility: "",
   participants: [],
   submitted: false
@@ -17,7 +17,7 @@ const initialState: CourseData = {
 type UpdateFieldPayload =
   | { name: "course_title"; value: string }
   | { name: "course_description"; value: string }
-  | { name: "department"; value: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "" }
+  | { name: "department"; value: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[] }
   | { name: "visibility"; value: "public" | "private" | "" }
   | { name: "participants"; value: string[] }
   | { name: "submitted"; value: true | false }

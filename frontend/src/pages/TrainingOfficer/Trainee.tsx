@@ -17,7 +17,7 @@ interface Trainees {
 const Employees = () => {
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
   return (  
-    <section className="w-full h-full shadow-md rounded-md px-12 py-7 bg-white">
+    <section className="w-full h-full shadow-md rounded-md px-12 py-7">
       <ParticipantsList trainees={trainees}/>
     </section>
   );
