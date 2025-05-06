@@ -51,6 +51,7 @@ function App() {
             <Route path=":id" element={<CourseView />} />
             <Route path=":id/learn" element={<CourseTaking />} />
           </Route>
+          <Route path="user-profile" element={<ViewUserProfile />} />
           <Route path="resources" element={<Resources />} />
         </Route>
         </Route>

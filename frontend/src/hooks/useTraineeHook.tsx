@@ -270,6 +270,74 @@ const useTraineeHook = () => {
         }
     }
 
+    const getUserInfo = async(userID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/accounts/${userID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const validatePassword = async(data: {email: string, password: string}) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.post(`${API_URL}/accounts/check/`, data,{
+                withCredentials: true
+            })
+            if(response.status === 200){
+                setIsLoading(false)
+                return response.data
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const updateUserData = async(data, userID: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.patch(`${API_URL}/accounts/${userID}/`, data,{
+                withCredentials: true
+            })
+            if(response.status === 200){
+                setIsLoading(false)
+                console.log(response.data)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return {
     getTraineeCourses, 
     getCourse, 
@@ -283,6 +351,9 @@ const useTraineeHook = () => {
     deleteUserTrainingDocument,
     submitSurvey,
     getExternalTrainingDocuments,
+    getUserInfo,
+    validatePassword,
+    updateUserData,
     isLoading, 
     error}
 }
