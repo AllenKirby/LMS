@@ -140,7 +140,7 @@ const Header: React.FC = () => {
                   onClick={() => setDropDown(!dropDown)}
                 />
                 <div className="absolute right-0 bg-white rounded-md p-2 z-20">
-                  <button onClick={() => navigate('/trainingofficer/user-profile')} className="px-3 py-1 rounded-md hover:bg-gray-100">
+                  <button onClick={() => navigate('/trainee/user-profile')} className="px-3 py-1 rounded-md hover:bg-gray-100">
                     Profile
                   </button>
                   <button className="px-3 py-1 rounded-md hover:bg-gray-100">
