@@ -12,6 +12,7 @@ import { TrainingEvaluationRecord } from "./Trainee Components";
 
 import { CourseContentOverview } from "./";
 import { CiSquareInfo } from "react-icons/ci";
+import CourseIMG from "../assets/course-img.png"
 import { useEffect, useState } from "react";
 import { setCourseData } from "../redux/CourseDataRedux";
 import { setID } from "../redux/CourseIDRedux";
@@ -39,7 +40,7 @@ const CourseView = () => {
       id: 0,
       course_title: "",
       course_description: "",
-      department: "",
+      department: [],
       visibility: "",
       cover_image_url: "",
       created_at: "",
@@ -180,11 +181,11 @@ const CourseView = () => {
       </div>
       <div className="w-2/5 flex flex-col gap-5">
         <img
-          src={`${API_URL}${
+          src={(selectedCourse as TraineeCourses)?.course?.cover_image_url || (selectedCourse as CoursesState)?.cover_image_url ? `${API_URL}${
             user.user.role === "trainee"
               ? (selectedCourse as TraineeCourses).course.cover_image_url
               : (selectedCourse as CoursesState).cover_image_url
-          }`}
+          }` : CourseIMG}
           alt="Banner Img"
           className="w-full h-2/6 object-fill rounded-lg bg-c-grey-30"
         />
@@ -193,9 +194,13 @@ const CourseView = () => {
             <p className="text-p-sc text-c-green-50">Department</p>
             <p className="text-p-sm flex items-center gap-1 font-medium">
               <CiSquareInfo size={16} />
-              {user.user.role === "trainee"
-                ? (selectedCourse as TraineeCourses).course.department
-                : (selectedCourse as CoursesState).department}
+              {(() => {
+                const dept = user.user.role === "trainee"
+                  ? (selectedCourse as TraineeCourses).course.department
+                  : (selectedCourse as CoursesState).department;
+
+                return Array.isArray(dept) ? dept.join(", ") : String(dept);
+              })()}
             </p>
           </article>
           <article className="w-fit flex flex-col gap-1">

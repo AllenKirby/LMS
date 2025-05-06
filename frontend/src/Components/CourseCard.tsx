@@ -13,7 +13,7 @@ interface TraineeCourses {
   participant_status: string
 }
 type CourseCardState = {
-  selectedDepartment: string | "";
+  selectedDepartment: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
 }
 
 const CourseCard: React.FC<CourseCardState> = (props) => {
@@ -26,8 +26,8 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
 
   useEffect(() => {
     if(courses) {
-      if(selectedDepartment) {
-        const filtered = courses.filter(item => user.user.role === 'training_officer' ? (item as CoursesState)?.department === selectedDepartment : (item as TraineeCourses)?.course?.department === selectedDepartment)
+      if(selectedDepartment && selectedDepartment.length > 0) {
+        const filtered = courses.filter(item => user.user.role === 'training_officer' ? (item as CoursesState)?.department.includes(selectedDepartment) : (item as TraineeCourses)?.course?.department.includes(selectedDepartment))
         if(filtered) {
           setFilteredCourses(filtered as CoursesState[] | TraineeCourses[])
         } else {

@@ -91,7 +91,7 @@ export interface CourseData {
     cover_image_url?: string;
     course_title: string;
     course_description: string;
-    department: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
+    department: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
     visibility: "public" | "private" | "";
     participants: string[];
     participants_display?: {id: number; first_name: string; last_name: string; email: string;}[]
@@ -126,7 +126,7 @@ export interface CoursesState {
     id: number;
     course_title: string;
     course_description: string;
-    department: string;
+    department: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
     visibility: string;
     cover_image_url: string;
     created_at: string;

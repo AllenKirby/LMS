@@ -11,25 +11,13 @@ import {
 } from "react-icons/md";
 
 import Municipalities from "../../assets/json/Municipalites.json";
+import { MessageBox } from "../../Components";
 
 import { Input, Select } from "../../Components/UIComponents";
 import { useAuthHook } from "../../hooks";
 
-interface Signup {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstname: string;
-  lastname: string;
-  sex: string;
-  contactNumber: string;
-  municipality: string;
-  affiliation: string;
-  officeName: string;
-  officeAddress: string;
-  department: string;
-  positionTitle: string;
-}
+import { SignupState } from "../../types/UserTypes";
+import { FcDepartment } from "react-icons/fc";
 
 interface ShowPassword {
   password: boolean;
@@ -49,15 +37,22 @@ const SignupPage: React.FC = () => {
     password: false,
     confirmPassword: false,
   });
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
   const [counter, setCounter] = useState<number>(1);
   const { handleSignup, isLoading } = useAuthHook();
-  const [signupCredentials, setSignupCredentials] = useState<Signup>({
+  const [signupCredentials, setSignupCredentials] = useState<SignupState>({
     email: "",
     password: "",
     confirmPassword: "",
     firstname: "",
     lastname: "",
     sex: "",
+    official_id_number: '',
     contactNumber: "",
     municipality: "",
     affiliation: "",
@@ -68,6 +63,7 @@ const SignupPage: React.FC = () => {
   });
 
   const months = [
+    { label: "Select a Month", value: "" },
     { label: "January", value: "01" },
     { label: "February", value: "02" },
     { label: "March", value: "03" },
@@ -88,24 +84,34 @@ const SignupPage: React.FC = () => {
     { label: "Female", value: "female" },
   ];
 
-  const affiliation = [
-    { label: "Select Affiliation", value: "" },
-    {
-      label: "Employed - Government - Regular",
-      value: "Employed - Government - Regular",
-    },
-    {
-      label: "Employed - Government - Contractual(CSC)",
-      value: "Employed - Government - Contractual(CSC)",
-    },
-    { label: "Private Freelancer", value: "Private Freelancer" },
+  const officeName = [
+    { label: "Select Office", value: "" },
+    { label: "Regional Office", value: "Regional Office" },
+    { label: "Laguna-Rizal IMO", value: "Laguna-Rizal IMO" },
+    { label: "Batangas-Cavite IMO", value: "Batangas-Cavite IMO" },
+    { label: "Quezon IMO", value: "Quezon IMO" },
   ];
 
+  const affiliation = [
+    { label: "Select Affiliation", value: "" },
+    { label: "Employed - Government - Regular", value: "Employed - Government - Regular" },
+    { label: "Employed - Government - Contractual (CSC)", value: "Employed - Government - Contractual (CSC)" },
+    { label: "Employed - Government - Contract of Service / Job Order", value: "Employed - Government - Contract of Service / Job Order" },
+    { label: "Employed - Government - Casual", value: "Employed - Government - Casual" },
+    { label: "Employed - Government - Temporary", value: "Employed - Government - Temporary" },
+    { label: "Employed - Government - Co-terminous", value: "Employed - Government - Co-terminous" },
+    { label: "Seconded / Detailed from another agency", value: "Seconded / Detailed from another agency" },
+  ];
+  
+
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, index) => {
-    const year = currentYear - index;
-    return { label: year.toString(), value: year.toString() };
-  });
+  const years = [
+    { label: "Select a Year", value: "" },
+    ...Array.from({ length: currentYear - 1900 + 1 }, (_, index) => {
+      const year = currentYear - index;
+      return { label: year.toString(), value: year.toString() };
+    }),
+  ];
 
   const increment = () => {
     setCounter((prevCounter) => prevCounter + 1);
@@ -122,6 +128,7 @@ const SignupPage: React.FC = () => {
       last_name: signupCredentials.lastname,
       email: signupCredentials.email,
       sex: signupCredentials.sex,
+      official_id_number: signupCredentials.official_id_number,
       birth_date: `${date.year}-${date.month}-${date.day}`,
       address: signupCredentials.municipality,
       contact: signupCredentials.contactNumber,
@@ -129,10 +136,25 @@ const SignupPage: React.FC = () => {
       affiliation: signupCredentials.affiliation,
       office_name: signupCredentials.officeName,
       office_address: signupCredentials.officeAddress,
-      division: signupCredentials.department,
+      department: signupCredentials.department,
       position_title: signupCredentials.positionTitle,
     };
-    await handleSignup(data);
+    const isFormComplete =
+      Object.values(date).every((value) => value.trim() !== "") &&
+      Object.values(signupCredentials).every((value) => value.trim() !== "");
+    if(isFormComplete) {
+      await handleSignup(data);
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Fields",
+        message: "Please fill in all required fields before continuing.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -379,6 +401,22 @@ const SignupPage: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-col">
+              <label className="mb-1">Official ID Number</label>
+              <div className="w-full">
+                <Input
+                  type="text"
+                  styling="tertiary"
+                  value={signupCredentials.official_id_number}
+                  onChange={(e) =>
+                    setSignupCredentials({
+                      ...signupCredentials,
+                      official_id_number: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
               <label className="mb-1">Contact Number</label>
               <div className="flex flex-row gap-2">
                 <div className="w-fit flex items-center justify-center gap-2 bg-c-grey-5 rounded-md px-3">
@@ -453,7 +491,7 @@ const SignupPage: React.FC = () => {
             <div className="flex flex-col">
               <label className="mb-1">Affiliation</label>
               <Select
-                value={signupCredentials.sex}
+                value={signupCredentials.affiliation}
                 onChange={(e) =>
                   setSignupCredentials({
                     ...signupCredentials,
@@ -465,16 +503,15 @@ const SignupPage: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Office Name</label>
-              <Input
-                type="text"
-                styling="tertiary"
-                placeholder=""
+              <Select
+                value={signupCredentials.officeName}
                 onChange={(e) =>
                   setSignupCredentials({
                     ...signupCredentials,
                     officeName: e.target.value,
                   })
                 }
+                options={officeName}
               />
             </div>
             <div className="flex flex-col">
@@ -509,7 +546,7 @@ const SignupPage: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <label className="mb-1">
-                Official Position Title(Appointment / Contract)
+                Designation
               </label>
               <Input
                 type="text"
@@ -573,6 +610,7 @@ const SignupPage: React.FC = () => {
           </span>
         </p>
       </section>
+      {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </form>
   );
 };
