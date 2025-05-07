@@ -25,8 +25,8 @@ const TrainingCard: React.FC = () => {
   const [selectedTraining, setSelectedTraining] = useState<number | null>(null);
   const user = useSelector((state: {user: UserState}) => state.user)
   const externalTrainings = useSelector(
-    (state: { externalTrainingData: TrainingDataState[] | TraineeTrainings[] }) =>
-      state.externalTrainingData
+    (state: { externalTrainingData?: TrainingDataState[] | TraineeTrainings[] }) =>
+      state.externalTrainingData || []
   );
   const [trainingData, setTrainingData] = useState<TrainingDataState>({
     training_title: '',
@@ -69,6 +69,11 @@ const TrainingCard: React.FC = () => {
   
   return (
     <>
+    {externalTrainings.length === 0 && (
+        <p className="text-center col-span-5 text-c-grey-50 w-full">
+          No trainings available.
+        </p>
+      )}
       {externalTrainings && user.user.role === 'training_officer' && (
         externalTrainings.map((info, index) => (
           <section
