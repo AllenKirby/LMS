@@ -12,19 +12,21 @@ interface LoginCredentials {
   password: string;
 }
 
-interface SignupData {
+interface SignupState {
   email: string;
   password: string;
   first_name: string;
   last_name: string;
   sex: string;
+  birth_date: string;
+  official_id_number: string;
   contact: string;
   address: string;
   affiliation: string;
   office_name: string;
   office_address: string;
-  division: string
-  position_title: string
+  department: string;
+  position_title: string;
 }
 
 const useAuthHook = () => {
@@ -51,6 +53,7 @@ const useAuthHook = () => {
       }  
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
+        setIsLoading(false)
         console.log(error.response?.data?.message);
         setError(error.response?.data?.message || "Something went wrong");
       } else {
@@ -84,7 +87,7 @@ const useAuthHook = () => {
     }
   }
 
-  const handleSignup = async(data: SignupData) => {
+  const handleSignup = async(data: SignupState) => {
     console.log(data)
     setIsLoading(true)
     setError(null)
