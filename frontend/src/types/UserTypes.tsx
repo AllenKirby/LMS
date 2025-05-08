@@ -18,8 +18,7 @@ export interface User {
   export interface SignupState {
     email: string;
     password: string;
-    confirmPassword: string;
-    firstname: string;
+    first_name: string;
     lastname: string;
     sex: string;
     official_id_number: string;

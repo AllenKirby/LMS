@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
   //router
   const navigate = useNavigate();
   //hooks
-  const { handleLogin, isLoading } = useAuthHook();
+  const { handleLogin, isLoading, error } = useAuthHook();
   //states
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
@@ -40,8 +40,8 @@ const LoginPage: React.FC = () => {
   });
 
   const login = async (data: LoginForm) => {
-    console.log(data, "Login attempt...");
     await handleLogin(data);
+    
   };
 
   const handleButtonClick = async () => {
@@ -58,6 +58,11 @@ const LoginPage: React.FC = () => {
         </p>
       </section>
       <section className="flex flex-col gap-6 py-10">
+        {error && (
+          <div className="border border-red-500 rounded-md p-2 bg-red-100 text-center">
+            <p className="text-red-500">{error}</p> 
+          </div>
+        )}
         <div>
           <label>Email Address</label>
           <div className="relative w-auto h-auto mt-1">

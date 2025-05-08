@@ -81,7 +81,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
                 className="px-2 py-1 outline-none rounded-md bg-c-grey-5 font-medium text-p-sm">
                 <option value="Multiple Choice">Multiple Choice</option>
                 <option value="Check Box">Check Box</option>
-                <option value="Text Answer">Text Answer</option>
+                {/* <option value="Text Answer">Text Answer</option> */}
                 <option value="True or False">True or False</option>
              </select>
             <div className="flex items-center justify-center gap-2">

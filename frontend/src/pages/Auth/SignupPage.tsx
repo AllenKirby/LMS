@@ -16,9 +16,6 @@ import { MessageBox } from "../../Components";
 import { Input, Select } from "../../Components/UIComponents";
 import { useAuthHook } from "../../hooks";
 
-import { SignupState } from "../../types/UserTypes";
-import { FcDepartment } from "react-icons/fc";
-
 interface ShowPassword {
   password: boolean;
   confirmPassword: boolean;
@@ -27,6 +24,24 @@ interface ShowPassword {
 interface Municipality {
   label: string;
   value: string;
+}
+
+interface SignupState {
+  email: string;
+  confirmPassword: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+  sex: string;
+  birthdate: string;
+  official_id_number: string;
+  contactNumber: string;
+  address: string;
+  affiliation: string;
+  officeName: string;
+  officeAddress: string;
+  department: string;
+  positionTitle: string;
 }
 
 const SignupPage: React.FC = () => {
@@ -48,13 +63,14 @@ const SignupPage: React.FC = () => {
   const [signupCredentials, setSignupCredentials] = useState<SignupState>({
     email: "",
     password: "",
-    confirmPassword: "",
+    confirmPassword: '',
     firstname: "",
     lastname: "",
     sex: "",
+    birthdate: '',
     official_id_number: '',
     contactNumber: "",
-    municipality: "",
+    address: "",
     affiliation: "",
     officeName: "",
     officeAddress: "",
@@ -130,7 +146,7 @@ const SignupPage: React.FC = () => {
       sex: signupCredentials.sex,
       official_id_number: signupCredentials.official_id_number,
       birth_date: `${date.year}-${date.month}-${date.day}`,
-      address: signupCredentials.municipality,
+      address: signupCredentials.address,
       contact: signupCredentials.contactNumber,
       password: signupCredentials.password,
       affiliation: signupCredentials.affiliation,
@@ -443,14 +459,14 @@ const SignupPage: React.FC = () => {
               <div className="relative">
                 <Input
                   type="text"
-                  value={signupCredentials.municipality}
+                  value={signupCredentials.address}
                   placeholder="Select Municipality"
                   styling="tertiary"
                   onChange={(e) => {
                     setMunicipalitiesSearch(e.target.value);
                     setSignupCredentials({
                       ...signupCredentials,
-                      municipality: e.target.value,
+                      address: e.target.value,
                     });
                   }}
                 />
@@ -471,7 +487,7 @@ const SignupPage: React.FC = () => {
                             onClick={() => {
                               setSignupCredentials({
                                 ...signupCredentials,
-                                municipality: municipality.value,
+                                address: municipality.value,
                               });
                               setMunicipalitiesSearch("");
                             }}
