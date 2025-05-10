@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
+// Icons
 import { IoMdCheckboxOutline, IoIosAt } from "react-icons/io";
 import { GoLock } from "react-icons/go";
 import { FiEye, FiEyeOff } from "react-icons/fi";
@@ -12,7 +16,6 @@ import {
 
 import Municipalities from "../../assets/json/Municipalites.json";
 import { MessageBox } from "../../Components";
-
 import { Input, Select } from "../../Components/UIComponents";
 import { useAuthHook } from "../../hooks";
 
@@ -26,23 +29,47 @@ interface Municipality {
   value: string;
 }
 
-interface SignupState {
-  email: string;
-  confirmPassword: string;
-  password: string;
-  firstname: string;
-  lastname: string;
-  sex: string;
-  birthdate: string;
-  official_id_number: string;
-  contactNumber: string;
-  address: string;
-  affiliation: string;
-  officeName: string;
-  officeAddress: string;
-  department: string;
-  positionTitle: string;
-}
+const signupSchema = yup.object({
+  // Step 1: Login Credentials
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required!"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      "Password must contain at least one uppercase, one lowercase, one number and one special character"
+    ),
+  confirmPassword: yup
+    .string()
+    .required("Please confirm your password")
+    .oneOf([yup.ref("password")], "Passwords must match"),
+  firstname: yup.string().required("First name is required"),
+  lastname: yup.string().required("Last name is required"),
+
+  // Step 2: Personal Information
+  sex: yup.string().required("Sex is required"),
+  birthdate: yup.date().required("Birthdate is required"),
+  official_id_number: yup.string().required("Official ID number is required"),
+  contactNumber: yup
+    .string()
+    .required("Contact number is required")
+    .matches(/^[0-9]{10}$/, "Must be a valid 10-digit number"),
+  address: yup.string().required("Address is required"),
+
+  // Step 3: Affiliation
+  affiliation: yup.string().required("Affiliation is required"),
+  officeName: yup.string().required("Office name is required"),
+  officeAddress: yup.string().required("Office address is required"),
+  department: yup.string().required("Department is required"),
+  designation: yup.string().required("Designation is required"),
+  positionTitle: yup.string().required("Position title is required"),
+});
+
+type SignupForm = yup.InferType<typeof signupSchema>;
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -53,29 +80,27 @@ const SignupPage: React.FC = () => {
     confirmPassword: false,
   });
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
-  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+  const [messageInfo, setMessageInfo] = useState<{
+    status: "success" | "error" | "warning" | "info" | "";
+    title: string;
+    message: string;
+  }>({
     status: "",
     title: "",
-    message: ""
+    message: "",
   });
   const [counter, setCounter] = useState<number>(1);
   const { handleSignup, isLoading } = useAuthHook();
-  const [signupCredentials, setSignupCredentials] = useState<SignupState>({
-    email: "",
-    password: "",
-    confirmPassword: '',
-    firstname: "",
-    lastname: "",
-    sex: "",
-    birthdate: '',
-    official_id_number: '',
-    contactNumber: "",
-    address: "",
-    affiliation: "",
-    officeName: "",
-    officeAddress: "",
-    department: "",
-    positionTitle: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+    setValue,
+  } = useForm<SignupForm>({
+    resolver: yupResolver(signupSchema),
+    mode: "onChange",
   });
 
   const months = [
@@ -110,15 +135,35 @@ const SignupPage: React.FC = () => {
 
   const affiliation = [
     { label: "Select Affiliation", value: "" },
-    { label: "Employed - Government - Regular", value: "Employed - Government - Regular" },
-    { label: "Employed - Government - Contractual (CSC)", value: "Employed - Government - Contractual (CSC)" },
-    { label: "Employed - Government - Contract of Service / Job Order", value: "Employed - Government - Contract of Service / Job Order" },
-    { label: "Employed - Government - Casual", value: "Employed - Government - Casual" },
-    { label: "Employed - Government - Temporary", value: "Employed - Government - Temporary" },
-    { label: "Employed - Government - Co-terminous", value: "Employed - Government - Co-terminous" },
-    { label: "Seconded / Detailed from another agency", value: "Seconded / Detailed from another agency" },
+    {
+      label: "Employed - Government - Regular",
+      value: "Employed - Government - Regular",
+    },
+    {
+      label: "Employed - Government - Contractual (CSC)",
+      value: "Employed - Government - Contractual (CSC)",
+    },
+    {
+      label: "Employed - Government - Contract of Service / Job Order",
+      value: "Employed - Government - Contract of Service / Job Order",
+    },
+    {
+      label: "Employed - Government - Casual",
+      value: "Employed - Government - Casual",
+    },
+    {
+      label: "Employed - Government - Temporary",
+      value: "Employed - Government - Temporary",
+    },
+    {
+      label: "Employed - Government - Co-terminous",
+      value: "Employed - Government - Co-terminous",
+    },
+    {
+      label: "Seconded / Detailed from another agency",
+      value: "Seconded / Detailed from another agency",
+    },
   ];
-  
 
   const currentYear = new Date().getFullYear();
   const years = [
@@ -129,53 +174,75 @@ const SignupPage: React.FC = () => {
     }),
   ];
 
-  const increment = () => {
-    setCounter((prevCounter) => prevCounter + 1);
-  };
+  useEffect(() => {
+    if (date.day && date.month && date.year) {
+      setValue("birthdate", new Date(`${date.year}-${date.month}-${date.day}`));
+    }
+  }, [date, setValue]);
 
-  const decrement = () => {
-    setCounter((prevCounter) => prevCounter - 1);
-  };
+  const increment = async () => {
+    let isValid = false;
 
-  const signup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const data = {
-      first_name: signupCredentials.firstname,
-      last_name: signupCredentials.lastname,
-      email: signupCredentials.email,
-      sex: signupCredentials.sex,
-      official_id_number: signupCredentials.official_id_number,
-      birth_date: `${date.year}-${date.month}-${date.day}`,
-      address: signupCredentials.address,
-      contact: signupCredentials.contactNumber,
-      password: signupCredentials.password,
-      affiliation: signupCredentials.affiliation,
-      office_name: signupCredentials.officeName,
-      office_address: signupCredentials.officeAddress,
-      department: signupCredentials.department,
-      position_title: signupCredentials.positionTitle,
-    };
-    const isFormComplete =
-      Object.values(date).every((value) => value.trim() !== "") &&
-      Object.values(signupCredentials).every((value) => value.trim() !== "");
-    if(isFormComplete) {
-      await handleSignup(data);
+    if (counter === 1) {
+      isValid = await trigger([
+        "email",
+        "password",
+        "confirmPassword",
+        "firstname",
+        "lastname",
+      ]);
+    } else if (counter === 2) {
+      isValid = await trigger([
+        "sex",
+        "birthdate",
+        "official_id_number",
+        "contactNumber",
+        "address",
+      ]);
+    }
+
+    if (isValid) {
+      setCounter((prev) => prev + 1);
     } else {
       setShowMessageBox(true);
       setMessageInfo({
         status: "error",
-        title: "Missing Required Fields",
-        message: "Please fill in all required fields before continuing.",
-      })
-      setTimeout(() => {
-        setShowMessageBox(false);
-      }, 2000);
+        title: "Validation Error",
+        message:
+          "Please fill in all required fields correctly before continuing.",
+      });
+      setTimeout(() => setShowMessageBox(false), 2000);
     }
+  };
+
+  const decrement = () => {
+    setCounter((prev) => prev - 1);
+  };
+
+  const onSubmit = async (data: SignupForm) => {
+    const formattedData = {
+      first_name: data.firstname,
+      last_name: data.lastname,
+      email: data.email,
+      sex: data.sex,
+      official_id_number: data.official_id_number,
+      birth_date: data.birthdate.toISOString().split("T")[0],
+      address: data.address,
+      contact: data.contactNumber,
+      password: data.password,
+      affiliation: data.affiliation,
+      office_name: data.officeName,
+      office_address: data.officeAddress,
+      department: data.department,
+      position_title: data.positionTitle,
+    };
+
+    await handleSignup(formattedData);
   };
 
   return (
     <form
-      onSubmit={signup}
+      onSubmit={handleSubmit(onSubmit)}
       className="w-4/5 h-full py-10 flex flex-col justify-between"
     >
       <section className="w-full h-auto flex flex-col">
@@ -238,16 +305,16 @@ const SignupPage: React.FC = () => {
                 <Input
                   type="email"
                   styling="secondary"
-                  value={signupCredentials.email}
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      email: e.target.value,
-                    })
-                  }
+                  {...register("email")}
                   placeholder="Enter valid email address"
+                  error={!!errors.email}
                 />
               </div>
+              {errors.email && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Password</label>
@@ -259,14 +326,9 @@ const SignupPage: React.FC = () => {
                 <Input
                   type={showPassword.password ? "text" : "password"}
                   styling="primary"
-                  value={signupCredentials.password}
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      password: e.target.value,
-                    })
-                  }
+                  {...register("password")}
                   placeholder="Enter your password"
+                  error={!!errors.password}
                 />
                 <button
                   type="button"
@@ -290,6 +352,11 @@ const SignupPage: React.FC = () => {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Confirm Password</label>
@@ -299,16 +366,11 @@ const SignupPage: React.FC = () => {
                   size={24}
                 />
                 <Input
-                  type={showPassword.confirmPassword ? "text" : "password"}
+                  type={showPassword.password ? "text" : "password"}
                   styling="primary"
-                  value={signupCredentials.confirmPassword}
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  placeholder="Confirm your password"
+                  {...register("confirmPassword")}
+                  placeholder="Enter your password"
+                  error={!!errors.confirmPassword}
                 />
                 <button
                   type="button"
@@ -332,6 +394,11 @@ const SignupPage: React.FC = () => {
                   )}
                 </button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
             <div className="w-full flex gap-5">
               <div className="w-1/2 flex flex-col">
@@ -339,30 +406,30 @@ const SignupPage: React.FC = () => {
                 <Input
                   type="text"
                   styling="tertiary"
-                  value={signupCredentials.firstname}
+                  {...register("firstname")}
                   placeholder="Enter your firstname"
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      firstname: e.target.value,
-                    })
-                  }
+                  error={!!errors.firstname}
                 />
+                {errors.firstname && (
+                  <p className="text-p-sm text-red-500 mt-1">
+                    {errors.firstname.message}
+                  </p>
+                )}
               </div>
               <div className="w-1/2 flex flex-col">
                 <label className="mb-1">Lastname</label>
                 <Input
                   type="text"
                   styling="tertiary"
-                  value={signupCredentials.lastname}
-                  placeholder="Enter you lastname"
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      lastname: e.target.value,
-                    })
-                  }
+                  {...register("lastname")}
+                  placeholder="Enter your lastname"
+                  error={!!errors.lastname}
                 />
+                {errors.lastname && (
+                  <p className="text-p-sm text-red-500 mt-1">
+                    {errors.lastname.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -371,16 +438,24 @@ const SignupPage: React.FC = () => {
           <div className="w-full h-fit text-f-dark flex flex-col gap-6">
             <div className="flex flex-col">
               <label className="mb-1">Sex</label>
-              <Select
-                value={signupCredentials.sex}
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    sex: e.target.value,
-                  })
-                }
-                options={sex}
-              />
+              <select
+                {...register("sex")}
+                className={`w-full p-3 rounded-md focus:outline-green-950 border ${
+                  errors.sex ? "border-red-500" : " border-f-gray"
+                }`}
+                defaultValue=""
+              >
+                {sex.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.sex && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.sex.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Birthdate</label>
@@ -396,13 +471,33 @@ const SignupPage: React.FC = () => {
                   />
                 </div>
                 <div className="w-2/5">
-                  <Select
+                  <select
                     value={date.month}
-                    onChange={(e) =>
-                      setDate({ ...date, month: e.target.value })
-                    }
-                    options={months}
-                  />
+                    onChange={(e) => {
+                      setDate({ ...date, month: e.target.value });
+                      setValue(
+                        "birthdate",
+                        new Date(`${date.year}-${e.target.value}-${date.day}`),
+                        {
+                          shouldValidate: true,
+                        }
+                      );
+                    }}
+                    className={`w-full p-3 rounded-md focus:outline-green-950 border ${
+                      errors.birthdate ? "border-red-500" : " border-f-gray"
+                    }`}
+                  >
+                    {months.map((month) => (
+                      <option key={month.value} value={month.value}>
+                        {month.label}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.birthdate && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.birthdate.message}
+                    </p>
+                  )}
                 </div>
                 <div className="w-2/5">
                   <Select
@@ -422,14 +517,14 @@ const SignupPage: React.FC = () => {
                 <Input
                   type="text"
                   styling="tertiary"
-                  value={signupCredentials.official_id_number}
-                  onChange={(e) =>
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      official_id_number: e.target.value,
-                    })
-                  }
+                  {...register("official_id_number")}
+                  error={!!errors.official_id_number}
                 />
+                {errors.official_id_number && (
+                  <p className="text-p-sm text-red-500 mt-1">
+                    {errors.official_id_number.message}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex flex-col">
@@ -440,38 +535,39 @@ const SignupPage: React.FC = () => {
                 </div>
                 <div className="w-full">
                   <Input
-                    type="number"
-                    placeholder="9123456789"
+                    type="text"
                     styling="tertiary"
-                    value={signupCredentials.contactNumber}
-                    onChange={(e) =>
-                      setSignupCredentials({
-                        ...signupCredentials,
-                        contactNumber: e.target.value,
-                      })
-                    }
+                    {...register("contactNumber")}
+                    placeholder="9123456789"
+                    error={!!errors.contactNumber}
                   />
                 </div>
               </div>
+              {errors.contactNumber && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.contactNumber.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Municipality (Region-4A)</label>
               <div className="relative">
                 <Input
                   type="text"
-                  value={signupCredentials.address}
+                  {...register("address")}
+                  value={municipalitiesSearch}
                   placeholder="Select Municipality"
                   styling="tertiary"
+                  error={!!errors.address}
                   onChange={(e) => {
                     setMunicipalitiesSearch(e.target.value);
-                    setSignupCredentials({
-                      ...signupCredentials,
-                      address: e.target.value,
+                    setValue("address", e.target.value, {
+                      shouldValidate: true,
                     });
                   }}
                 />
                 {municipalitiesSearch && (
-                  <div className="w-full p-2 absolute left-0 bg-white">
+                  <div className="w-full p-2 absolute left-0 bg-white shadow-lg z-10 max-h-60 overflow-y-auto">
                     <div className="flex flex-col">
                       {Municipalities.region4A
                         .filter((municipality: Municipality) =>
@@ -483,13 +579,12 @@ const SignupPage: React.FC = () => {
                           <button
                             type="button"
                             key={municipality.value}
-                            className="text-left"
+                            className="text-left p-2 hover:bg-gray-100"
                             onClick={() => {
-                              setSignupCredentials({
-                                ...signupCredentials,
-                                address: municipality.value,
+                              setValue("address", municipality.value, {
+                                shouldValidate: true,
                               });
-                              setMunicipalitiesSearch("");
+                              setMunicipalitiesSearch(municipality.label);
                             }}
                           >
                             {municipality.label}
@@ -499,6 +594,11 @@ const SignupPage: React.FC = () => {
                   </div>
                 )}
               </div>
+              {errors.address && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.address.message}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -506,43 +606,63 @@ const SignupPage: React.FC = () => {
           <div className="w-full h-fit text-f-dark flex flex-col gap-6">
             <div className="flex flex-col">
               <label className="mb-1">Affiliation</label>
-              <Select
-                value={signupCredentials.affiliation}
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    affiliation: e.target.value,
-                  })
-                }
-                options={affiliation}
-              />
+              <select
+                {...register("affiliation", {
+                  required: "Affiliation is required",
+                })}
+                className={`w-full p-3 rounded-md focus:outline-green-950 border  ${
+                  errors.affiliation ? "border-red-500" : "border-f-gray"
+                }`}
+                defaultValue=""
+              >
+                {affiliation.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.affiliation && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.affiliation.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Office Name</label>
-              <Select
-                value={signupCredentials.officeName}
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    officeName: e.target.value,
-                  })
-                }
-                options={officeName}
-              />
+              <select
+                {...register("officeName", {
+                  required: "Office name is required",
+                })}
+                className={`w-full p-3 rounded-md focus:outline-green-950 border  ${
+                  errors.officeName ? "border-red-500" : "border-f-gray"
+                }`}
+                defaultValue=""
+              >
+                {officeName.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.officeName && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.officeName.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">Office Address</label>
               <Input
                 type="text"
                 styling="tertiary"
-                placeholder=""
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    officeAddress: e.target.value,
-                  })
-                }
+                {...register("officeAddress")}
+                error={!!errors.officeAddress}
               />
+              {errors.officeAddress && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.officeAddress.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
               <label className="mb-1">
@@ -551,30 +671,28 @@ const SignupPage: React.FC = () => {
               <Input
                 type="text"
                 styling="tertiary"
-                placeholder=""
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    department: e.target.value,
-                  })
-                }
+                {...register("department")}
+                error={!!errors.department}
               />
+              {errors.department && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.department.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col">
-              <label className="mb-1">
-                Designation
-              </label>
+              <label className="mb-1">Designation</label>
               <Input
                 type="text"
                 styling="tertiary"
-                placeholder=""
-                onChange={(e) =>
-                  setSignupCredentials({
-                    ...signupCredentials,
-                    positionTitle: e.target.value,
-                  })
-                }
+                {...register("designation")}
+                error={!!errors.designation}
               />
+              {errors.designation && (
+                <p className="text-p-sm text-red-500 mt-1">
+                  {errors.designation.message}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -626,7 +744,13 @@ const SignupPage: React.FC = () => {
           </span>
         </p>
       </section>
-      {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
+      {showMessageBox && (
+        <MessageBox
+          status={messageInfo.status}
+          title={messageInfo.title}
+          message={messageInfo.message}
+        />
+      )}
     </form>
   );
 };
