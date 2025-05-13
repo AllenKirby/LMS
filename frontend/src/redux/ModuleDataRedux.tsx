@@ -56,7 +56,7 @@ const ModuleDataRedux = createSlice({
             if (questionnaire) {
                 questionnaire[field] = value as never;
             }
-            if (module.key_answers) {
+            if (field === 'choiceType' && module.key_answers) {
                 module.key_answers = module.key_answers.filter((item) => !Object.prototype.hasOwnProperty.call(item, questionnaireID));
             }
         }

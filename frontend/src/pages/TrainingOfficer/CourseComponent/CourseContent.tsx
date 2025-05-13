@@ -8,6 +8,8 @@ import { useTrainingOfficerHook } from '../../../hooks'
 import { FiPlus, FiUpload, FiSave } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
+import Empty from '../../../assets/Empty.png'
+
 import { 
   setModule, 
   setContent, 
@@ -395,7 +397,10 @@ const CourseContent = () => {
           </div>
         ) : (
           <div className='w-full h-full flex items-center justify-center'>
-            <h1 className='text-h-h6 font-medium'>No Module Selected</h1>
+            <div className='flex flex-col items-center justify-center'>
+              <img src={Empty} alt="Empty" className='w-52 h-52' />
+              <h1 className='text-h-h6 font-medium'>No Module Selected</h1>
+            </div>
           </div>
         )}
       </div>

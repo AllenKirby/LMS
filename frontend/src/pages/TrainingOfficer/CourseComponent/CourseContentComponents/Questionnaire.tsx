@@ -232,7 +232,11 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
                             <p className="text-c-grey-50">{value.length > 0 ? value.join(', ') : ''}</p>
                             <FaAngleDown size={20} className="text-f-dark cursor-pointer"/>
                         </button>
-                        <div className={`${customSelectOpen ? "block" : "hidden"} px-2 pt-1 h-fit w-48 rounded-md bg-c-grey-5 absolute mt-1 shadow-sm`}>
+                        <div
+                            className={`${customSelectOpen ? "block" : "hidden"} fixed inset-0 z-30`}
+                            onClick={() => setCustomSelectOpen(!customSelectOpen)}
+                            />
+                        <div className={`${customSelectOpen ? "block" : "hidden"} px-2 pt-1 h-fit z-40 w-48 rounded-md bg-c-grey-5 absolute mt-1 shadow-sm`}>
                             {data.choices.map((c) => (
                                 c.choice && 
                                 <label className="cursor-pointer w-full" key={c.choiceID}>

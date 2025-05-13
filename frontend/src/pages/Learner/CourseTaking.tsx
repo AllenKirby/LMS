@@ -246,8 +246,11 @@ const CourseTaking = () => {
       )
     );
   }
-  console.log(selectedModule)
+  console.log(menus)
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
+  const sortedItems = (items: ModulePreview[]) => {
+    return items.sort((a, b) => a.position - b.position);
+  }
 
   return (
      <section className="flex flex-col w-full h-screen top-0 left-0 fixed inset-1">
@@ -289,7 +292,7 @@ const CourseTaking = () => {
                   </button>
                 </header>
                 <div className={`w-full p-3 bg-white rounded-b-md ${!collapse[menuIndex] ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50" : "hidden"}`}>
-                  {item.modules.map((module: ModulePreview, index) => (
+                  {sortedItems(item.modules).map((module: ModulePreview, index) => (
                     <div onClick={() => {
                       if(!module.required || module.module_progress === 'completed') {
                         setCurrentMenuIndex(menuIndex)
