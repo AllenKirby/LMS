@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { FiEdit2, FiUpload } from "react-icons/fi";
 import { FaAngleDown } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,12 +10,44 @@ import { CourseData } from "../../../types/CourseCreationTypes";
 
 const departments = ["IT", "EOD", "AFD", "RIM", "EMU"];
 
+// Define validation schema
+const schema = yup.object().shape({
+  course_title: yup.string().required("Course title is required"),
+  course_description: yup.string().required("Course description is required"),
+  visibility: yup.string().required("Visibility option is required"),
+});
+
 const CourseOverview = () => {
   const dispatch = useDispatch();
-  const courseData = useSelector((state: { courseData: CourseData }) => state.courseData);
+  const courseData = useSelector(
+    (state: { courseData: CourseData }) => state.courseData
+  );
   const API_URL = import.meta.env.VITE_URL;
 
   const [deptDropdownOpen, setDeptDropdownOpen] = useState(false);
+
+  // Initialize react-hook-form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger,
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      course_title: courseData.course_title,
+      course_description: courseData.course_description,
+      visibility: courseData.visibility,
+    },
+  });
+
+  // Update form values when courseData changes
+  useEffect(() => {
+    setValue("course_title", courseData.course_title);
+    setValue("course_description", courseData.course_description);
+    setValue("visibility", courseData.visibility);
+  }, [courseData, setValue]);
 
   const handleImageUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -40,6 +75,15 @@ const CourseOverview = () => {
     dispatch(updateField({ name: "department", value: newSelection }));
   };
 
+  // Handle field changes with validation
+  const handleFieldChange = async (
+    fieldName: keyof typeof schema.fields,
+    value: string
+  ) => {
+    dispatch(updateField({ name: fieldName, value }));
+    setValue(fieldName, value);
+    await trigger(fieldName);
+  };
 
   useEffect(() => console.log(courseData), [courseData]);
 
@@ -53,7 +97,7 @@ const CourseOverview = () => {
 
           {/* Cover Image */}
           <div className="w-full h-[200px] overflow-hidden relative">
-            {(courseData.cover_image_upload || courseData.cover_image_url) ? (
+            {courseData.cover_image_upload || courseData.cover_image_url ? (
               <div>
                 <img
                   className="w-full h-full object-cover"
@@ -66,13 +110,19 @@ const CourseOverview = () => {
                   }
                   alt="Cover"
                 />
-                <button onClick={uploadFile} className="absolute right-5 top-5 bg-white p-2 rounded-md">
+                <button
+                  onClick={uploadFile}
+                  className="absolute right-5 top-5 bg-white p-2 rounded-md"
+                >
                   <FiUpload size={20} />
                 </button>
               </div>
             ) : (
               <div className="w-full h-full border-2 border-dashed border-c-grey-20 rounded-md">
-                <button onClick={uploadFile} className="w-full h-full flex flex-col items-center justify-center">
+                <button
+                  onClick={uploadFile}
+                  className="w-full h-full flex flex-col items-center justify-center"
+                >
                   <FiUpload size={44} />
                   <p className="font-medium">Upload Cover Image</p>
                   <p className="text-c-grey-50">(Max. 20mb, Landscape)</p>
@@ -83,13 +133,23 @@ const CourseOverview = () => {
 
           {/* Title */}
           <div className="w-full flex items-center justify-between mt-5">
-            <input
-              type="text"
-              value={courseData.course_title}
-              onChange={(e) => dispatch(updateField({ name: "course_title", value: e.target.value }))}
-              className="bg-transparent p-1 text-h-h6 outline-none border-b focus:border-c-green-20 w-full"
-              placeholder="Course Title"
-            />
+            <div className="w-full">
+              <input
+                type="text"
+                {...register("course_title")}
+                value={courseData.course_title}
+                onChange={(e) =>
+                  handleFieldChange("course_title", e.target.value)
+                }
+                className="bg-transparent p-1 text-h-h6 outline-none border-b focus:border-c-green-20 w-full"
+                placeholder="Course Title"
+              />
+              {errors.course_title && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.course_title.message}
+                </p>
+              )}
+            </div>
             <FiEdit2 size={20} />
           </div>
 
@@ -97,11 +157,19 @@ const CourseOverview = () => {
           <div className="flex flex-col mt-5">
             <label className="text-c-grey-50">Course Description</label>
             <textarea
+              {...register("course_description")}
               value={courseData.course_description}
-              onChange={(e) => dispatch(updateField({ name: "course_description", value: e.target.value }))}
+              onChange={(e) =>
+                handleFieldChange("course_description", e.target.value)
+              }
               placeholder="Input Course Description"
               className="mt-1 h-24 border rounded-md resize-none p-2 hover:border-c-grey-10 outline-c-green-30"
             />
+            {errors.course_description && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.course_description.message}
+              </p>
+            )}
           </div>
 
           {/* Department Multi-Select */}
@@ -112,7 +180,8 @@ const CourseOverview = () => {
               className="mt-1 px-3 py-2 border rounded-md w-full flex items-center justify-between hover:border-c-grey-10 outline-c-green-30"
             >
               <span className="text-left">
-                {Array.isArray(courseData.department) && courseData.department.length > 0
+                {Array.isArray(courseData.department) &&
+                courseData.department.length > 0
                   ? courseData.department.join(", ")
                   : "Select Department"}
               </span>
@@ -120,19 +189,27 @@ const CourseOverview = () => {
             </button>
             {deptDropdownOpen && (
               <>
-                <div className="fixed inset-0 z-30" onClick={() => setDeptDropdownOpen(!deptDropdownOpen)}/>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setDeptDropdownOpen(!deptDropdownOpen)}
+                />
                 <div className="absolute top-full mt-1 z-40 bg-white border rounded-md shadow-md w-full max-h-40 overflow-y-auto">
                   {departments.map((dept) => (
                     <>
-                      <label key={dept} className="z-50 flex items-center gap-2 px-3 py-2 hover:bg-c-grey-5 cursor-pointer">
+                      <label
+                        key={dept}
+                        className="z-50 flex items-center gap-2 px-3 py-2 hover:bg-c-grey-5 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           className="peer hidden"
-                          checked={courseData.department.includes(dept as Department)}
-                          onChange={() => toggleDepartment(dept  as Department)}
-                        /> 
+                          checked={courseData.department.includes(
+                            dept as Department
+                          )}
+                          onChange={() => toggleDepartment(dept as Department)}
+                        />
                         <div className="w-full px-2 py-1 rounded-md transition-all peer-checked:bg-blue-500 peer-checked:text-white mb-1">
-                            {dept}
+                          {dept}
                         </div>
                       </label>
                     </>
@@ -146,14 +223,22 @@ const CourseOverview = () => {
           <div className="flex flex-col mt-5">
             <label className="text-c-grey-50">Visibility Option</label>
             <select
+              {...register("visibility")}
               value={courseData.visibility}
-              onChange={(e) => dispatch(updateField({ name: "visibility", value: e.target.value as "public" | "private" }))}
+              onChange={(e) => handleFieldChange("visibility", e.target.value)}
               className="mt-1 px-3 py-2 border rounded-md w-full h-fit hover:border-c-grey-10 outline-c-green-30"
             >
-              <option value="" disabled>Select Visibility</option>
+              <option value="" disabled>
+                Select Visibility
+              </option>
               <option value="public">Public</option>
               <option value="private">Private</option>
             </select>
+            {errors.visibility && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.visibility.message}
+              </p>
+            )}
           </div>
         </section>
       </div>
