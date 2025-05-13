@@ -214,6 +214,7 @@ const useTrainingOfficer = () => {
                 const response = res.data
                 if(withFile.length > 0) {
                     await uploadCourseFile(response.id, withFile)
+                    dispatch(setSubmitted({moduleID: response.moduleID, value: true}))
                 } else {
                     dispatch(replaceModule({moduleID: response.moduleID, newModule: response}))
                     dispatch(setSubmitted({moduleID: response.moduleID, value: true}))
@@ -517,6 +518,7 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
+                return true
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -686,6 +688,29 @@ const useTrainingOfficer = () => {
         }
     } 
 
+    const deleteTraining = async(trainingID: number) => {
+        setIsLoading(true)
+        setError(null)
+        try {
+            const response = await axios.delete(`${API_URL}/training/trainings/${trainingID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 204){
+                console.log(response.data)
+                setIsLoading(false)
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return { 
     handleAddCourse, 
     retrieveTrainees, 
@@ -711,6 +736,7 @@ const useTrainingOfficer = () => {
     deleteUserCourseDocument,
     getEvaluationRecord,
     getSurveyAnswers,
+    deleteTraining,
     isLoading, 
     error }
 }

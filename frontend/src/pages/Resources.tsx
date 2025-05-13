@@ -12,8 +12,6 @@ const Resources = () => {
   const [viewResource, setViewResource] = useState<boolean>(false);
   const courses = useSelector((state: {courses?: TraineeCourses[] | CoursesState[]}) => state.courses || []);
   const [courseID, setCourseID] = useState<number>(0)
-
-  console.log(courses)
     
   const handleViewResources = (id: number = 0) => {
     setCourseID(id)

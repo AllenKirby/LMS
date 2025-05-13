@@ -1,6 +1,6 @@
 //assets
 import { MdOutlineCalendarToday } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SlOptions } from "react-icons/sl";
 
 import { TrainingDataState } from '../../../types/CourseCreationTypes'
@@ -8,7 +8,9 @@ import { UserState } from '../../../types/UserTypes'
 import { ExternalTrainingForm, ParticipantUploadedDocument } from "../ExternalTrainingComponent";
 import { ConfirmationModal } from "../../../Components";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTrainingOfficerHook } from "../../../hooks";
+import { deleteTrainingRedux } from '../../../redux/ExternalTrainingDataRedux'
 
 interface TraineeTrainings {
   training_details: TrainingDataState;
@@ -16,7 +18,13 @@ interface TraineeTrainings {
   status: string;
 }
 
-const TrainingCard: React.FC = () => {
+type TrainingCardState = {
+  searchString?: string;
+}
+
+const TrainingCard: React.FC<TrainingCardState> = (props) => {
+  const {searchString = ""} = props
+
   const navigate = useNavigate()
   const [ menuOpen, setMenuOpen ] = useState<boolean>(false);
   const [ editTrainingForm, setEditTraingForm ] = useState<boolean>(false);
@@ -37,8 +45,27 @@ const TrainingCard: React.FC = () => {
     training_provider: '',
     participants: []
   })
+  const [filteredTrainings, setFilteredTrainings] = useState<TrainingDataState[] | TraineeTrainings[]>([])
+  const [trainingID, setTrainingID] = useState<number>(0)
+  const { deleteTraining } = useTrainingOfficerHook()
+  const dispatch = useDispatch()
 
-  console.log(externalTrainings)
+  useEffect(() => {
+    if (externalTrainings) {
+      let filtered = [...externalTrainings];
+
+      // Apply search filter if searchString exists
+      if (searchString && user.user.role === 'training_officer') {
+        filtered = filtered.filter(training =>
+          (training as TrainingDataState).training_title.toLowerCase().includes(searchString.toLowerCase())
+        );
+      }
+
+      setFilteredTrainings(filtered as TrainingDataState[]);
+    } else {
+      setFilteredTrainings([]);
+    }
+  }, [externalTrainings, searchString]);
 
   const isModalOpen = (data?: TrainingDataState) => {
     setEditTraingForm(!editTrainingForm)
@@ -66,16 +93,22 @@ const TrainingCard: React.FC = () => {
       setSelectedTraining(trainingId);
     }
   };
+
+  const handleDeleteTraining = async() => {
+    await deleteTraining(trainingID)
+    dispatch(deleteTrainingRedux(trainingID))
+    setConfirmation(!confirmation)
+  }
   
   return (
     <>
-    {externalTrainings.length === 0 && (
+    {filteredTrainings.length === 0 && (
         <p className="text-center col-span-5 text-c-grey-50 w-full">
           No trainings available.
         </p>
       )}
-      {externalTrainings && user.user.role === 'training_officer' && (
-        externalTrainings.map((info, index) => (
+      {filteredTrainings && user.user.role === 'training_officer' && (
+        filteredTrainings.map((info, index) => (
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
             key={index}
@@ -103,7 +136,7 @@ const TrainingCard: React.FC = () => {
                       </button>
                       <button 
                         className="w-full text-p-sm rounded-md text-left pl-2 py-1 hover:bg-red-500 hover:text-f-light hover:font-medium"
-                        onClick={() => setConfirmation(!confirmation)}
+                        onClick={() => {setConfirmation(!confirmation); setTrainingID(Number((info as TrainingDataState).id))}}
                       >
                         Delete
                       </button>
@@ -251,7 +284,7 @@ const TrainingCard: React.FC = () => {
       {confirmation && (
         <ConfirmationModal 
           onClose={() => setConfirmation(!confirmation)}
-          onConfirm={() => setConfirmation(!confirmation)}
+          onConfirm={handleDeleteTraining}
           title="Remove Training?"
           label="Are You Sure? This Will Permanently Remove External Training"
         />

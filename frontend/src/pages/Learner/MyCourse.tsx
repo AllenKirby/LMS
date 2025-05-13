@@ -11,7 +11,7 @@ interface Filters {
   course: boolean;
   externalCourse: boolean;
   all: boolean;
-  inProgress: boolean;
+  in_progress: boolean;
   completed: boolean;
   saved: boolean;
   sort: string;
@@ -21,8 +21,8 @@ const MyCourse = () => {
   const [selectedFilters, setSelectedFilters] = useState<Filters>({
     course: true,
     externalCourse: true,
-    all: false,
-    inProgress: false,
+    all: true,
+    in_progress: true,
     completed: false,
     saved: false,
     sort: "Latest",
@@ -32,7 +32,7 @@ const MyCourse = () => {
     (state: { externalTrainingData: TrainingDataState[] }) => state.externalTrainingData
   );
 
-  const [activeButtonCourse, setActiveButtonCourse] = useState<string>("");
+  const [activeButtonCourse, setActiveButtonCourse] = useState<"" | "EMU" | "RIM" | "EOD" | "AFD" | "IT">("");
   const { id } = useParams();
   const [collapse, setCollapse] = useState<boolean>(false);
 
@@ -53,7 +53,7 @@ const MyCourse = () => {
 
   const statusOptions: { label: string; key: keyof Filters }[] = [
     { label: "All", key: "all" },
-    { label: "In Progress", key: "inProgress" },
+    { label: "In Progress", key: "in_progress" },
     { label: "Completed", key: "completed" },
     { label: "Saved", key: "saved" },
   ];
@@ -99,7 +99,7 @@ const MyCourse = () => {
                   <p className="text-p-lg">Categories</p>
                 </header>
                 <div className="flex-1 flex flex-col">
-                  {["", "EMU", "RID", "EOD", "AFD", "IT"].map((category) => (
+                  {["", "EMU", "RIM", "EOD", "AFD", "IT"].map((category) => (
                     <button
                       key={category}
                       className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
@@ -107,7 +107,7 @@ const MyCourse = () => {
                           ? "text-c-blue-50 border border-c-blue-50 bg-c-blue-5"
                           : "bg-none text-c-grey-50"
                       }`}
-                      onClick={() => setActiveButtonCourse(category)}
+                      onClick={() => setActiveButtonCourse(category as "" | "EMU" | "RIM" | "EOD" | "AFD" | "IT")}
                     >
                       {!category ? "All" : category}
                     </button>
@@ -197,7 +197,7 @@ const MyCourse = () => {
           {selectedFilters.course || selectedFilters.externalCourse ? (
             <>
               {selectedFilters.course && (
-                <CourseCard selectedDepartment={activeButtonCourse} />
+                <CourseCard selectedDepartment={activeButtonCourse} selectedFilters={selectedFilters} />
               )}
 
               {selectedFilters.externalCourse && (

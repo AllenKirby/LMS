@@ -30,6 +30,8 @@ const ModuleDataRedux = createSlice({
     setSubmitted: (state, action: PayloadAction<{ moduleID: string; value: boolean }>) => {
         const { moduleID, value } = action.payload;
         const module = state.find((mod) => mod.moduleID === moduleID);
+        console.log('module', module)
+        console.log(moduleID, value)
         if(module) module.submitted = value
     },
     setRequired: (state, action: PayloadAction<{ moduleID: string; value: boolean }>) => {
@@ -50,9 +52,12 @@ const ModuleDataRedux = createSlice({
             const questionnaire = module.content.find(
                 (item) => item.type === "questionnaire" && item.questionnaireID === questionnaireID
             ) as Extract<ModuleContent, { type: "questionnaire" }> | undefined;
-    
+            
             if (questionnaire) {
                 questionnaire[field] = value as never;
+            }
+            if (module.key_answers) {
+                module.key_answers = module.key_answers.filter((item) => !Object.prototype.hasOwnProperty.call(item, questionnaireID));
             }
         }
     },

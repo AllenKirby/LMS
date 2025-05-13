@@ -308,7 +308,7 @@ const ViewUserProfile = () => {
       last_name: userData.last_name,
       official_id_number: userData.official_id_number,
       birth_date: `${date.year}-${date.month}-${date.day}`,
-      sex: userData.password,
+      sex: userData.sex,
       municipality: userData.address,
       contact: userData.contact,
       email: userData.email,

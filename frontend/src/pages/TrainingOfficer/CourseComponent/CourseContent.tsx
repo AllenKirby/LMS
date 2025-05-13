@@ -27,14 +27,15 @@ import {
   setRequired,
   setModules
 } from '../../../redux/ModuleDataRedux';
-import {setMenuID, setModuleID} from '../../../redux/IDsRedux'
+import {setMenuID, setModuleID, resetIDs} from '../../../redux/IDsRedux'
 
 import { 
   MenuDataState, 
   ModuleState, 
   ChoicesState, 
   CourseActionType, 
-  IDsState
+  IDsState,
+  FileUploadState
 } from '../../../types/CourseCreationTypes'
 
 const CourseContent = () => {
@@ -83,7 +84,7 @@ const CourseContent = () => {
   
         case "uploadedFile":
         case "document":
-          return item.fileName.trim() !== '' && item.file !== null;
+          return (item as FileUploadState).fileName ||(item as FileUploadState).file !== null;
   
         case "separator":
           return item.content.trim() !== '';
@@ -159,9 +160,14 @@ const CourseContent = () => {
 
   const DeleteModule = (id: string) => {
     dispatch(deleteModule(id))
+    dispatch(resetIDs())
   }
 
   const SetQuestion = (id: string, questionnaireID: string, fieldString: string, dataString: string) => {
+    if(fieldString === 'choiceType') {
+      dispatch(deleteAllChoicesFromQuestionnaire({moduleID: id, questionnaireID: questionnaireID}))
+      dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question", value: dataString}))
+    }
     dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question", value: dataString}))
   }
 
@@ -185,12 +191,10 @@ const CourseContent = () => {
     dispatch(deleteChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID}))
   }
 
-  const DeleteAllChoice = (id: string, questionnaireID: string) => {
-    dispatch(deleteAllChoicesFromQuestionnaire({moduleID: id, questionnaireID: questionnaireID}))
-  }
-
-  const DeleteModulePermanent = async(id: number) => {
+  const DeleteModulePermanent = async(id: number, moduleID: string) => {
     await handleDeleteModule(id, courseID)
+    dispatch(deleteModule(moduleID))
+    dispatch(resetIDs())
   }
 
   const SetContent = (id: string, lessonID: string, field: string, value: string) => {
@@ -214,6 +218,7 @@ const CourseContent = () => {
   }
 
   const getModule = async(id: number) => {
+    console.log(await getSpecificModule(id))
     return await getSpecificModule(id)
   }
 
@@ -236,17 +241,19 @@ const CourseContent = () => {
 
           for (const id of IDs) {
             const fetchedModule = await getModule(Number(id));
+            console.log(fetchedModule)
             fetchedModules.push(fetchedModule);
           }
           console.log(fetchedModules)
           dispatch(setModules(fetchedModules));
         }
-        
+        console.log(modules)
         const module = modules.find(
           module => module.menuID === Number(menuID) && module.moduleID === moduleID
         );
         
         if (module) {
+          console.log(module)
           setSelectedModuleMap(module);
         }
       } catch (error) {
@@ -263,6 +270,8 @@ const CourseContent = () => {
       content: prevModule.content.filter((item) => item.values.document_id !== id)
     }))
   }
+
+  console.log(selectedModuleMap)
   
   return (
     <section className="w-full h-full flex flex-row">
@@ -291,7 +300,7 @@ const CourseContent = () => {
         </div>
       </div>
       <div className="w-3/4 h-full bg-white">
-        {menuID && moduleID ? (
+        {menuID !== null && moduleID !== null ? (
           <div className='w-full h-full border rounded-md overflow-hidden flex flex-col'>
             <div className='w-full h-fit flex items-center justify-between py-3 px-5 border-b'>
               <div className='flex flex-row gap-2 w-full'>
@@ -333,7 +342,6 @@ const CourseContent = () => {
                         setChoice={SetChoice}
                         deleteQuestionnaire={DeleteContent}
                         deleteChoice={DeleteChoice}
-                        deleteAllChoices={DeleteAllChoice}
                         setKeyAnswer={SetKeyAnswers}
                         keyAnswers={selectedModuleMap.key_answers}
                       />

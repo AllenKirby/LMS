@@ -1,11 +1,17 @@
+import { useSelector } from "react-redux";
 import {
   PopularCourse,
   CalendarView,
   CourseStatus,
   TopPerformer,
 } from "./DashboardComponent";
+import { UserState } from "../../types/UserTypes";
 
 const Dashboard = () => {
+  const user = useSelector((state: {user: UserState}) => state.user)
+
+  console.log(user)
+
   return (
     <section className="w-full h-full flex p-10 gap-10 text-f-dark bg-[#f0f0f0] ">
       <div className="w-2/3 h-full flex flex-col gap-10">
@@ -15,7 +21,7 @@ const Dashboard = () => {
               <section>
                 <p className="text-c-grey-50">Good morning</p>
                 <h6 className="text-p-lg font-medium -mt-1">
-                  Welcome back, Username!
+                  Welcome back, {user.user.first_name}!
                 </h6>
               </section>
               <p className="text-c-grey-50">Date</p>
