@@ -16,7 +16,7 @@ type MenuState = {
   modules: ModuleState[];
   deleteMenu: (id: number) => void;
   deleteModule: (id: string) => void;
-  deleteModulePermanent: (id: number) => void;
+  deleteModulePermanent: (id: number, moduleID: string) => void;
   courseAction: CourseActionType;
   setMenuID: (id: number) => void;
   setModuleID: (id: number | string) => void;
@@ -62,7 +62,7 @@ const Menu: React.FC<MenuState> = (props) => {
                 <p>{m.title ? m.title : 'Untitled'}</p>
               </section>
               {('submitted' in m && m?.submitted || courseAction === 'update' ) ? (
-                <button onClick={() => deleteModulePermanent(m.id)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
+                <button onClick={() => deleteModulePermanent(m.id, m.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               ) : (
                 <button onClick={() => deleteModule(m.moduleID)} className="hidden group-hover:block text-red-500"><IoMdClose size={16}/></button>
               )}

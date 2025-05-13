@@ -1,5 +1,6 @@
 import { IoMdClose } from "react-icons/io";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import FileIcon from '../../../assets/file.png'
 
 import ParticipantsList from "../ParticipantsList";
 import {MessageBox} from "../../../Components";
@@ -146,6 +147,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
 
   const handleDeleteDoc = async(docID: number) => {
     const response = await deleteTrainingDocument(docID)
+    setFiles(prevData => prevData.filter(file => file.document_id !== docID))
     console.log(response)
   }
 
@@ -308,21 +310,25 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
                   Upload Necessary Document
                 </button>
                 {uploadedFile?.map((item, index) => (
-                  <div key={index} className="w-full h-fit flex items-center justify-between">
-                    <li key={index}>{item.name}</li>
+                  <div key={index} className="w-full flex items-center justify-between gap-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <img src={FileIcon} alt="File" className="w-14 h-14" />
+                      <span>{item.name}</span>
+                    </div>
                     <button type="button" onClick={() => removeFile(index)}>&times;</button>
                   </div>
                 ))}
                 <ul>
                   {files?.map((item, index) => (
-                    <li key={index} className="w-full h-fit flex items-center justify-between">
-                      <a href={`${VITE_URL}${item.doc_url}`} className="text-blue-500 underline">
-                        {item.doc_name}
+                    <div key={index} className="w-full flex items-center justify-between gap-4">
+                      <a href={`${VITE_URL}${item.doc_url}`} className="flex items-center justify-center gap-3">
+                        <img src={FileIcon} alt="File" className="w-14 h-14" />
+                        <span>{item.doc_name}</span>
                       </a>
                       <button type="button" onClick={() => handleDeleteDoc(item.document_id)} className="ml-2 text-red-500 text-xl">
                         &times;
                       </button>
-                    </li>
+                    </div>
                   ))}
                 </ul>
               </div>

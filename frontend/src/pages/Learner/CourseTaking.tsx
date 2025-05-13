@@ -9,9 +9,11 @@ import { useTraineeHook } from "../../hooks";
 import { ModuleState, MenuDataState, ModulePreview } from '../../types/CourseCreationTypes'
 import { UserState } from '../../types/UserTypes'
 import { useSelector } from "react-redux";
+import NIALogo from '../../assets/NIAimg.png'
 
 const CourseTaking = () => {
   const { id } = useParams()
+  const [finalID, course_title] = id ? id.split('|') : []
   //states
   const [collapse, setCollapse] = useState<boolean[]>([]);
   const [menus, setMenus] = useState<MenuDataState[]>([])
@@ -173,11 +175,11 @@ const CourseTaking = () => {
   
   useEffect(() => {
     const getCourseDetails = async() => {
-      const response = await getCourseContent(Number(id), user.user.id)
+      const response = await getCourseContent(Number(finalID), user.user.id)
       setMenus(response)
     }
     getCourseDetails()
-  }, [id])
+  }, [finalID])
 
   useEffect(() => {
     const getModuleDetails = async () => {
@@ -244,128 +246,138 @@ const CourseTaking = () => {
       )
     );
   }
-  console.log(menus)
+  console.log(selectedModule)
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
 
   return (
-     <section className="flex flex-row w-full h-full">
-        <nav
-          className={`transition-all duration-300 ${
-            collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
-          } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
-        >  
-        <section className="flex items-center justify-between gap-10 pb-3">
-            <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
-              <IoArrowBackCircleOutline/>{" "} Go back
-            </button>
-            <button className="bg-red-300 h-fit rounded-full p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
+     <section className="flex flex-col w-full h-screen top-0 left-0 fixed inset-1">
+        <header className="w-full h-fit py-5 px-10 bg-white flex items-center justify-start gap-5 border-2 border-gray-200">
+          <section className="flex items-center justify-center gap-2">
+            <img src={NIALogo} alt="NIA Logo" className="w-12 h-12 rounded-full bg-gray-300" />
+            <h1 className="text-p-lg font-medium">NIA-LMS</h1>
           </section>
-          {menus && menus.map((item, menuIndex) => (
-            <section key={item.id} className="w-full rounded-md my-2">
-              <header className={`w-full p-3 flex flex-row items-center justify-between bg-c-blue-5 text-c-blue-50 border border-c-blue-50
-                ${!collapse[menuIndex] ? "rounded-t-md" : "rounded-md"}`} // Use collapse state for each menu
-              >
-                <p>{item.title}</p>
-                <button 
-                  onClick={() => {
-                    const newCollapse = [...collapse];
-                    newCollapse[menuIndex] = !newCollapse[menuIndex]; // Toggle the collapse state for this menu
-                    setCollapse(newCollapse); // Update the collapse state for this menu index
-                  }}
-                  className={`${!collapse[menuIndex] ? "rotate-0" : "rotate-180"}`}
-                >
-                  <FaAngleDown />
-                </button>
-              </header>
-              <div className={`w-full p-3 bg-white rounded-b-md ${!collapse[menuIndex] ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50" : "hidden"}`}>
-                {item.modules.map((module: ModulePreview, index) => (
-                  <div onClick={() => {
-                    if(!module.required || module.module_progress === 'completed') {
-                      setCurrentMenuIndex(menuIndex)
-                      setCurrentModuleIndex(index)
-                      setShowSurveyForm(false)
-                    } else {
-                      return null
-                    }
-                  }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
-                    <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <div className="flex-1 flex items-center justify-end"><CiLock color="red"/></div> : ""}
-                  </div>
-                ))}
-              </div>
+          <div className="border border-gray-200 rounded-lg h-full"></div>
+          <h1 className="font-medium text-h-h5">{course_title}</h1>
+        </header>
+        <div className="flex flex-1 overflow-hidden">
+          <nav
+            className={`transition-all duration-300 ${
+              collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
+            } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
+          >  
+            <section className="flex items-center justify-between gap-10 pb-3">
+              <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
+                <IoArrowBackCircleOutline/>{" "} Go back
+              </button>
+              <button className="bg-red-300 h-fit rounded-full p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
             </section>
-          ))}
-          <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form {!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) && <CiLock size={24}/>}</button>
-        </nav>
-        {selectedModule && (
-          <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
-            <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
-              <button className="bg-red-400 p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
-              <h6 className="text-f-light text-h-h6">{!showSurveyForm ? selectedModule.title : 'Survey Form'}</h6>
-            </div>
-            <div className="flex flex-col items-end gap-5 p-10">
-              {showSurveyForm ? (
-                <SurveyForm courseID={Number(id)} userID={user.user.id} />
-              ) : (
-                <>
-                  {selectedModule.content && selectedModule.content.map(item => {
-                    switch(item.type) {
-                      case 'questionnaire':
-                        return (
-                          <QuestionCard 
-                            data={answers}
-                            content={item}
-                            addChoice={handleRadioChange}
-                            addMultipleChoice={handleCheckboxChange}
-                            correctAnswer={result}/>
-                        )
-                      case 'separator':
-                        return (
-                          <CourseContentComponent content={item}/>
-                        )
-                      case 'document':
-                        return (
-                          <CourseContentComponent content={item}/>
-                        )
-                    }
-                  })}
-                  {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([, value]) => value === "Correct")) && (
-                    <div className="w-full flex flex-col items-center justify-center">
-                      <div 
-                        className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
-                        ${parseFloat(score.percentage) < 30 ? "bg-red-500 border-red-200"
-                          : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
-                        ? "bg-amber-500 border-amber-200" : "bg-c-blue-50 border-c-blue-10"}`}
-                      >
-                        <p className="font-medium text-center">You Score</p>
-                        <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
-                      </div>
-                      {parseFloat(score.percentage) < 30
-                        ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
-                        : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
-                        ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
-                        : <p className="text-p-rg font-medium text-c-blue-50">Great job!</p>
+            {menus && menus.map((item, menuIndex) => (
+              <section key={item.id} className="w-full rounded-md my-2">
+                <header className={`w-full p-3 flex flex-row items-center justify-between bg-c-blue-5 text-c-blue-50 border border-c-blue-50
+                  ${!collapse[menuIndex] ? "rounded-t-md" : "rounded-md"}`} // Use collapse state for each menu
+                >
+                  <p>{item.title}</p>
+                  <button 
+                    onClick={() => {
+                      const newCollapse = [...collapse];
+                      newCollapse[menuIndex] = !newCollapse[menuIndex]; // Toggle the collapse state for this menu
+                      setCollapse(newCollapse); // Update the collapse state for this menu index
+                    }}
+                    className={`${!collapse[menuIndex] ? "rotate-0" : "rotate-180"}`}
+                  >
+                    <FaAngleDown />
+                  </button>
+                </header>
+                <div className={`w-full p-3 bg-white rounded-b-md ${!collapse[menuIndex] ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50" : "hidden"}`}>
+                  {item.modules.map((module: ModulePreview, index) => (
+                    <div onClick={() => {
+                      if(!module.required || module.module_progress === 'completed') {
+                        setCurrentMenuIndex(menuIndex)
+                        setCurrentModuleIndex(index)
+                        setShowSurveyForm(false)
+                      } else {
+                        return null
                       }
-                      <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
+                    }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
+                      <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <div className="flex-1 flex items-center justify-end"><CiLock color="red"/></div> : ""}
                     </div>
-                  )}
-                  {(selectedModule.content.some(item => item.type === "questionnaire") && Object.values(result).every(value => value !== "Correct" && value !== "Incorrect"))&& (
-                    <div className="w-full flex items-center justify-center">
-                      <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
-                        Submit Quiz
-                      </button>
-                    </div>
-                  )}
-                  <div className="w-full flex items-center justify-between">
-                    <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
-                    {(selectedModule.content.some(item => item.type !== "questionnaire") || score.userScore !== 0 && score.totalScore !== 0 && score.percentage) && (
-                      <button onClick={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? () => goToSurveyForm(true, menus[currentMenuIndex].id, selectedModule.id) : () => handleClickNext(menus[currentMenuIndex].id, selectedModule.id)} className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'Survey Form' : 'Next' }</button>
+                  ))}
+                </div>
+              </section>
+            ))}
+            <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form {!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) && <CiLock size={24}/>}</button>
+          </nav>
+          {selectedModule && (
+            <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
+              <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
+                <button className="bg-red-400 p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
+                <h6 className="text-f-light text-h-h6">{!showSurveyForm ? selectedModule.title : 'Survey Form'}</h6>
+              </div>
+              <div className="flex flex-col items-end gap-5 p-10">
+                {showSurveyForm ? (
+                  <SurveyForm courseID={Number(finalID)} userID={user.user.id} />
+                ) : (
+                  <>
+                    {selectedModule.content && selectedModule.content.map(item => {
+                      switch(item.type) {
+                        case 'questionnaire':
+                          return (
+                            <QuestionCard 
+                              data={answers}
+                              content={item}
+                              addChoice={handleRadioChange}
+                              addMultipleChoice={handleCheckboxChange}
+                              correctAnswer={result}/>
+                          )
+                        case 'separator':
+                          return (
+                            <CourseContentComponent content={item}/>
+                          )
+                        case 'document':
+                          return (
+                            <CourseContentComponent content={item}/>
+                          )
+                      }
+                    })}
+                    {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([, value]) => value === "Correct")) && (
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div 
+                          className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
+                          ${parseFloat(score.percentage) < 30 ? "bg-red-500 border-red-200"
+                            : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                          ? "bg-amber-500 border-amber-200" : "bg-c-blue-50 border-c-blue-10"}`}
+                        >
+                          <p className="font-medium text-center">You Score</p>
+                          <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
+                        </div>
+                        {parseFloat(score.percentage) < 30
+                          ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
+                          : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                          ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
+                          : <p className="text-p-rg font-medium text-c-blue-50">Great job!</p>
+                        }
+                        <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
+                      </div>
                     )}
-                  </div>
-                </>
-              )}
+                    {(selectedModule.content.some(item => item.type === "questionnaire") && Object.values(result).every(value => value !== "Correct" && value !== "Incorrect"))&& (
+                      <div className="w-full flex items-center justify-center">
+                        <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
+                          Submit Quiz
+                        </button>
+                      </div>
+                    )}
+                    <div className="w-full flex items-center justify-between">
+                      <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
+                      {(selectedModule.content.some(item => item.type !== "questionnaire") || score.userScore !== 0 && score.totalScore !== 0 && score.percentage) && (
+                        <button onClick={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? () => goToSurveyForm(true, menus[currentMenuIndex].id, selectedModule.id) : () => handleClickNext(menus[currentMenuIndex].id, selectedModule.id)} className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'Survey Form' : 'Next' }</button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
     </section>
   )
 }

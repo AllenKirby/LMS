@@ -1,3 +1,4 @@
+import HTMLReactParser from "html-react-parser";
 import { QuestionnaireState } from "../../../types/CourseCreationTypes";
 
 interface QuestionCardProps {
@@ -35,7 +36,7 @@ const QuestionCard: React.FC<QuestionCardProps> = (props) => {
         }
       </header>
       <div className="w-full h-fit p-5 flex flex-col gap-5">
-        <p className="text-p-lg">{content.question}</p>
+        <p className="text-p-lg">{HTMLReactParser(content.question)}</p>
         <div className="flex flex-col gap-3">
           {/* Multiple Choice */}
           {content.choiceType === "Multiple Choice" && (

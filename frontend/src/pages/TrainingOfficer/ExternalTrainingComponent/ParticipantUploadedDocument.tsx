@@ -1,9 +1,9 @@
 import { ExternalParticipantState } from '../../../types/CourseCreationTypes';
-import { UserState } from '../../../types/UserTypes'
+import { UserState } from '../../../types/UserTypes';
 
 import { useTraineeHook, useTrainingOfficerHook } from '../../../hooks';
 
-import FileIcon from '../../../assets/file.png'
+import FileIcon from '../../../assets/file.png';
 import { IoClose } from 'react-icons/io5';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -12,158 +12,201 @@ type ParticipantUploadedDocumentProps = {
   onClose: () => void;
   data: ExternalParticipantState;
   trainingID: number;
-  trainingTitle?: string; 
+  trainingTitle?: string;
 };
+
 interface FilesState {
   document_status: 'pending' | 'incomplete' | 'completed';
-  documents: {doc_id: number, doc_name: string, doc_url: string}[]
+  documents: { doc_id: number; doc_name: string; doc_url: string }[];
 }
 
 const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = (props) => {
   const { onClose, data, trainingID, trainingTitle = '' } = props
+  const openInput = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<FilesState>();
+  const [necessaryDocs, setNecessaryDocs] = useState<{ document_url: { document_id: number; doc_url: string; doc_name: string }[] }>({ document_url: [] });
 
-  const openInput = useRef<HTMLInputElement>(null)
-  const [files, setFiles] = useState<File[]>([])
-  const [uploadedFiles, setUploadedFiles] = useState<FilesState>()
-  const [necessaryDocs, setNecessaryDocs] = useState<{document_url: {document_id: number; doc_url: string; doc_name: string}[]}>({document_url: []})
-  const user = useSelector((state: {user: UserState}) => state.user)
-  const API_URL = import.meta.env.VITE_URL
+  const user = useSelector((state: { user: UserState }) => state.user);
+  const API_URL = import.meta.env.VITE_URL;
 
-  const { uploadParticipantDocument, retrieveExternalDocuments, markComplete } = useTrainingOfficerHook()
-  const { deleteUserTrainingDocument, getExternalTrainingDocuments } = useTraineeHook()
+  const { uploadParticipantDocument, retrieveExternalDocuments, markComplete } = useTrainingOfficerHook();
+  const { deleteUserTrainingDocument, getExternalTrainingDocuments } = useTraineeHook();
 
   useEffect(() => {
-    const retrieveFiles = async() => {
-      const res = await retrieveExternalDocuments(trainingID, data.id)
-      if(res) {
-        setUploadedFiles(res)
-      } 
-    }
-    const getNecessaryTrainingDocs = async() => {
-      const res = await getExternalTrainingDocuments(trainingID)
-      if(res) {
-        setNecessaryDocs(res)
-      } 
-    }
-    getNecessaryTrainingDocs()
-    retrieveFiles()
-  }, [])
+    const init = async () => {
+      const docs = await retrieveExternalDocuments(trainingID, data.id);
+      if (docs) setUploadedFiles(docs);
 
-  const removeFile = (index: number) => {
-    setFiles((prevData) => prevData.filter((_, i) => i !== index));
-  };
+      const neededDocs = await getExternalTrainingDocuments(trainingID);
+      if (neededDocs) setNecessaryDocs(neededDocs);
+    };
+    init();
+  }, []);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
+  const removeFile = (index: number) => setFiles(prev => prev.filter((_, i) => i !== index));
 
-    if (selectedFiles) {
-      const newFiles = Array.from(selectedFiles);
-      setFiles((prev) => [...prev, ...newFiles]);
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selected = Array.from(e.target.files);
+      setFiles(prev => [...prev, ...selected]);
     }
   };
 
-  const uploadDocs = () => {
-    openInput.current?.click()
-  }
+  const uploadDocs = () => openInput.current?.click();
 
-  const bytesToMB = (bytes: number) => {
-    const MB = bytes / 1048576; // 1 MB = 1,048,576 bytes
-    return MB;
-  }
+  const bytesToMB = (bytes: number) => (bytes / 1048576).toFixed(2);
 
-  const uploadFile = async() => {
-    console.log(data.id)
-    await uploadParticipantDocument(trainingID, data.id, files)
-    onClose()
-  }
+  const uploadFile = async () => {
+    await uploadParticipantDocument(trainingID, data.id, files);
+    setFiles([]);
+    const docs = await retrieveExternalDocuments(trainingID, data.id);
+    if (docs) setUploadedFiles(docs);
+  };
 
-  const markAsComplete = async(e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    const status = {
-      status: 'completed'
+  const markAsComplete = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('complete')
+    const res = await markComplete(trainingID, data.id, { status: 'completed' });
+    if(res){
+      onClose();
     }
+  };
 
-    await markComplete(trainingID, data.id, status)
-    onClose()
-  } 
+  const deleteUploadedDoc = async(docID: number) => {
+    await deleteUserTrainingDocument(docID)
+    setUploadedFiles(prevData => {
+      if (!prevData) return undefined;
+      return {
+        ...prevData,
+        documents: prevData.documents.filter(doc => doc.doc_id !== docID),
+      };
+    });
+  }
 
-  console.log(data)
+  console.log(uploadedFiles)
+
   return (
     <>
-      <div className="fixed inset-0 z-40 bg-black opacity-20" />
-      <div onClick={(e) => e.stopPropagation()} className="fixed z-50 left-0 top-0 w-full h-full flex items-center justify-end">
-        <form onSubmit={markAsComplete} className="w-2/5 h-full bg-f-light z-30 flex flex-col text-f-dark">
-          <header className="flex items-center justify-between px-5 py-3">
-            <h6 className="text-p-lg font-medium">{user.user.role === 'training_officer' ? `${data.first_name} ${data.last_name}` : trainingTitle}</h6>
-            <button onClick={onClose}>&times;</button>
+      <div className="fixed inset-0 z-40 bg-black opacity-30" />
+      <div className="fixed inset-0 z-50 flex justify-end">
+        <form onSubmit={markAsComplete} onClick={(e) => e.stopPropagation()} className="w-full md:w-2/5 h-full bg-white shadow-lg flex flex-col">
+          {/* Header */}
+          <header className="flex items-center justify-between px-6 py-4 border-b">
+            <h2 className="text-xl font-semibold">
+              {user.user.role === 'training_officer' ? `${data.first_name} ${data.last_name}` : trainingTitle}
+            </h2>
+            <button onClick={onClose} type="button" className="text-gray-600 hover:text-red-600 text-2xl">
+              &times;
+            </button>
           </header>
-          <div className='flex flex-col p-4'>
-            <h2 className='font-medium'>Necessary Training Documents</h2>
-            {necessaryDocs?.document_url ? 
-              necessaryDocs?.document_url.map((item) => (
-                <a href={`${API_URL}/${item.doc_url}`} className='flex items-center justify-center p-2 rounded-md border my-1'>
-                  <img src={FileIcon} alt="file" />
-                  <div className='w-full flex items-start justify-between mx-5'>
-                    <h2>{item.doc_name}</h2>
-                  </div>
-                </a>
-              )
-            ) : (
-                <div className='w-full h-52 flex items-center justify-center'>
-                  <h2>No Uploaded Documents Found</h2>
-                </div>
+
+          {/* Necessary Docs */}
+          <div className="p-6 overflow-y-auto flex-1">
+            <section className="mb-6">
+              <h3 className="text-lg font-medium mb-3">Necessary Training Documents</h3>
+              {necessaryDocs?.document_url?.length > 0 ? (
+                necessaryDocs.document_url.map(item => (
+                  <a
+                    key={item.document_id}
+                    href={`${API_URL}/${item.doc_url}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 p-3 border rounded hover:bg-gray-100 transition mb-2"
+                  >
+                    <img src={FileIcon} alt="Document" className="w-6 h-6" />
+                    <span className="font-medium">{item.doc_name}</span>
+                  </a>
+                ))
+              ) : (
+                <p className="text-gray-500 italic">No necessary documents listed.</p>
               )}
-          </div>
-          <div className='flex-1 overflow-y-auto'>
-            {(data.status !== 'completed' && user.user.role === 'trainee') && (
-              <button type='button' onClick={uploadDocs} className='h-52 w-full rounded-md flex items-center justify-center border-2 border-dashed'>
-                <div className='flex flex-col items-center justify-center'>
-                  <h2 className='font-medium'>Upload Necessary Document</h2>
-                  <p className='text-f-gray'>(Max. 20MB)</p>
-                  <input type="file" className='hidden' ref={openInput} onChange={handleFileUpload}/>
-                </div>
-              </button>
-            )}
-            <div className='flex flex-col py-4'>
-              {files.map((item, index) => (
-                <div className='flex items-center justify-center p-2 rounded-md border mb-1'>
-                  <img src={FileIcon} alt="file" />
-                  <div className='w-full flex flex-col'>
-                    <h2>{item.name}</h2>
-                    <h3 className='text-sm text-f-gray'>{`${bytesToMB(item.size).toFixed(2)}MB`}</h3>
+            </section>
+
+            {/* Upload Section (Trainee Only) */}
+            {data.status !== 'completed' && user.user.role === 'trainee' && (
+              <section className="mb-6">
+                <button
+                  type="button"
+                  onClick={uploadDocs}
+                  className="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-600 hover:bg-gray-50"
+                >
+                  <input type="file" className="hidden" ref={openInput} onChange={handleFileUpload} />
+                  <div>
+                    <p className="font-medium">Click to Upload Document</p>
+                    <small>(Max. 20MB)</small>
                   </div>
-                  <button onClick={() => removeFile(index)} className='w-fit px-2'><IoClose size={20}/></button>
-                </div>
-              ))}
-              {files.length > 0 && (<button type='button' onClick={uploadFile}>upload</button>)}
-            </div>
-            <div className='flex flex-col py-4'>
-              <h2 className='font-medium'>Uploaded Documents</h2>
-              {uploadedFiles?.documents ? uploadedFiles?.documents.map((item) => (
-                <a href={item.doc_url} className='flex items-center justify-center p-2 rounded-md border my-1'>
-                  <img src={FileIcon} alt="file" />
-                  <div className='w-full flex items-start justify-between mx-5'>
-                    <h2>{item.doc_name}</h2>
-                    <button onClick={(e) => {e.stopPropagation(); deleteUserTrainingDocument(item.doc_id)}} className="ml-2 text-red-500 text-xl">
-                      &times;
+                </button>
+
+                {/* New Files Preview */}
+                {files.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {files.map((file, idx) => (
+                      <div key={idx} className="flex items-center gap-4 border rounded p-2">
+                        <img src={FileIcon} alt="File" className="w-5 h-5" />
+                        <div className="flex-1">
+                          <p className="font-medium">{file.name}</p>
+                          <small className="text-gray-500">{bytesToMB(file.size)} MB</small>
+                        </div>
+                        <button onClick={() => removeFile(idx)} type="button" className="text-red-500">
+                          <IoClose size={20} />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={uploadFile}
+                      className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                    >
+                      Upload
                     </button>
                   </div>
-                </a>
-              )) : (
-                <div className='w-full h-52 flex items-center justify-center'>
-                  <h2>No Uploaded Documents Found</h2>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className='w-full p-3'>
-            {(data.status !== 'completed' && user.user.role === 'training_officer') && (<button type='submit' className='w-full rounded-md py-3 bg-c-green-50 text-f-light'>Mark As Complete</button>)}
-            {data.status === 'completed' && (
-              <div className='w-full rounded-md py-3 text-f-green text-center'>
-                <h1 className='font-medium'>Completed</h1>
-              </div>
+                )}
+              </section>
             )}
+
+            {/* Uploaded Documents */}
+            <section>
+              <h3 className="text-lg font-medium mb-3">Uploaded Documents</h3>
+              {uploadedFiles?.documents?.length ? (
+                uploadedFiles.documents.map(doc => (
+                  <div
+                    key={doc.doc_id}
+                    className="flex items-center justify-between border p-3 rounded mb-2 hover:bg-gray-50 transition"
+                  >
+                    <a href={doc.doc_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4">
+                      <img src={FileIcon} alt="File" className="w-5 h-5" />
+                      <span>{doc.doc_name}</span>
+                    </a>
+                    {(user.user.role === 'trainee' && data.status !== 'completed') && (
+                      <button
+                        type="button"
+                        onClick={() => deleteUploadedDoc(doc.doc_id)}
+                        className="text-red-500 text-xl"
+                      >
+                        &times;
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 italic">No documents uploaded yet.</p>
+              )}
+            </section>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="p-4 border-t">
+            {data.status !== 'completed' && user.user.role === 'training_officer' ? (
+              <button
+                type="submit"
+                className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
+              >
+                Mark as Complete
+              </button>
+            ) : data.status === 'completed' ? (
+              <div className="text-center text-green-600 font-medium">Completed</div>
+            ) : null}
           </div>
         </form>
       </div>

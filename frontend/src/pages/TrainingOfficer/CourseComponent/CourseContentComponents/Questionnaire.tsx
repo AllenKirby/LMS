@@ -2,14 +2,14 @@
 import { BsQuestionSquareFill } from "react-icons/bs";
 import { BiUpArrowAlt, BiDownArrowAlt } from "react-icons/bi";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { CiImageOn } from "react-icons/ci";
 import { IoMdClose } from "react-icons/io";
 import { FiPlus } from "react-icons/fi";
 import { FaAngleDown } from "react-icons/fa";
 
-import { useEffect, useState} from "react";
+import { useEffect, useState, useRef, useMemo} from "react";
 
 import { v4 as uuidv4 } from 'uuid'
+import JoditEditor from "jodit-react";
 
 import { QuestionnaireState, ChoicesState,  } from '../../../../types/CourseCreationTypes'
 
@@ -21,7 +21,6 @@ type QuestionnaireDataState = {
     setChoice: (id: string, questionnaireID: string, choiceID: string, dataString: string) => void;
     deleteQuestionnaire: (id: string, contentID: string) => void;
     deleteChoice: (id: string, questionnaireID: string, choiceID: string) => void;
-    deleteAllChoices: (id: string, questionnaireID: string) => void;
     setKeyAnswer: (id: string, questionnaireID: string, dataString: string, type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False") => void;
     keyAnswers?: {[key: string]: string | string[]}[]
 }
@@ -35,16 +34,15 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         setChoice,
         deleteQuestionnaire,
         deleteChoice,
-        deleteAllChoices,
         setKeyAnswer,
         keyAnswers
     } = props
+    const [customSelectOpen, setCustomSelectOpen] = useState<boolean>(false);
+    const editor = useRef(null)
 
-    console.log(keyAnswers)
-
-    useEffect(() => {
-        deleteAllChoices(moduleID, data.questionnaireID)
-    }, [data.choiceType])
+    // useEffect(() => {
+    //     deleteAllChoices(moduleID, data.questionnaireID)
+    // }, [data.choiceType])
 
     useEffect(() => {
         if(data.choiceType === 'True or False') {
@@ -71,7 +69,45 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
     const foundItem = keyAnswers?.find(item => Object.keys(item).some(key => key === data.questionnaireID));
     const value = foundItem ? foundItem[data.questionnaireID] : "";
 
-    const [customSelectOpen, setCustomSelectOpen] = useState<boolean>(false);
+    const configTitle = useMemo(() => ({
+        height: 150,
+        minHeight: 120,
+        maxHeight: 200,
+        placeholder: 'Enter the Title here...',
+        buttons: [
+            'bold', 'italic', 'underline', 'strikethrough', 'font', 'eraser', 'image'
+        ],
+        removeButtons: [
+            'source', 'brush', 'paragraph', 'fontsize', 'ul', 'ol', 
+            'indent', 'outdent', 'left', 'center', 'right', 'justify',
+            'lineHeight', 'superscript', 'subscript', 'cut', 'copy', 'paste',
+            'copyformat', 'hr', 'table', 'link', 'symbol', 'dots', 'find',
+            'selectall', 'file', 'video', 'print', 'about', 'preview',
+            'spellcheck', 'className', 'fullsize', 'undo', 'redo'
+        ],
+        disablePlugins: [
+            'mobile', 'speechRecognize', 'class-span', 'wrapNodes',
+            'pasteStorage', 'clipboard', 'symbols', 'table',
+            'video', 'file', 'print', 'search', 'about',
+            'fullsize', 'preview', 'spellcheck'
+        ],
+        showXPathInStatusbar: false,
+        showCharsCounter: false,
+        showWordsCounter: false,
+        toolbarAdaptive: false,
+        iframe: false,
+        allowTags: {
+            bold: true,
+            italic: true,
+            underline: true,
+            strike: true,
+            font: true,
+            span: false,
+            div: false
+        }
+    }), []);
+
+
   return (
     <section className="w-full h-fit border border-c-grey-20 rounded-lg">
         <header className="w-full flex items-center justify-between border-b p-3 rounded-t-md">
@@ -93,15 +129,16 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         <div className="w-full p-5 flex flex-col gap-4">
             <section className="flex flex-col gap-2 ">
                 <p className="flex gap-1 items-center text-f-dark font-medium"><BsQuestionSquareFill/> Question Number</p>
-                <div className="w-full flex gap-2">
-                    <textarea 
+                <div className="w-full">
+                    {/* <textarea 
                         value={data.question}
                         onChange={(e) => setQuestion(moduleID, data.questionnaireID, "question", e.target.value)}
                         className="w-full p-2 rounded-md bg-c-grey-5 resize-none outline-c-green-30" 
                         placeholder="Enter question here..."
                         rows={3} 
-                    />
-                    <button className="text-c-grey-50 h-fit"><CiImageOn size={24}/></button>
+                    /> */}
+                    <JoditEditor ref={editor} config={configTitle} value={data.question} onChange={(e) => setQuestion(moduleID, data.questionnaireID, "question", e)} />
+                    {/* <button className="text-c-grey-50 h-fit"><CiImageOn size={24}/></button> */}
                 </div>
             </section>
             <div className="text-p-sm flex flex-col gap-2">
@@ -192,7 +229,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
                             className="px-2 h-10 w-48 rounded-md bg-c-grey-5 flex items-center justify-between"
                             onClick={() => setCustomSelectOpen(!customSelectOpen)}
                         >
-                            <p className="text-c-grey-50">Choose Answers</p>
+                            <p className="text-c-grey-50">{value.length > 0 ? value.join(', ') : ''}</p>
                             <FaAngleDown size={20} className="text-f-dark cursor-pointer"/>
                         </button>
                         <div className={`${customSelectOpen ? "block" : "hidden"} px-2 pt-1 h-fit w-48 rounded-md bg-c-grey-5 absolute mt-1 shadow-sm`}>

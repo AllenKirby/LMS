@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { setCourseData } from "../redux/CourseDataRedux";
 import { setID } from "../redux/CourseIDRedux";
 import { setAction } from "../redux/CourseActionRedux";
+import { deleteCourseRedux } from '../redux/CoursesRedux'
 
 interface TraineeCourses {
   course: CoursesState;
@@ -77,6 +78,7 @@ const CourseView = () => {
 
   const removeCourse = async (id: number) => {
     await deleteCourse(id);
+    dispatch(deleteCourseRedux(id))
     window.history.back();
   };
 
@@ -90,12 +92,13 @@ const CourseView = () => {
 
   const takeCourse = async () => {
     console.log((selectedCourse as TraineeCourses).course.id);
+    const finalID = `${id}|${(selectedCourse as TraineeCourses).course.course_title}`
     await updateCourseStatus(
       (selectedCourse as TraineeCourses).course.id,
       user.user.id,
       { participant_status: "in progress" }
     );
-    navigate(`/trainee/mycourses/${id}/learn`);
+    navigate(`/trainee/mycourses/${finalID}/learn`);
   };
 
   const openEvaluation = () => {

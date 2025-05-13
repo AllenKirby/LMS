@@ -2,16 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { CoursesState } from '../types/CourseCreationTypes'
 
-const initialState: CoursesState | null = null;
+const initialState: CoursesState[] = [];
 
 const CoursesRedux = createSlice({
   name: "courses",
   initialState,
   reducers: {
     setCourses: (_, action) => action.payload,
-    clearCourses: () => null,
+    clearCourses: () => [],
+    deleteCourseRedux: (state, action: { payload: number }) => {
+      return state.filter(course => course.id !== action.payload);
+    },
   },
 });
 
-export const { setCourses, clearCourses } = CoursesRedux.actions;
+export const { setCourses, clearCourses, deleteCourseRedux } = CoursesRedux.actions;
 export default CoursesRedux.reducer;

@@ -15,6 +15,8 @@ import { setAction } from "../../redux/CourseActionRedux";
 const Course: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Course");
   const [activeTab, setActiveTab] = useState<string>(selectedTab);
+  const [selectedDepartment, setSelectedDepartment] = useState<"" | "EMU" | "RIM" | "EOD" | "AFD" | "IT">('')
+  const [search, setSearch] = useState<{courses: string; trainings: string}>({courses: '', trainings: ''})
   const [isTrainingModalOpen, setTrainingModalOpen] = useState<boolean>(false);
   const { default: tabDefault, active: tabActive } = TabButton;
   const dispatch = useDispatch()
@@ -48,23 +50,39 @@ const Course: React.FC = () => {
       <header className="flex justify-between items-center">
         <h1 className="text-h-h6 font-medium">{selectedTab}</h1>
         <div className="flex gap-3">
-          <select
-            name="Categories"
-            className="px-3 py-2 border rounded-md h-fit w-40 truncate "
-          >
-            <option value="" disabled>
-              Select Category
-            </option>
-            <option value="FA">For All</option>
-            <option value="EOD">EOD</option>
-            <option value="EMU">EMU</option>
-          </select>
+          {activeTab === 'Course' && (
+            <select
+              value={selectedDepartment}
+              onChange={(e) => setSelectedDepartment(e.target.value as "" | "EMU" | "RIM" | "EOD" | "AFD" | "IT")}
+              name="Categories"
+              className="px-3 py-2 border rounded-md h-fit w-40 truncate "
+            >
+              <option value="" disabled>
+                Select Department
+              </option>
+              <option value="">All</option>
+              <option value="EMU">EMU</option>
+              <option value="RIM">RIM</option>
+              <option value="EOD">EOD</option>
+              <option value="AFD">AFD</option>
+              <option value="IT">IT</option>
+            </select>
+          )}
           <section className="flex items-center relative">
             <FiSearch size={20} className="absolute left-3 text-c-grey-50" />
             <input
               type="text"
               className={SearchBar}
-              placeholder="Search course"
+              value={activeTab === 'Course' ? search.courses : search.trainings}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (activeTab === 'Course') {
+                  setSearch({ ...search, courses: value });
+                } else {
+                  setSearch({ ...search, trainings: value });
+                }
+              }}
+              placeholder={activeTab === 'Course' ? 'Search Course Title' : 'Search Training Title'}
             />
           </section>
           <button
@@ -103,10 +121,10 @@ const Course: React.FC = () => {
       </nav>
       <main className="w-full flex-1  overflow-y-auto">
         <>
-          {activeTab === "Course" && <CourseCard />}
+          {activeTab === "Course" && <CourseCard selectedDepartment={selectedDepartment} searchString={search.courses}/>}
         </>
         <section className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-          {activeTab === "External Training" && <TrainingCard />}
+          {activeTab === "External Training" && <TrainingCard searchString={search.trainings}/>}
         </section>
       </main>
       {isTrainingModalOpen && <ExternalTrainingForm modal={handleToggle} flag={false}/>}
