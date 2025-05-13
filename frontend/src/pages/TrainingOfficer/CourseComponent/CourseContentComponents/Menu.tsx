@@ -35,6 +35,17 @@ const Menu: React.FC<MenuState> = (props) => {
       setModuleID(moduleID)
   }
 
+  const sortedItems = (items: ModuleState[]) => {
+    const sortedModules =  items.sort((a, b) => {
+      if (a.position == null) return 1;
+      if (b.position == null) return -1;
+      return a.position - b.position;
+    });
+
+    return courseAction === 'update' ? sortedModules : items
+  };
+
+
   return (
     <section className="w-full h-auto rounded-md border border-c-grey-20 cursor-pointer">
       <div className={`w-full px-4 py-2 flex items-center justify-between text-f-dark ${collapse === false? "rounded-t-md border-b" : "rounded-md"}`}>
@@ -55,7 +66,7 @@ const Menu: React.FC<MenuState> = (props) => {
       </div>
       <div className={`px-4 py-2 flex flex-col items-center justify-center ${collapse === false? "block" : "hidden"}`}>
         <div className="w-full mb-2">
-          {filteredModules.map((m: ModuleState | ModulePreview) => (
+          {sortedItems(filteredModules).map((m: ModuleState | ModulePreview) => (
             <div onClick={() => handleClickModule(m.moduleID)} className="w-full flex items-center justify-between mb-2 text-c-grey-50 group">
               <section className="flex items-center gap-2 group-hover:text-c-grey-70 group-hover:font-medium">
                 <HiMenuAlt2 size={12}/>

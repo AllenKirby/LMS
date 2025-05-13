@@ -221,7 +221,7 @@ const Courses: React.FC = () => {
                     className="px-3 py-1 rounded-md bg-c-blue-50 text-f-light"
                     onClick={handlePublish}
                   >
-                    Publish Course
+                    {courseAction === 'create' ? 'Publish Course' : 'Save Course'}
                   </button>
                 }
               </section>
