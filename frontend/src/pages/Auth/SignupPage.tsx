@@ -66,7 +66,6 @@ const signupSchema = yup.object({
   officeAddress: yup.string().required("Office address is required"),
   department: yup.string().required("Department is required"),
   designation: yup.string().required("Designation is required"),
-  positionTitle: yup.string().required("Position title is required"),
 });
 
 type SignupForm = yup.InferType<typeof signupSchema>;
@@ -75,6 +74,7 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [date, setDate] = useState({ day: "", month: "", year: "" });
   const [municipalitiesSearch, setMunicipalitiesSearch] = useState<string>("");
+  const [municipalitiesSearchFlag, setMunicipalitiesSearchFlag] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<ShowPassword>({
     password: false,
     confirmPassword: false,
@@ -234,11 +234,12 @@ const SignupPage: React.FC = () => {
       office_name: data.officeName,
       office_address: data.officeAddress,
       department: data.department,
-      position_title: data.positionTitle,
+      designation: data.designation,
     };
 
     await handleSignup(formattedData);
   };
+  console.log(errors)
 
   return (
     <form
@@ -366,7 +367,7 @@ const SignupPage: React.FC = () => {
                   size={24}
                 />
                 <Input
-                  type={showPassword.password ? "text" : "password"}
+                  type={showPassword.confirmPassword ? "text" : "password"}
                   styling="primary"
                   {...register("confirmPassword")}
                   placeholder="Enter your password"
@@ -561,12 +562,13 @@ const SignupPage: React.FC = () => {
                   error={!!errors.address}
                   onChange={(e) => {
                     setMunicipalitiesSearch(e.target.value);
+                    setMunicipalitiesSearchFlag(true);
                     setValue("address", e.target.value, {
                       shouldValidate: true,
                     });
                   }}
                 />
-                {municipalitiesSearch && (
+                {(municipalitiesSearch && municipalitiesSearchFlag) && (
                   <div className="w-full p-2 absolute left-0 bg-white shadow-lg z-10 max-h-60 overflow-y-auto">
                     <div className="flex flex-col">
                       {Municipalities.region4A
@@ -584,6 +586,7 @@ const SignupPage: React.FC = () => {
                               setValue("address", municipality.value, {
                                 shouldValidate: true,
                               });
+                              setMunicipalitiesSearchFlag(false);
                               setMunicipalitiesSearch(municipality.label);
                             }}
                           >

@@ -2,26 +2,6 @@ import { useState } from 'react'
 import axios from 'axios'
 import { SurveyAnswers } from '../types/CourseCreationTypes'
 
-type ProfileState = 
-    {password: string} | 
-    { 
-        first_name: string;
-        last_name: string;
-        official_id_number: string;
-        birth_date: string;
-        sex: string;
-        municipality: string;
-        contact: string;
-        email: string;
-    } | 
-    {
-        affiliation: string;
-        office_name: string;
-        office_address: string;
-        department: string;
-        position_title: string;
-    }
-
 const useTraineeHook = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null>(null)
@@ -335,31 +315,6 @@ const useTraineeHook = () => {
         }
     }
 
-    const updateUserData = async(data: ProfileState, userID: number) => {
-        setIsLoading(true)
-        setError(null)
-        console.log(data)
-        try {
-            const response = await axios.patch(`${API_URL}/accounts/${userID}/`, data,{
-                withCredentials: true
-            })
-            if(response.status === 200){
-                setIsLoading(false)
-                console.log(response.data)
-                return true
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                setIsLoading(false)
-                console.log(error.response?.data?.message);
-                setError(error.response?.data?.message || "Something went wrong");
-            } else {
-                console.log(error);
-                setError("An unexpected error occurred");
-            }
-        }
-    }
-
   return {
     getTraineeCourses, 
     getCourse, 
@@ -375,7 +330,6 @@ const useTraineeHook = () => {
     getExternalTrainingDocuments,
     getUserInfo,
     validatePassword,
-    updateUserData,
     isLoading, 
     error}
 }

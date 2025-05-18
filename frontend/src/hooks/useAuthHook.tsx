@@ -26,7 +26,7 @@ interface SignupState {
   office_name: string;
   office_address: string;
   department: string;
-  position_title: string;
+  designation: string;
 }
 
 const useAuthHook = () => {
