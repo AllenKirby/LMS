@@ -23,7 +23,7 @@ const CoursesFunctions = () => {
 
     const sortCourses = (array: CoursesState[] | TraineeCourses[], user: UserState, sort: string = '') => {
         if (array.length === 0) return [];
-    
+        console.log(array)
         return [...array].sort((a, b) => {
           if (user.user.role === 'training_officer') {
             const dateA = new Date((a as CoursesState).created_at).getTime() || 0;
@@ -35,8 +35,8 @@ const CoursesFunctions = () => {
           const courseB = (b as TraineeCourses).course;
     
           if (sort === 'Latest') {
-            const dateA = new Date(courseA.created_at).getTime() || 0;
-            const dateB = new Date(courseB.created_at).getTime() || 0;
+            const dateA = new Date(courseA?.created_at).getTime() || 0;
+            const dateB = new Date(courseB?.created_at).getTime() || 0;
             return dateB - dateA;
           }
     

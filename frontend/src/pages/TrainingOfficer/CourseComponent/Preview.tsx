@@ -7,6 +7,8 @@ import { CourseData, MenuDataState, ModuleState } from '../../../types/CourseCre
 
 import { CourseContentOverview } from '../../../Components/index'
 
+import CourseIMG from '../../../assets//course-img.png'
+
 const Preview = () => {
   const[activeSection, setActiveSection] = useState<string>("Course");
 
@@ -22,8 +24,11 @@ const Preview = () => {
   return (
     <section className="w-full h-full p-8 flex justify-center overflow-y-auto">
       <div className="w-3/5 h-fit flex flex-col gap-5">
-        <img src={`${API_URL}${courseOverview.cover_image_url}`} alt="Banner Image"
-             className="w-full h-80 rounded-lg bg-c-grey-30" />
+        <img
+          src={courseOverview.cover_image_url ? `${API_URL}${courseOverview.cover_image_url}` : CourseIMG}
+          alt="Banner Image"
+          className="w-full h-80 rounded-lg object-cover bg-c-grey-30"
+        />
         <nav className="w-full h-fit flex flex-row gap-3 border-b">
           {["Course", "Participants", "Content"].map((section) => (
             <button key={section} 

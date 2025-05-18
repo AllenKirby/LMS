@@ -28,7 +28,7 @@ const TraineeCourseCard: React.FC<TraineeCourseCardState> = (props) => {
     <section className="relative flex-1 aspect-square group">
       <div 
         className="absolute top-0 left-0 w-full h-full bg-black opacity-0 group-hover:opacity-20 transition-opacity rounded-lg cursor-pointer"
-        onClick={() => navigate('/trainingofficer/courses/CourseView')}
+        onClick={() => navigate(`/trainee/mycourses/${data.course.id}`)}
       >
       </div>  
       <section className="w-full h-full bg-white rounded-lg flex flex-col group">

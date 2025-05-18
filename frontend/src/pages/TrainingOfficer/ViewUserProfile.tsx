@@ -2,16 +2,18 @@ import { PageSpacing } from "../../assets/Util/Spacing";
 import { DPButton } from "../../assets/Util/ButtonStyle";
 import { defaultInput } from "../../assets/Util/InputStyle";
 import Ph from "../../assets/Ph.jpg";
-import { MdCalendarToday } from "react-icons/md";
+import Man from '../../assets/man.png'
+import Woman from '../../assets/woman.png'
+import { MdOutlineEdit, MdClose } from "react-icons/md";
 
-import { useEffect, useState } from "react";
-import { useTraineeHook } from "../../hooks";
+import { useEffect, useState, useRef } from "react";
+import { useSharedHook, useTraineeHook } from "../../hooks";
 import { useSelector } from "react-redux";
 import { UserState } from "../../types/UserTypes";
 import Municipalities from "../../assets/json/Municipalites.json";
 import { MessageBox } from "../../Components";
 
-import { Input, Select } from "../../Components/UIComponents";
+import { CoursesState } from '../../types/CourseCreationTypes'
 
 interface Municipality {
   label: string;
@@ -31,7 +33,7 @@ interface ValidationErrors {
   office_name?: string;
   office_address?: string;
   department?: string;
-  position_title?: string;
+  designation?: string;
   password?: string;
   confirmPassword?: string;
 }
@@ -42,7 +44,8 @@ const ViewUserProfile = () => {
   const [municipalitiesSearch, setMunicipalitiesSearch] = useState<string>("");
   const [date, setDate] = useState({ day: "", month: "", year: "" });
   const { tab: tabStyle, section: sectionStyle } = DPButton;
-  const { getUserInfo, validatePassword, updateUserData } = useTraineeHook();
+  const { getUserInfo, validatePassword } = useTraineeHook();
+  const { updateUserData, updateProfilePicture, getProfilePicture } = useSharedHook();
   const user = useSelector((state: { user: UserState }) => state.user);
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
   const [messageInfo, setMessageInfo] = useState<{
@@ -61,7 +64,15 @@ const ViewUserProfile = () => {
     message: "",
     correct: false,
   });
+  const [currentPassword, setCurrentPassword] = useState<string>('')
   const [errors, setErrors] = useState<ValidationErrors>({});
+
+  const [profilePicture, setProfilePicture] = useState<string | File>('')
+  const [uploadedProfilePic, setUploadedProfilePic] = useState<File | null>(null)
+  const [editProfilePic, setEditProfilePic] = useState<boolean>(false)
+  const uploadProfile = useRef<HTMLInputElement | null>(null)
+
+  const courses = useSelector((state: {courses: CoursesState[]}) => state.courses)
 
   const [userData, setUserData] = useState<{
     email: string;
@@ -77,7 +88,7 @@ const ViewUserProfile = () => {
     office_name: string;
     office_address: string;
     department: string;
-    position_title: string;
+    designation: string;
   }>({
     email: "",
     password: "",
@@ -92,7 +103,7 @@ const ViewUserProfile = () => {
     office_name: "",
     office_address: "",
     department: "",
-    position_title: "",
+    designation: "",
   });
 
   useEffect(() => {
@@ -111,6 +122,16 @@ const ViewUserProfile = () => {
       }
     };
     getUserData();
+  }, []);
+
+  useEffect(() => {
+    const retrieveProfilePicture = async () => {
+      const res = await getProfilePicture()
+      if(res) {
+        setProfilePicture(res)
+      }
+    }
+    retrieveProfilePicture();
   }, []);
 
   const validatePersonalInfo = (): boolean => {
@@ -159,6 +180,8 @@ const ViewUserProfile = () => {
   const validateAffiliation = (): boolean => {
     const newErrors: ValidationErrors = {};
 
+    console.log(userData)
+
     if (!userData.affiliation) {
       newErrors.affiliation = "Affiliation is required";
     }
@@ -175,8 +198,8 @@ const ViewUserProfile = () => {
       newErrors.department = "Department is required";
     }
 
-    if (!userData.position_title.trim()) {
-      newErrors.position_title = "Position title is required";
+    if (!userData.designation.trim()) {
+      newErrors.designation = "Position title is required";
     }
 
     setErrors(newErrors);
@@ -309,7 +332,7 @@ const ViewUserProfile = () => {
       official_id_number: userData.official_id_number,
       birth_date: `${date.year}-${date.month}-${date.day}`,
       sex: userData.sex,
-      municipality: userData.address,
+      address: userData.address,
       contact: userData.contact,
       email: userData.email,
     };
@@ -335,8 +358,10 @@ const ViewUserProfile = () => {
       office_name: userData.office_name,
       office_address: userData.office_address,
       department: userData.department,
-      position_title: userData.position_title,
+      designation: userData.designation,
     };
+
+    console.log(data)
 
     const isNotEmpty = Object.values(data).every(
       (item) =>
@@ -398,12 +423,55 @@ const ViewUserProfile = () => {
     }
   };
 
-  console.log(userData);
+  const openUploadProfile = () => {
+  if (uploadProfile.current) {
+    uploadProfile.current.click();
+  }
+};
+
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadedProfilePic(file);
+    }
+  };
+
+  const saveImage = async() => {
+    if(uploadedProfilePic) {
+      const formData = new FormData();
+      formData.append('profile_image', uploadedProfilePic);
+      const res = await updateProfilePicture(formData);
+      if (res) {
+        setEditProfilePic(false);
+        setShowMessageBox(true);
+        setMessageInfo({
+          status: "success",
+          title: "Profile Picture Updated",
+          message: "Your profile picture has been successfully updated",
+        });
+        setTimeout(() => {
+          setShowMessageBox(false);
+        }, 2000);
+      }
+    } else {
+      setShowMessageBox(true);
+        setMessageInfo({
+          status: "error",
+          title: "Profile Picture Error",
+          message: "Please select a profile picture to upload",
+        });
+        setTimeout(() => {
+          setShowMessageBox(false);
+        }, 2000);
+    }
+  }
+
+  console.log(courses);
 
   return (
-    <section className={`${PageSpacing} flex-col gap-5`}>
-      <nav className="flex items-center justify-between">
-        <button>Go back</button>
+    <section className={`${PageSpacing} flex flex-col gap-2`}>
+      <nav className="w-full h-fit flex items-center justify-end">
         <section className="w-fit h-fit rounded-md bg-white shadow-md p-1 flex flex-row gap-1">
           {["Personal Information", "Office Affiliation", "Password"].map(
             (key) => (
@@ -418,26 +486,57 @@ const ViewUserProfile = () => {
           )}
         </section>
       </nav>
-      <div className="w-full h-full flex flex-row gap-5">
+      <div className="w-full h-full flex flex-row gap-5 overflow-hidden ">
         <div className="w-1/4 flex flex-col flex-1">
           <article className="w-full h-fit rounded-md flex flex-col gap-1 items-center p-5 bg-white shadow-md">
-            <img
-              src=""
-              alt="Profile Image"
-              className="w-40 h-40 rounded-full bg-red-100"
-            />
+            <div className="relative w-fit h-fit">
+              <img
+                src={uploadedProfilePic ? URL.createObjectURL(uploadedProfilePic) : profilePicture ? profilePicture : user.user.sex === 'male' ? Man : Woman}
+                alt="Profile Image"
+                className="w-40 h-40 rounded-full border-4 bg-red-100"
+              />
+              <button onClick={() => setEditProfilePic(!editProfilePic)} className="absolute bottom-0 right-0 border-2 p-2 rounded-full bg-f-light">{editProfilePic ? <MdClose size={25}/> : <MdOutlineEdit size={25}/>}</button>
+            </div>
+            {editProfilePic && (
+              <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-4 mt-4">
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={uploadProfile}
+                  onChange={handleImageChange}
+                />
+
+                {/* Upload Button */}
+                <button
+                  onClick={openUploadProfile}
+                  className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                >
+                  Upload Image
+                </button>
+
+                {/* Save Button */}
+                <button
+                  onClick={saveImage}
+                  className="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition"
+                >
+                  Save Changes
+                </button>
+              </div>
+            )}
             <p className="text-p-rg font-medium">{`${userData.first_name} ${userData.last_name}`}</p>
             <p className="text-p-sm font-medium">{userData.email}</p>
             <section className="flex flex-row gap-10 mt-3">
               <p className="flex flex-col items-center text-p-lg">
-                6
+                {courses.length}
                 <span className="text-p-sc font-medium text-c-grey-50">
                   Courses
                 </span>
               </p>
               <div className="border-l border-c-grey-50 my-1"></div>
               <p className="flex flex-col items-center text-p-lg">
-                3
+                0
                 <span className="text-p-sc font-medium text-c-grey-50">
                   Completed
                 </span>
@@ -460,7 +559,7 @@ const ViewUserProfile = () => {
             ))}
           </section>
         </div>
-        <div className="w-3/4 p-5 rounded-md bg-white shadow-md">
+        <div className="w-3/4 p-5 h-full overflow-y-auto rounded-md bg-white shadow-md">
           {activeSection === "User Profile" ? (
             <section>
               {activeTab === "Personal Information" && (
@@ -539,13 +638,13 @@ const ViewUserProfile = () => {
                         )}
                       </section>
                       <section className="w-full">
-                        <p className="text-p-sm">Gender</p>
+                        <p className="text-p-sm">Sex</p>
                         <select
                           value={userData.sex}
                           onChange={(e) =>
                             setUserData({ ...userData, sex: e.target.value })
                           }
-                          className={errors.sex ? "border-red-500" : ""}
+                          className={`${errors.sex ? "border-red-500" : ""} w-full ${defaultInput}`}
                         >
                           {sex.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -571,9 +670,7 @@ const ViewUserProfile = () => {
                               }
                               //styling="tertiary"
                               className={
-                                errors.birth_date
-                                  ? "border-red-500"
-                                  : `${defaultInput}`
+                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
                               }
                             />
                           </div>
@@ -584,7 +681,7 @@ const ViewUserProfile = () => {
                                 setDate({ ...date, month: e.target.value })
                               }
                               className={
-                                errors.birth_date ? "border-red-500" : ""
+                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
                               }
                             >
                               {months.map((option) => (
@@ -601,7 +698,7 @@ const ViewUserProfile = () => {
                                 setDate({ ...date, year: e.target.value })
                               }
                               className={
-                                errors.birth_date ? "border-red-500" : ""
+                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
                               }
                             >
                               {years.map((option) => (
@@ -611,12 +708,6 @@ const ViewUserProfile = () => {
                               ))}
                             </select>
                           </div>
-                          <button type="button" className="w-fit px-2 relative">
-                            <MdCalendarToday
-                              className="text-f-gray"
-                              size={24}
-                            />
-                          </button>
                         </div>
                         {errors.birth_date && (
                           <p className="text-red-500 text-xs">
@@ -651,10 +742,8 @@ const ViewUserProfile = () => {
                               });
                             }}
                             className={
-                              errors.address
-                                ? "border-red-500"
-                                : `${defaultInput}`
-                            }
+                                `${errors.address ? "border-red-500" : defaultInput } w-full`
+                              }
                           />
                           {errors.address && (
                             <p className="text-red-500 text-xs">
@@ -767,7 +856,9 @@ const ViewUserProfile = () => {
                             affiliation: e.target.value,
                           })
                         }
-                        className={errors.affiliation ? "border-red-500" : ""}
+                        className={
+                          `${errors.affiliation ? "border-red-500" : defaultInput } w-full`
+                        }
                       >
                         {affiliation.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -791,7 +882,9 @@ const ViewUserProfile = () => {
                             office_name: e.target.value,
                           })
                         }
-                        className={errors.office_name ? "border-red-500" : ""}
+                        className={
+                          `${errors.office_name ? "border-red-500" : defaultInput } w-full`
+                        }
                       >
                         {officeName.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -853,20 +946,20 @@ const ViewUserProfile = () => {
                       <p className="text-p-sm">Designation</p>
                       <input
                         type="text"
-                        value={userData.position_title}
+                        value={userData.designation}
                         onChange={(e) =>
                           setUserData({
                             ...userData,
-                            position_title: e.target.value,
+                            designation: e.target.value,
                           })
                         }
                         className={`${defaultInput} w-full ${
-                          errors.position_title ? "border-red-500" : ""
+                          errors.designation ? "border-red-500" : ""
                         }`}
                       />
-                      {errors.position_title && (
+                      {errors.designation && (
                         <p className="text-red-500 text-xs">
-                          {errors.position_title}
+                          {errors.designation}
                         </p>
                       )}
                     </section>
@@ -892,18 +985,18 @@ const ViewUserProfile = () => {
                   <div className="w-2/3 flex flex-col gap-3">
                     <section className="w-full">
                       <p className="text-p-sm">Current Password</p>
-                      <input
-                        type="password"
-                        className={`${defaultInput} w-full`}
-                        onBlur={(e) => {
-                          if (
-                            !passwordStatus.correct &&
-                            passwordStatus.message === ""
-                          ) {
-                            checkCurrentPassword(e.target.value);
-                          }
-                        }}
-                      />
+                      <div className="w-full flex flex-row items-center justify-center gap-2">
+                        <input
+                          type="password"
+                          className={`${defaultInput} w-full`}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                        />
+                        <button 
+                          onClick={() => checkCurrentPassword(currentPassword)}
+                          className="w-fit py-2 px-5 rounded-md bg-c-green-50 text-f-light">
+                          Check
+                        </button>
+                      </div>  
                     </section>
                     {passwordStatus.correct &&
                       passwordStatus.message === "Password Match!" && (

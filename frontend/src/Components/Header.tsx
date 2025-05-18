@@ -1,13 +1,15 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 //icons
 import { IoIosArrowDown } from "react-icons/io";
 import { RiNotification2Line } from "react-icons/ri";
 import NIALogo from '../assets/NIAimg.png';
+import Man from '../assets/man.png'
+import Woman from '../assets/woman.png'
 
 //hooks
-import { useAuthHook } from "../hooks";
+import { useAuthHook, useSharedHook } from "../hooks";
 import { useSelector } from "react-redux";
 //Style
 import { NavStyle } from "../assets/Util/ButtonStyle";
@@ -32,11 +34,11 @@ interface UserState {
 }
 
 const Header: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   //const [activeSection, setActiveSection] = useState<string>(location.pathname);
   //states
   const [dropDown, setDropDown] = useState<boolean>(false);
+  const [profilePic, setProfilePic] = useState<string>('')
   //hooks
   const { handleLogout, isLoading } = useAuthHook();
   //redux
@@ -47,6 +49,7 @@ const Header: React.FC = () => {
     inactive: NavInactive,
     active: NavActive,
   } = NavStyle;
+  const {getProfilePicture} = useSharedHook();
 
   const logout = async () => {
     await handleLogout();
@@ -56,7 +59,15 @@ const Header: React.FC = () => {
     return roleName === 'trainee' ? 'trainee' : 'trainingofficer'
   }
 
-  console.log(location.pathname);
+  useEffect(() => {
+    const retrieveProfilePicture = async () => {
+      const res = await getProfilePicture()
+      if(res) {
+        setProfilePic(res)
+      } 
+    }
+    retrieveProfilePicture();
+  }, []);
 
   return (
     <header className="w-full h-auto py-4 px-4 md:px-14 flex items-center justify-between border-b">
@@ -131,7 +142,7 @@ const Header: React.FC = () => {
           <RiNotification2Line size={28} />
         </button>
         <section className="hidden md:flex items-center justify-center gap-2">
-          <div className="w-10 h-10 rounded-full bg-green-950"></div>
+          <img src={profilePic ? profilePic : user.user.sex === 'male' ? Man : Woman} alt="profile picture" className="w-10 h-10 rounded-full bg-green-950"></img>
           <h2 className="hidden md:block">{user.user.first_name}</h2>
           <div className="relative">
             <button onClick={() => setDropDown(!dropDown)}>
@@ -147,9 +158,9 @@ const Header: React.FC = () => {
                   <button onClick={() => navigate(`/${role(user.user.role)}/user-profile`)} className="px-3 py-1 rounded-md hover:bg-gray-100">
                     Profile
                   </button>
-                  <button className="px-3 py-1 rounded-md hover:bg-gray-100">
+                  {/* <button className="px-3 py-1 rounded-md hover:bg-gray-100">
                     Settings
-                  </button>
+                  </button> */}
                   <button
                     onClick={logout}
                     className="px-3 py-1 rounded-md hover:bg-gray-100"
