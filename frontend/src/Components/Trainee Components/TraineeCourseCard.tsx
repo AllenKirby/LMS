@@ -5,6 +5,8 @@ import { CoursesState } from '../../types/CourseCreationTypes'
 import CourseIMG from '../../assets/course-img.png'
 import CoursesFunctions from "../../utils/CoursesFunctions";
 
+import React from 'react'
+
 interface TraineeCourses {
   course: CoursesState
   participant_status: string
@@ -14,7 +16,7 @@ type TraineeCourseCardState = {
   data: TraineeCourses
 }
 
-const TraineeCourseCard: React.FC<TraineeCourseCardState> = (props) => {
+const TraineeCourseCard: React.FC<TraineeCourseCardState> = React.memo((props) => {
   const { data } = props
   const API_URL = import.meta.env.VITE_URL
   const navigate = useNavigate();
@@ -47,7 +49,7 @@ const TraineeCourseCard: React.FC<TraineeCourseCardState> = (props) => {
       </section>
     </section>
   )
-}
+});
 
 export default TraineeCourseCard
 

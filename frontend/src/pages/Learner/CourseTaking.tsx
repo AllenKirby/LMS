@@ -3,7 +3,7 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { TbAlignLeft } from "react-icons/tb";
 import { CiLock } from "react-icons/ci";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTraineeHook } from "../../hooks";
 import { ModuleState, MenuDataState, ModulePreview } from '../../types/CourseCreationTypes'
@@ -40,8 +40,7 @@ const CourseTaking = () => {
   //redux
   const user = useSelector((state: {user: UserState}) => state.user)
   //hooks
-  const { getCourseContent, getSingleModule } = useTraineeHook()
-  const { submitAnswers, updateModuleStatus } = useTraineeHook()
+  const { getCourseContent, getSingleModule, submitAnswers, updateModuleStatus } = useTraineeHook()
   //local storage
   //const activeModule = JSON.parse(localStorage.getItem("IDs") || '{}');
 
@@ -54,7 +53,7 @@ const CourseTaking = () => {
 
   useEffect(() => {
     if(result) {
-      const questions = selectedModule.content.filter(item => item.type === 'questionnaire').length
+      const questions = selectedModule.content.filter(item => item.type === 'questionnaire' && item.questionnaireType === 'exam/quiz').length
       const correctCount = Object.values(result).filter(value => value === "Correct").length;
       //get percentage
       const percentage = correctCount / questions * 100
@@ -110,16 +109,16 @@ const CourseTaking = () => {
     return comparisonResult;
   };
 
-  const handleRadioChange = (questionID: string, choice: string) => {
+  const handleRadioChange = useCallback((questionID: string, choice: string) => {
     setAnswers((prev) => ({
       answers: {
         ...prev.answers,
         [questionID]: choice, 
       }
     }));
-  };
+  }, []);
   
-  const handleCheckboxChange = (questionID: string, choice: string) => {
+  const handleCheckboxChange = useCallback((questionID: string, choice: string) => {
     setAnswers((prev) => {
       const selectedChoices = Array.isArray(prev.answers?.[questionID]) ? (prev.answers[questionID] as string[]) : [];
       
@@ -132,7 +131,7 @@ const CourseTaking = () => {
         }
       };
     });
-  };
+  }, []);
 
   const handleClickNext = async (menuID: number, moduleID: number) => {
     const data = {
@@ -246,7 +245,7 @@ const CourseTaking = () => {
       )
     );
   }
-  console.log(menus)
+  console.log(answers)
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
   const sortedItems = (items: ModulePreview[]) => {
     return items.sort((a, b) => a.position - b.position);
@@ -348,7 +347,7 @@ const CourseTaking = () => {
                           className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
                           ${parseFloat(score.percentage) < 30 ? "bg-red-500 border-red-200"
                             : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
-                          ? "bg-amber-500 border-amber-200" : "bg-c-blue-50 border-c-blue-10"}`}
+                          ? "bg-amber-500 border-amber-200" : "bg-green-500 border-c-blue-10"}`}
                         >
                           <p className="font-medium text-center">You Score</p>
                           <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
@@ -357,7 +356,7 @@ const CourseTaking = () => {
                           ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
                           : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
                           ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
-                          : <p className="text-p-rg font-medium text-c-blue-50">Great job!</p>
+                          : <p className="text-p-rg font-medium text-green-500">Great job!</p>
                         }
                         <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
                       </div>

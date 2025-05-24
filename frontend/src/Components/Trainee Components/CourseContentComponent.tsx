@@ -1,12 +1,13 @@
 import FileIcon from "../../assets/file.png"
 import { LessonState, DocumentState } from '../../types/CourseCreationTypes'
 import HTMLReactParser from "html-react-parser/lib/index";
+import React from "react";
 
 interface CourseProps {
   content: LessonState | DocumentState;
 }
 
-const CourseContentComponent: React.FC<CourseProps> = (props) => {
+const CourseContentComponent: React.FC<CourseProps> = React.memo((props) => {
   const {content} = props
   const API_URL = import.meta.env.VITE_URL
   return (
@@ -46,6 +47,6 @@ const CourseContentComponent: React.FC<CourseProps> = (props) => {
       )} */}
     </>
   );
-};
+});
 
 export default CourseContentComponent;

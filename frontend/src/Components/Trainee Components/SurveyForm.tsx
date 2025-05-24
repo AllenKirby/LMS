@@ -120,7 +120,7 @@ type SurveyFormProps = {
   userID: number;
 }
 
-const SurveyForm: React.FC<SurveyFormProps> = (props) => {
+const SurveyForm: React.FC<SurveyFormProps> = React.memo((props) => {
   const { courseID, userID } = props;
   const navigate = useNavigate();
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
@@ -240,6 +240,7 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
       message: "Your survey responses has been submitted successfully.",
     }) 
     setTimeout(() => {
+      navigate(`/trainee/mycourses/${courseID}`)
       setShowMessageBox(false);
     }, 2000);
     //navigate('/trainee/mycourses')
@@ -298,6 +299,6 @@ const SurveyForm: React.FC<SurveyFormProps> = (props) => {
         {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
       </form>
   );
-};
+});
 
 export default SurveyForm;

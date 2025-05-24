@@ -10,7 +10,7 @@ import { useTraineeHook, useTrainingOfficerHook } from "../hooks/";
 import { TrainingEvaluationRecord } from "./Trainee Components";
 import { CourseContentOverview } from "./";
 import { CiSquareInfo, CiCalendar, CiUser } from "react-icons/ci";
-import { FiEdit2, FiTrash2, FiArrowLeft } from "react-icons/fi";
+import { FiEdit2, FiTrash2, FiArrowLeft, FiFile } from "react-icons/fi";
 import { HiOutlineChartBar } from "react-icons/hi";
 import CourseIMG from "../assets/course-img.png";
 import { useEffect, useState } from "react";
@@ -127,11 +127,11 @@ const CourseView = () => {
     <section className="w-full h-full overflow-y-auto bg-gray-50">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden min-h-full">
         {/* Course Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-c-green-60 to-c-green-80 p-6 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 hover:bg-blue-700 p-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 hover:bg-c-green-70 p-2 rounded-lg transition-colors"
             >
               <FiArrowLeft size={20} />
               <span className="font-medium">Back to Courses</span>
@@ -142,14 +142,23 @@ const CourseView = () => {
                 <>
                   <button
                     onClick={editCourse}
-                    className="flex items-center gap-2 bg-white text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    className="flex items-center gap-2 bg-white text-c-green-70 px-4 py-2 rounded-lg font-medium hover:bg-c-green-5 transition-colors"
                   >
                     <FiEdit2 size={18} />
                     Edit Course
                   </button>
                   <button
+                    onClick={() =>
+                      navigate(`/trainingofficer/courses/viewresponses/${(selectedCourse as CoursesState).id}`)
+                    }
+                    className="flex items-center gap-2 bg-transparent border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-c-green-70 transition-colors"
+                  >
+                    <FiFile size={18} />
+                    View Responses
+                  </button>
+                  <button
                     onClick={() => removeCourse((selectedCourse as CoursesState).id)}
-                    className="flex items-center gap-2 bg-transparent border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-blue-700 transition-colors"
+                    className="flex items-center gap-2 bg-transparent border border-white text-white px-4 py-2 rounded-lg font-medium hover:bg-white hover:text-c-green-70 transition-colors"
                   >
                     <FiTrash2 size={18} />
                     Delete
@@ -163,7 +172,7 @@ const CourseView = () => {
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg font-bold transition-colors ${
                     (selectedCourse as TraineeCourses).participant_status === "completed"
                       ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-white text-blue-700 hover:bg-blue-50"
+                      : "bg-white text-c-green-70 hover:bg-c-green-5"
                   }`}
                 >
                   {(selectedCourse as TraineeCourses).participant_status === "pending"
@@ -186,7 +195,7 @@ const CourseView = () => {
               {user.user.role === 'trainee' && getCourseStatusBadge((selectedCourse as TraineeCourses).participant_status)}
             </div>
             
-            <p className="text-blue-100 max-w-3xl">
+            <p className="text-c-green-10 max-w-3xl">
               {user.user.role === "trainee"
                 ? (selectedCourse as TraineeCourses).course.course_description
                 : (selectedCourse as CoursesState).course_description}
@@ -236,7 +245,7 @@ const CourseView = () => {
                 <h3 className="font-medium text-gray-700 mb-3">Course Details</h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <CiSquareInfo className="text-blue-500 mt-1" size={18} />
+                    <CiSquareInfo className="text-c-green-50 mt-1" size={18} />
                     <div>
                       <p className="text-xs text-gray-500">Department</p>
                       <p className="text-sm font-medium">
@@ -251,7 +260,7 @@ const CourseView = () => {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <CiCalendar className="text-blue-500 mt-1" size={18} />
+                    <CiCalendar className="text-c-green-50 mt-1" size={18} />
                     <div>
                       <p className="text-xs text-gray-500">Created Date</p>
                       <p className="text-sm font-medium">
@@ -265,7 +274,7 @@ const CourseView = () => {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <CiUser className="text-blue-500 mt-1" size={18} />
+                    <CiUser className="text-c-green-50 mt-1" size={18} />
                     <div>
                       <p className="text-xs text-gray-500">Visibility</p>
                       <p className="text-sm font-medium">
@@ -299,16 +308,6 @@ const CourseView = () => {
                       <HiOutlineChartBar size={14} />
                       Standings
                     </button>
-                    {user.user.role === "training_officer" && (
-                      <button
-                        onClick={() =>
-                          navigate(`/trainingofficer/courses/survey/${(selectedCourse as CoursesState).id}`)
-                        }
-                        className="text-xs bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded"
-                      >
-                        Survey
-                      </button>
-                    )}
                   </div>
                 </div>
 

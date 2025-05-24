@@ -36,9 +36,9 @@ const Resources = () => {
                   <p>2 Video Links</p>
                 </div>
             </article>
-    </React.Fragment>
-  ))
-)}
+          </React.Fragment>
+        ))
+      )}
       {viewResource && <ResourcesViewModal onClose={handleViewResources} id={courseID}/>}
     </section>
   )

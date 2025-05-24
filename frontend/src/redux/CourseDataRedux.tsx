@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { CourseData } from "../types/CourseCreationTypes";
+import { SignupState } from "../types/UserTypes";
 
 const initialState: CourseData = {
   id: 0,
@@ -19,7 +20,7 @@ type UpdateFieldPayload =
   | { name: "course_description"; value: string }
   | { name: "department"; value: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[] }
   | { name: "visibility"; value: "public" | "private" | "" }
-  | { name: "participants"; value: string[] }
+  | { name: "participants"; value: SignupState[] }
   | { name: "submitted"; value: true | false }
   | { name: "cover_image_upload"; value: File | null }
   | { name: "cover_image_url"; value: string };

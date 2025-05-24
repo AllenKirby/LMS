@@ -142,7 +142,7 @@ const Header: React.FC = () => {
           <RiNotification2Line size={28} />
         </button>
         <section className="hidden md:flex items-center justify-center gap-2">
-          <img src={profilePic ? profilePic : user.user.sex === 'male' ? Man : Woman} alt="profile picture" className="w-10 h-10 rounded-full bg-green-950"></img>
+          <img src={profilePic ? profilePic : user.user.sex === 'male' ? Man : Woman} alt="profile picture" className="w-10 h-10 object-cover rounded-full bg-green-950"></img>
           <h2 className="hidden md:block">{user.user.first_name}</h2>
           <div className="relative">
             <button onClick={() => setDropDown(!dropDown)}>

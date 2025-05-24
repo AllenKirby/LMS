@@ -30,6 +30,8 @@ const Home: React.FC = () => {
 
   console.log(courses)
 
+  const completedCourses = courses.filter((course) => course.participant_status === "completed");
+
   return (
     <section className="w-full h-full py-7 px-5 flex flex-row gap-5 bg-content-bg">
       <section className="w-2/3 2xl:w-3/4 h-full overflow-y-auto flex flex-col gap-5 px-5">
@@ -53,7 +55,9 @@ const Home: React.FC = () => {
               <p className="text-p-sm font-medium text-f-gray">
                 Course Completed
               </p>
-              <div className="w-12 h-12 rounded-xl bg-gray-300 p-5"></div>
+              <div className="w-12 h-12 px-5 font-medium flex items-center justify-center">
+                <h1 className="text-h-h5">{completedCourses.length}</h1>
+              </div>
             </div>
             <div className="flex flex-col gap-3 flex-1 h-fit shadow-md rounded-lg p-4 bg-white">
               <p className="text-p-sm font-medium text-f-gray">

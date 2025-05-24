@@ -42,8 +42,8 @@ const ModuleDataRedux = createSlice({
     setQuestion: (state, action: PayloadAction<{ 
             moduleID: string; 
             questionnaireID: string; 
-            field: keyof Pick<Extract<ModuleContent, { type: "questionnaire" }>, "choiceType" | "question" | "questionPoint">; 
-            value: string; 
+            field: keyof Pick<Extract<ModuleContent, { type: "questionnaire" }>, "choiceType" | "question" | "questionPoint" | "questionnaireType" | "required">; 
+            value: string | boolean; 
         }>) => {
         const { moduleID, questionnaireID, field, value } = action.payload;
         const module = state.find((mod) => mod.moduleID === moduleID);
@@ -253,7 +253,8 @@ const ModuleDataRedux = createSlice({
         if (index !== -1) {
           state[index] = newModule;
         }
-      },
+    },
+
     resetModuleData: () => initialState
   },
 });

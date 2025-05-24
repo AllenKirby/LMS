@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import { CoursesState } from '../types/CourseCreationTypes' 
 import { UserState } from '../types/UserTypes'
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import CourseIMG from '../assets/course-img.png'
 import CoursesFunctions from "../utils/CoursesFunctions";
@@ -32,7 +32,7 @@ type CourseCardState = {
   searchString?: string;
 }
 
-const CourseCard: React.FC<CourseCardState> = (props) => {
+const CourseCard: React.FC<CourseCardState> = React.memo((props) => {
   const { selectedDepartment, selectedFilters, searchString = "" } = props
   const navigate = useNavigate();
   const user = useSelector((state: {user: UserState}) => state.user)
@@ -83,8 +83,8 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
     );
   };
 
-  const InProgressCourses = (array:  TraineeCourses[]) => {
-    return array.filter(item => (item as TraineeCourses)?.participant_status === 'in progress'
+  const filteredCourseStatus = (array:  TraineeCourses[], status: string) => {
+    return array.filter(item => (item as TraineeCourses)?.participant_status === status
     );
   }
 
@@ -94,7 +94,7 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
     <>
       {(user.user.role === 'training_officer' && filteredCourses) && 
         <>
-          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Course ({publishedCourses(filteredCourses).length})</h6>
+          <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">Published Course ({publishedCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-3 gap-10">
             {sortCourses(publishedCourses(filteredCourses) as CoursesState[], user).map((info, index) => (
               <section
@@ -143,7 +143,8 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       }
       {(user.user.role === 'training_officer' && filteredCourses) && 
         <> 
-          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Drafts ({draftsCourses(filteredCourses).length})</h6>
+          <hr className="my-10 border-t border-c-grey-30" />
+          <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">Drafts ({draftsCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
             {sortCourses(draftsCourses(filteredCourses) as CoursesState[], user).map((info, index) => (
               <section
@@ -192,9 +193,58 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       }
       {(user.user.role === 'trainee' && filteredCourses && selectedFilters.in_progress) && 
         <> 
-          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">In Progress ({InProgressCourses(filteredCourses as TraineeCourses[]).length})</h6>
+          <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">In Progress ({filteredCourseStatus(filteredCourses as TraineeCourses[], 'in progress').length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
-            {sortCourses(InProgressCourses(filteredCourses as TraineeCourses[]), user, selectedFilters.sort).map((info, index) => (
+            {sortCourses(filteredCourseStatus(filteredCourses as TraineeCourses[], 'in progress'), user, selectedFilters.sort).map((info, index) => (
+              <section
+                className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
+                key={index}
+              >
+                <div className="w-full h-full bg-f-dark opacity-0 group-hover:opacity-40 absolute rounded-xl flex items-center justify-center transition-opacity duration-300"></div>
+                <button className="absolute text-f-light font-semibold text-p-lg opacity-0 group-hover:opacity-100 h-full w-full"
+                        onClick={() => navigate(`/trainee/mycourses/${(info as TraineeCourses).course.id}`)}>
+                    View Course
+                </button>
+                <div className="w-full h-full">
+                  <figure className="w-full h-2/5">
+                    <img
+                      src={(info as TraineeCourses).course.cover_image_url ? `${API_URL}${(info as TraineeCourses).course.cover_image_url}` : CourseIMG}
+                      alt="Course-img"
+                      className="object-cover w-full h-full rounded-t-xl bg-gradient-to-r from-c-blue-30 to-c-green-20"
+                    />
+                  </figure>
+                  <main className="w-full h-3/5 flex flex-col items-center justify-between p-5">
+                    <section className="w-full">
+                      <p className="text-p-sc font-medium text-c-green-50">
+                        {(info as TraineeCourses).course.department}
+                      </p>
+                      <h1 className="text-p-lg font-semibold w-full">{user.user.role === 'training_officer' ? (info as CoursesState).course_title  : (info as TraineeCourses).course.course_title}</h1>
+                    </section>
+                    <pre className="text-p-rg text-c-grey-70 h-20 w-full truncate">
+                      {(info as TraineeCourses).course.course_description}
+                    </pre>
+                    <article className="w-full flex items-center justify-between text-p-sm">
+                      <p className="text-c-grey-70 flex items-center justify-center gap-1">
+                        <MdOutlineCalendarToday size={15} />
+                        {convertDate((info as TraineeCourses).course.created_at)}
+                      </p>
+                      <p className="text-c-grey-70 flex items-center justify-center gap-1">
+                        <LuUsers size={16} />
+                        {(info as TraineeCourses).course.participants_display.length} Enrolled
+                      </p>
+                    </article>
+                  </main>
+                </div>
+              </section>
+            ))}
+          </section>
+        </>
+      }
+      {(user.user.role === 'trainee' && filteredCourses && selectedFilters.completed) && 
+        <> 
+          <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">Completed ({filteredCourseStatus(filteredCourses as TraineeCourses[], 'completed').length})</h6>
+          <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+            {sortCourses(filteredCourseStatus(filteredCourses as TraineeCourses[], 'completed'), user, selectedFilters.sort).map((info, index) => (
               <section
                 className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
                 key={index}
@@ -241,7 +291,8 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
       }
       {(user.user.role === 'trainee' && filteredCourses && selectedFilters.all) && 
         <> 
-          <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">Published Courses ({publishedCourses(filteredCourses).length})</h6>
+          <hr className="my-10 border-t border-c-grey-30" />
+          <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">Published Courses ({publishedCourses(filteredCourses).length})</h6>
           <section className="grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
             {sortCourses(publishedCourses(filteredCourses) as TraineeCourses[], user, selectedFilters.sort).map((info, index) => (
               <section
@@ -286,10 +337,11 @@ const CourseCard: React.FC<CourseCardState> = (props) => {
               </section>
             ))}
           </section>
+          <hr className="my-10 border-t border-c-grey-30" />
         </>
       }
     </>
   );
-};
+});
 
 export default CourseCard;

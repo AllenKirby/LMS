@@ -493,7 +493,7 @@ const ViewUserProfile = () => {
               <img
                 src={uploadedProfilePic ? URL.createObjectURL(uploadedProfilePic) : profilePicture ? profilePicture : user.user.sex === 'male' ? Man : Woman}
                 alt="Profile Image"
-                className="w-40 h-40 rounded-full border-4 bg-red-100"
+                className="w-40 h-40 object-cover rounded-full border-4 bg-red-100"
               />
               <button onClick={() => setEditProfilePic(!editProfilePic)} className="absolute bottom-0 right-0 border-2 p-2 rounded-full bg-f-light">{editProfilePic ? <MdClose size={25}/> : <MdOutlineEdit size={25}/>}</button>
             </div>
