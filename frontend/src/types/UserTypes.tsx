@@ -8,6 +8,11 @@ export interface User {
     birth_date: string;
     contact: string;
     address: string;
+    affiliation: string;
+    officeName: string;
+    officeAddress: string;
+    department: string;
+    positionTitle: string;
   }
   
   export interface UserState {

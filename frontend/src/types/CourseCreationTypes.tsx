@@ -4,7 +4,7 @@ export interface ChoicesState {
 }
 
 export interface FileUploadState {
-  type: "uploadedFile" | "document";
+  type: "uploadedFile";
   fileID: string;
   fileName: string;
   file: File | null;
@@ -28,18 +28,20 @@ export interface LessonState {
 
 export interface QuestionnaireState {
     type: "questionnaire"; 
+    questionnaireType: 'exam/quiz' | 'personal_info';
     questionnaireID: string; 
     question: string; 
     choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; 
     choices: ChoicesState[];  
     questionPoint: number
+    required: boolean;
 }
   
 export type ModuleContent = 
-| { type: "separator"; lessonID: string; title: string; content: string; }
-| { type: "uploadedFile"; fileID: string; fileName: string; file: File | null; }
-| { type: "questionnaire"; questionnaireID: string; question: string; choiceType: 'Multiple Choice' | 'Text Answer' | 'Check Box' | 'True or False' | ''; choices: ChoicesState[]; questionPoint: number }
-| { type: "document"; values: {document_name: string; document_url: string; document_id: number;};}
+| LessonState
+| FileUploadState
+| QuestionnaireState
+| DocumentState
 
 export interface ModuleState {
   menuID: number;
@@ -86,6 +88,23 @@ export interface Trainees {
   address: string;
 }
 
+export interface UserState {
+  id: number
+  email: string;
+  password?: string;
+  first_name: string;
+  lastname: string;
+  sex?: string;
+  official_id_number?: string;
+  contactNumber?: string;
+  municipality?: string;
+  affiliation?: string;
+  officeName?: string;
+  officeAddress?: string;
+  department?: string;
+  positionTitle?: string;
+}
+
 export interface CourseData {
   id?: number;
   cover_image_upload: File | null;
@@ -95,12 +114,7 @@ export interface CourseData {
   department: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
   visibility: "public" | "private" | "";
   participants: string[];
-  participants_display?: {
-    id: number;
-    first_name: string;
-    last_name: string;
-    email: string;
-  }[];
+  participants_display?: UserState[];
   created_at?: string;
   submitted: true | false;
 }

@@ -79,9 +79,13 @@ const CourseContent = () => {
         case "questionnaire":
           return (
             item.question.trim() !== '' &&
-            item.questionPoint > 0 &&
-            item.choices.length > 0 &&
-            item.choices.every(choice => choice.choice.trim() !== '')
+            (
+              item.choiceType === 'Text Answer' || 
+              (
+                item.choices.length > 0 &&
+                item.choices.every(choice => choice.choice.trim() !== '')
+              )
+            )
           );
   
         case "uploadedFile":
@@ -165,7 +169,7 @@ const CourseContent = () => {
     dispatch(resetIDs())
   }
 
-  const SetQuestion = (id: string, questionnaireID: string, fieldString: string, dataString: string) => {
+  const SetQuestion = (id: string, questionnaireID: string, fieldString: string, dataString: string | boolean) => {
     if(fieldString === 'choiceType') {
       dispatch(deleteAllChoicesFromQuestionnaire({moduleID: id, questionnaireID: questionnaireID}))
       dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question", value: dataString}))
@@ -389,7 +393,7 @@ const CourseContent = () => {
                 }
               })}
               <div className='w-full flex items-center justify-center gap-3'>
-                <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "questionnaire", questionnaireID: uuidv4(), question: '', choices: [], choiceType: 'Multiple Choice', questionPoint: 0}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
+                <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "questionnaire", questionnaireType: 'exam/quiz', questionnaireID: uuidv4(), question: '', choices: [], choiceType: 'Multiple Choice', questionPoint: 0, required: false}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiPlus size={20}/></button>
                 <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "uploadedFile", fileID: uuidv4(), fileName: '', file: null}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><FiUpload size={20}/></button>
                 <button onClick={() => dispatch(setContent({moduleID: String(moduleID), newContent: {type: "separator", lessonID: uuidv4(), title: '', content: ''}}))} className="p-2 flex items-center justify-center gap-2 text-c-blue-50 bg-c-blue-5 rounded-full"><RxText  size={20}/></button>
               </div>

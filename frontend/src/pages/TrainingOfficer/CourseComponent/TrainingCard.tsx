@@ -102,12 +102,13 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
   
   return (
     <>
-    {filteredTrainings.length === 0 && (
+      {filteredTrainings.length === 0 && (
         <p className="text-center col-span-5 text-c-grey-50 w-full">
           No trainings available.
         </p>
       )}
       {filteredTrainings && user.user.role === 'training_officer' && (
+        
         filteredTrainings.map((info, index) => (
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"

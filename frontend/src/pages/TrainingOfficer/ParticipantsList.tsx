@@ -1,16 +1,16 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
 import { useLocation } from "react-router-dom";
 
-import { Trainees } from '../../types/CourseCreationTypes'
+import { SignupState } from '../../types/UserTypes'
 import { useState } from "react";
 
 //Styling
 import { SearchBar } from "../../assets/Util/InputStyle";
 
 type ParticipantsListState = {
-  trainees: {trainees: Trainees[]};
-  handleCheckBox?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  participants?: (string | number)[]
+  trainees: {trainees: SignupState[]};
+  handleCheckBox?: (event: React.ChangeEvent<HTMLInputElement>, trainee: SignupState) => void;
+  participants?: SignupState[]
 }
 
 const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
@@ -44,7 +44,7 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
   const startPage = Math.max(1, currentPage - pageRange);
   const endPage = Math.min(totalPages, currentPage + pageRange);
   const btnContentColor = "bg-c-blue-50";
-  console.log(trainees)
+  console.log(participants)
 
   return (
     <section className="w-full h-full flex flex-col gap-3">
@@ -68,88 +68,88 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
       </div>
       {currentTrainees.length > 0 ? 
         <>
-          <table className="min-w-full table-auto border-collapse text-f-dark overflow-x-auto font-Poppins text-p-sm md:text-p-rg">
-            <thead>
-              <tr className="text-c-grey-50 h-14">
-                {location.pathname === '/trainingofficer/trainee' ?
-                  <></> :             
-                  <th className="w-20 bg-white rounded-l-md border-r">
-                    <input type="checkbox" 
-                      checked={trainees.trainees.length === (participants?.length || 0)} 
-                      onChange={() => {
-                        const traineesEmails = trainees.trainees.map((trainee) => trainee.email);
-                        if (!props.handleCheckBox) return;
-                        if (trainees.trainees.length !== (participants?.length || 0)) {
-                          traineesEmails.forEach((email) => {
-                            props.handleCheckBox?.({
-                              target: { checked: true, value: email }
-                            } as unknown as React.ChangeEvent<HTMLInputElement>);
-                          });
-                        } else {
-                          traineesEmails.forEach((email) => {
-                            props.handleCheckBox?.({
-                              target: { checked: false, value: email }
-                            } as unknown as React.ChangeEvent<HTMLInputElement>);
-                          });
-                        }
-                      }} 
-                      className="scale-150"/>
-                  </th>
-                }
-                <th className={`pl-4 flex-1 text-start font-medium border-r ${location.pathname === '/trainingofficer/trainee' ? "rounded-l-md bg-c-grey-5" : "bg-white"}`}>Full Name</th>
-                <th className={`pl-4 flex-1 text-start font-medium ${location.pathname === '/trainingofficer/courses/courseCreation/courseParticipants' ? "rounded-r-md bg-white" : "border-r bg-c-grey-5"}`}>Department</th>
-                {location.pathname === '/trainingofficer/trainee' && 
-                  <th className="pl-4 flex-1 text-start font-medium bg-c-grey-5 border-r ">Contact Number</th>
-                }
-                {location.pathname === '/trainingofficer/trainee' && 
-                  <th className="pl-4 flex-1 text-start font-medium bg-c-grey-5 rounded-r-md">Email  Address</th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              {currentTrainees.map((trainee, index) => (
-                <tr key={index} className="h-14 cursor-pointer">
+          <div className="overflow-auto max-h-[500px] rounded-md border">
+            <table className="min-w-full table-auto border-collapse text-f-dark overflow-x-auto font-Poppins text-p-sm md:text-p-rg">
+              <thead className="sticky top-0 bg-white z-10">
+                <tr className="text-c-grey-50 h-14">
                   {location.pathname === '/trainingofficer/trainee' ?
-                    <></> : 
-                    <td 
-                      className={`w-20 rounded-l-md text-center border-r ${index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}
-                    >
-                      <input 
-                        type="checkbox" 
-                        value={trainee.email} 
-                        checked={participants?.includes(trainee.email) || false}
-                        onChange={handleCheckBox}
+                    <></> :             
+                    <th className="w-20 bg-white rounded-l-md border-r">
+                      <input type="checkbox" 
+                        checked={trainees.trainees.length === (participants?.length || 0)} 
+                        onChange={() => {
+                          if (!props.handleCheckBox) return;
+                          if (trainees.trainees.length !== (participants?.length || 0)) {
+                            trainees.trainees.forEach((data) => {
+                              props.handleCheckBox?.({
+                                target: { checked: true }
+                              } as unknown as React.ChangeEvent<HTMLInputElement>, data);
+                            });
+                          } else {
+                            trainees.trainees.forEach((data) => {
+                              props.handleCheckBox?.({
+                                target: { checked: false }
+                              } as unknown as React.ChangeEvent<HTMLInputElement>, data);
+                            });
+                          }
+                        }} 
                         className="scale-150"/>
-                    </td>
+                    </th>
                   }
-                  <td 
-                    className={`pl-4 flex-1 text-start border-r 
-                                ${location.pathname === '/trainingofficer/trainee' ? (index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"  : index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}
-                                ${location.pathname === '/trainingofficer/trainee' && "rounded-l-md"}
-                              `}
-                  >
-                    {`${trainee.first_name} ${trainee.last_name}`}
-                  </td>
-                  <td 
-                    className={`pl-4 flex-1 text-start 
-                              ${location.pathname === '/trainingofficer/courses/courseCreation/courseParticipants' ? "rounded-r-md" : "border-r"} 
-                              ${location.pathname === '/trainingofficer/trainee' ? (index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"  : index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`
-                    }
-                  >
-                    {trainee.department || '--'}
-                  </td>
+                  <th className={`pl-4 flex-1 text-start font-medium border-r ${location.pathname === '/trainingofficer/trainee' ? "rounded-l-md bg-c-grey-5" : "bg-white"}`}>Full Name</th>
+                  <th className={`pl-4 flex-1 text-start font-medium ${location.pathname === '/trainingofficer/courses/courseCreation/courseParticipants' ? "rounded-r-md bg-white" : "border-r bg-c-grey-5"}`}>Department</th>
                   {location.pathname === '/trainingofficer/trainee' && 
-                    <td className={`pl-4 flex-1 text-start border-r ${(index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}>
-                      {trainee.contact}
-                    </td>}
+                    <th className="pl-4 flex-1 text-start font-medium bg-c-grey-5 border-r ">Contact Number</th>
+                  }
                   {location.pathname === '/trainingofficer/trainee' && 
-                    <td className={`pl-4 flex-1 text-start rounded-r-md ${(index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}>
-                    {trainee.email}
-                  </td>}
+                    <th className="pl-4 flex-1 text-start font-medium bg-c-grey-5 rounded-r-md">Email  Address</th>
+                  }
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {currentTrainees.map((trainee, index) => (
+                  <tr key={index} className="h-14 cursor-pointer">
+                    {location.pathname === '/trainingofficer/trainee' ?
+                      <></> : 
+                      <td 
+                        className={`w-20 rounded-l-md text-center border-r ${index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}
+                      >
+                        <input 
+                          type="checkbox" 
+                          checked={participants.map(item => item.email)?.includes(trainee.email) || false}
+                          onChange={(e) => handleCheckBox(e, trainee)}
+                          className="scale-150"/>
+                      </td>
+                    }
+                    <td 
+                      className={`pl-4 flex-1 text-start border-r 
+                                  ${location.pathname === '/trainingofficer/trainee' ? (index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"  : index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}
+                                  ${location.pathname === '/trainingofficer/trainee' && "rounded-l-md"}
+                                `}
+                    >
+                      {`${trainee.first_name} ${trainee.last_name}`}
+                    </td>
+                    <td 
+                      className={`pl-4 flex-1 text-start 
+                                ${location.pathname === '/trainingofficer/courses/courseCreation/courseParticipants' ? "rounded-r-md" : "border-r"} 
+                                ${location.pathname === '/trainingofficer/trainee' ? (index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"  : index % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`
+                      }
+                    >
+                      {trainee.department || '--'}
+                    </td>
+                    {location.pathname === '/trainingofficer/trainee' && 
+                      <td className={`pl-4 flex-1 text-start border-r ${(index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}>
+                        {trainee.contact}
+                      </td>}
+                    {location.pathname === '/trainingofficer/trainee' && 
+                      <td className={`pl-4 flex-1 text-start rounded-r-md ${(index + 1) % 2 === 0 ? "bg-c-grey-5" : "bg-white"}`}>
+                      {trainee.email}
+                    </td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="flex justify-end mt-4 text-p-sm md:text-p-rg">
             <button
               onClick={() => handlePageChange(currentPage - 1)}

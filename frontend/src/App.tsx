@@ -66,8 +66,8 @@ function App() {
               path="externaltraining/:id"
               element={<ExternalTrainingView />}
             />
-            <Route path="courseview/:id" element={<CourseView />} />
-            <Route path="survey/:id" element={<SurveyForm />}/>
+            <Route path="courseview/:id" element={<CourseView />}/>
+            <Route path="viewresponses/:id" element={<SurveyForm />}/>
             <Route path="courseCreation" element={<CourseCreation />}>
               <Route path="courseOverview" element={<CourseOverview />} />
               <Route

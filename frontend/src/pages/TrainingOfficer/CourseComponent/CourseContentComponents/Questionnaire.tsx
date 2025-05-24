@@ -16,7 +16,7 @@ import { QuestionnaireState, ChoicesState,  } from '../../../../types/CourseCrea
 type QuestionnaireDataState = {
     data: QuestionnaireState
     moduleID: string
-    setQuestion: (id: string, questionnaireID: string, field: string, dataString: string) => void;
+    setQuestion: (id: string, questionnaireID: string, field: string, dataString: string | boolean) => void;
     addChoice: (id: string, questionnaireID: string, dataString: ChoicesState) => void;
     setChoice: (id: string, questionnaireID: string, choiceID: string, dataString: string) => void;
     deleteQuestionnaire: (id: string, contentID: string) => void;
@@ -67,7 +67,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
     }, [data.choiceType])
 
     const foundItem = keyAnswers?.find(item => Object.keys(item).some(key => key === data.questionnaireID));
-    const value = foundItem ? foundItem[data.questionnaireID] : "";
+    const value = foundItem ? foundItem[data.questionnaireID] : '';
 
     const configTitle = useMemo(() => ({
         height: 150,
@@ -117,10 +117,19 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
                 className="px-2 py-1 outline-none rounded-md bg-c-grey-5 font-medium text-p-sm">
                 <option value="Multiple Choice">Multiple Choice</option>
                 <option value="Check Box">Check Box</option>
-                {/* <option value="Text Answer">Text Answer</option> */}
+                <option value="Text Answer">Text Answer</option>
                 <option value="True or False">True or False</option>
              </select>
             <div className="flex items-center justify-center gap-2">
+                <select value={data.questionnaireType} onChange={(e) => setQuestion(moduleID, data.questionnaireID, "questionnaireType", e.target.value)} className="outline-c-green-30 p-2 rounded-md border-gray-200 border">
+                    <option value="exam/quiz">Exam/Quiz</option>
+                    <option value="personal_info">Personal Information</option>
+                </select>
+                <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" className="sr-only peer" checked={data.required} onChange={(e) => setQuestion(moduleID, data.questionnaireID, "required", e.target.checked)}/>
+                    <div className="w-11 h-6 bg-gray-300 peer-checked:bg-teal-600 rounded-full peer-focus:ring-2 peer-focus:ring-teal-500 transition-colors duration-300"></div>
+                    <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-full"></div>
+                </label>
                 <button><BiDownArrowAlt size={20} color="gray"/></button>
                 <button><BiUpArrowAlt size={20} color="gray"/></button>
                 <button onClick={() => deleteQuestionnaire(moduleID, data.questionnaireID)}><RiDeleteBinLine size={20} color="gray"/></button>

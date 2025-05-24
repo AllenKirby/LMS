@@ -513,14 +513,6 @@ const questions = [
   },
 ];
 
-const dummyName = [
-  "John Doe",
-  "Jane Smith",
-  "Alice Johnson",
-  "Bob Williams",
-  "Charlie Brown",
-];
-
 const transformData = (surveyResults) => {
   return surveyResults.map((section) => ({
     title: section.title,
@@ -534,7 +526,7 @@ const transformData = (surveyResults) => {
 
 const SurveyForm = () => {
   const { id } = useParams()
-
+  const [activeResponses, setActiveResponses] = useState<string>("Course");
   const formattedSurveyData = transformData(surveyResults);
   const [activeSection, setActiveSection] = useState<string>("Questions");
   const [surveyData, setSurveyData] = useState<SurveyState[]>([]);
@@ -564,15 +556,22 @@ const SurveyForm = () => {
     getCourseSurveyAnswers()
   }, [id])
 
-
-  console.log(participants)
+  // useEffect(() => {
+  //   const getMenus = async () => {
+  //     const response = await getCourseContent(Number(id))
+  //   }
+  // }, [])
 
   return (
     <section className="w-full h-full flex flex-col items-center justify-between overflow-auto p-5 bg-content-bg">
-      <div className="w-3/4 h-fit py-3">
+      <div className="w-3/4 h-fit py-3 flex items-center justify-between">
         <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
           <IoArrowBackCircleOutline/>{" "} Go back
         </button>
+        <select value={activeResponses} onChange={(e) => setActiveResponses(e.target.value)} className="border rounded-md py-2 px-4">
+          <option value="Course">Course</option>
+          <option value="Survey">Survey</option>
+        </select>
       </div>
       <div className="w-3/4 p-5 h-fit bg-white shadow-md rounded-lg">
         <nav className="w-full h-fit flex flex-row items-center justify-center border-b">

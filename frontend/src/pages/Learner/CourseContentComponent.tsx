@@ -1,6 +1,11 @@
 import FileIcon from "../../../assets/file.png";
+import React from "react";
 
-const CourseContentComponent = ({ type }) => {
+type CourseContentProps = {
+  type: "TextDescription" | "LongText" | "FileAttachment" | "Separator" | "Link";
+}
+
+const CourseContentComponent: React.FC<CourseContentProps> = React.memo(({ type }) => {
   return (
     <>
       {type === "TextDescription" && (
@@ -50,6 +55,6 @@ const CourseContentComponent = ({ type }) => {
       )}
     </>
   );
-};
+});
 
 export default CourseContentComponent;

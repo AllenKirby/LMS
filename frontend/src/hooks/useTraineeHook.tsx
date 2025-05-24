@@ -235,6 +235,7 @@ const useTraineeHook = () => {
             })
             if(response.status === 200){
                 setIsLoading(false)
+                updateCourseStatus(courseID, userID, { participant_status: "completed" })
                 return true
             }
         } catch (error) {

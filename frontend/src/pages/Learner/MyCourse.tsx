@@ -23,7 +23,7 @@ const MyCourse = () => {
     externalCourse: true,
     all: true,
     in_progress: true,
-    completed: false,
+    completed: true,
     saved: false,
     sort: "Latest",
   });
@@ -202,7 +202,7 @@ const MyCourse = () => {
 
               {selectedFilters.externalCourse && (
                 <>
-                  <h6 className="mt-5 text-p-rg font-semibold text-c-blue-50">
+                  <h6 className="mt-5 text-p-lg font-semibold text-c-blue-50">
                     External Trainings (
                     {externalTrainings && externalTrainings.length > 0
                       ? externalTrainings.length
