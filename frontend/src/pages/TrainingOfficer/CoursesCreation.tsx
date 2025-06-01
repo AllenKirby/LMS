@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import ExternalTrainingForm from "./ExternalTrainingComponent/ExternalTrainingForm";
@@ -41,9 +41,9 @@ const Courses: React.FC = () => {
     (state: { courseAction: string }) => state.courseAction)
   const { handleAddCourse, handleUpdateCourse, publishCourse } = useTrainingOfficerHook();
 
-  const modal = () => {
+  const modal = useCallback(() => {
     setIsModalOpen(!isModalOpen);
-  };
+  }, []);
 
   const handleConfirmToggle = () => {
     setConfirmationOpen(!isConfirmationOpen);

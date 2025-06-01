@@ -1,4 +1,5 @@
 import { QuestionCard, CourseContentComponent, SurveyForm } from "../../Components/Trainee Components"
+import { MessageBox } from '../../Components'
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { TbAlignLeft } from "react-icons/tb";
@@ -24,6 +25,12 @@ const CourseTaking = () => {
   const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
   const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
   const [firstLoad, setFirstLoad] = useState<boolean>(true)
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
   const [selectedModule, setSelectedModule] = useState<ModuleState>({
     menuID: 0,
     id: 0,
@@ -40,7 +47,7 @@ const CourseTaking = () => {
   //redux
   const user = useSelector((state: {user: UserState}) => state.user)
   //hooks
-  const { getCourseContent, getSingleModule, submitAnswers, updateModuleStatus } = useTraineeHook()
+  const { getCourseContent, getSingleModule, submitAnswers, updateModuleStatus, updateCourseStatus } = useTraineeHook()
   //local storage
   //const activeModule = JSON.parse(localStorage.getItem("IDs") || '{}');
 
@@ -245,7 +252,53 @@ const CourseTaking = () => {
       )
     );
   }
-  console.log(answers)
+
+  const updateStatus = async() => {
+    const res = await updateCourseStatus(Number(finalID), user.user.id, {participant_status: 'pending survey'})
+    return res
+  }
+
+  useEffect(() => {
+    const pendingSurvey = async() => {
+      const isLastModule = currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1
+      const isContainsQuestionnaire = selectedModule.content.some(item => item.type === 'questionnaire')
+      const isAnswersEmpty = Object.keys(answers.answers).length === 0
+      const isResultsEmpty = Object.values(result).every(item => item !== 'No answer provided')
+
+      console.log(isLastModule, isContainsQuestionnaire, !isAnswersEmpty, isResultsEmpty)
+      if(isLastModule && !isContainsQuestionnaire) {
+        const res = await updateStatus()
+        if(res) {
+          setShowMessageBox(true);
+          setMessageInfo({
+            status: "info",
+            title: "Survey Available for 7 Days",
+            message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
+          })
+          setTimeout(() => {
+            setShowMessageBox(false);
+          }, 5000);
+        }
+      } else if(isLastModule && isContainsQuestionnaire && !isAnswersEmpty && isResultsEmpty) {
+        const res = await updateStatus()
+        if(res) {
+          setShowMessageBox(true);
+          setMessageInfo({
+            status: "info",
+            title: "Survey Available for 7 Days",
+            message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
+          })
+          setTimeout(() => {
+            setShowMessageBox(false);
+          }, 5000);
+        }
+      }
+    }
+    pendingSurvey()
+  }, [selectedModule, answers, result])
+
+  console.log(selectedModule)
+
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
   const sortedItems = (items: ModulePreview[]) => {
     return items.sort((a, b) => a.position - b.position);
@@ -364,7 +417,7 @@ const CourseTaking = () => {
                     {(selectedModule.content.some(item => item.type === "questionnaire") && Object.values(result).every(value => value !== "Correct" && value !== "Incorrect"))&& (
                       <div className="w-full flex items-center justify-center">
                         <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
-                          Submit Quiz
+                          Submit
                         </button>
                       </div>
                     )}
@@ -380,6 +433,7 @@ const CourseTaking = () => {
             </div>
           )}
         </div>
+        {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </section>
   )
 }

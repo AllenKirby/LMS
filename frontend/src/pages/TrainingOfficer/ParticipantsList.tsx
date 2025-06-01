@@ -1,19 +1,19 @@
 import { FiSearch, FiFilter } from "react-icons/fi";
 import { useLocation } from "react-router-dom";
 
-import { SignupState } from '../../types/UserTypes'
-import { useState } from "react";
+import { Trainees } from '../../types/CourseCreationTypes'
+import React, { useState } from "react";
 
 //Styling
 import { SearchBar } from "../../assets/Util/InputStyle";
 
 type ParticipantsListState = {
-  trainees: {trainees: SignupState[]};
-  handleCheckBox?: (event: React.ChangeEvent<HTMLInputElement>, trainee: SignupState) => void;
-  participants?: SignupState[]
+  trainees: {trainees: Trainees[]};
+  handleCheckBox?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  participants?: (string | number)[]
 }
 
-const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
+const ParticipantsList: React.FC<ParticipantsListState> = React.memo((props) => {
   const { trainees, handleCheckBox = () => {}, participants= [] } = props
   const location= useLocation()
 
@@ -44,7 +44,7 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
   const startPage = Math.max(1, currentPage - pageRange);
   const endPage = Math.min(totalPages, currentPage + pageRange);
   const btnContentColor = "bg-c-blue-50";
-  console.log(participants)
+  console.log(trainees)
 
   return (
     <section className="w-full h-full flex flex-col gap-3">
@@ -78,18 +78,19 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
                       <input type="checkbox" 
                         checked={trainees.trainees.length === (participants?.length || 0)} 
                         onChange={() => {
+                          const traineesEmails = trainees.trainees.map((trainee) => trainee.email);
                           if (!props.handleCheckBox) return;
                           if (trainees.trainees.length !== (participants?.length || 0)) {
-                            trainees.trainees.forEach((data) => {
+                            traineesEmails.forEach((email) => {
                               props.handleCheckBox?.({
-                                target: { checked: true }
-                              } as unknown as React.ChangeEvent<HTMLInputElement>, data);
+                                target: { checked: true, value: email }
+                              } as unknown as React.ChangeEvent<HTMLInputElement>);
                             });
                           } else {
-                            trainees.trainees.forEach((data) => {
+                            traineesEmails.forEach((email) => {
                               props.handleCheckBox?.({
-                                target: { checked: false }
-                              } as unknown as React.ChangeEvent<HTMLInputElement>, data);
+                                target: { checked: false, value: email }
+                              } as unknown as React.ChangeEvent<HTMLInputElement>);
                             });
                           }
                         }} 
@@ -116,8 +117,9 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
                       >
                         <input 
                           type="checkbox" 
-                          checked={participants.map(item => item.email)?.includes(trainee.email) || false}
-                          onChange={(e) => handleCheckBox(e, trainee)}
+                          value={trainee.email} 
+                          checked={participants?.includes(trainee.email) || false}
+                          onChange={handleCheckBox}
                           className="scale-150"/>
                       </td>
                     }
@@ -195,6 +197,6 @@ const ParticipantsList: React.FC<ParticipantsListState> = (props) => {
       }
     </section>
   )
-}
+})
 
 export default ParticipantsList

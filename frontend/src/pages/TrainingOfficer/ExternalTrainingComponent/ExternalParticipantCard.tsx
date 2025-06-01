@@ -8,7 +8,7 @@ type ExternalParticipantCardState = {
   id: number
 }
 
-const ExternalParticipantCard: React.FC<ExternalParticipantCardState> = (props) => {
+const ExternalParticipantCard: React.FC<ExternalParticipantCardState> = React.memo((props) => {
   const { data, id } = props
   const [selectedParticipantId, setSelectedParticipantId] = useState<number | null>(null);
     
@@ -41,6 +41,6 @@ const ExternalParticipantCard: React.FC<ExternalParticipantCardState> = (props) 
       ))}
     </>
   );
-};
+});
 
 export default ExternalParticipantCard;

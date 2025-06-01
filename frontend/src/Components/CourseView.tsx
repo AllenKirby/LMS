@@ -19,9 +19,20 @@ import { setID } from "../redux/CourseIDRedux";
 import { setAction } from "../redux/CourseActionRedux";
 import { deleteCourseRedux } from '../redux/CoursesRedux';
 
+interface EvaluationRecord {
+  date_started: string;
+  date_ended: string;
+  course: number;
+  final_score: number;
+  follow_up: string;
+  participant_status: string;
+  start_survey: string;
+  participant: { id: number; email: string; first_name: string; last_name: string };
+}
+
 interface TraineeCourses {
   course: CoursesState;
-  participant_status: "in progress" | "pending" | "completed";
+  participant_status: "in progress" | "pending" | "completed" | "pending survey";
 }
 
 const CourseView = () => {
@@ -54,6 +65,36 @@ const CourseView = () => {
   const { getCourse, updateCourseStatus } = useTraineeHook();
   const { deleteCourse } = useTrainingOfficerHook();
   const [viewEvaluation, setViewEvaluation] = useState<boolean>(false);
+
+  const { getEvaluationRecord } = useTrainingOfficerHook();
+  const [evaluationRecords, setEvaluationRecords] = useState<EvaluationRecord[]>([]);
+
+  useEffect(() => {
+    const getEvaluation = async () => {
+      const courseID = user.user.role === 'trainee' ? (selectedCourse as TraineeCourses).course.id : (selectedCourse as CoursesState).id
+      const response: EvaluationRecord[] = await getEvaluationRecord(courseID);
+      const userStartDate = response.find(item => item.participant.id === user.user.id)
+      if(userStartDate?.start_survey && user.user.role === 'trainee') {
+        checkSevenDays(userStartDate?.start_survey)
+      }
+      setEvaluationRecords(response);
+    };
+    getEvaluation();
+  }, [selectedCourse, user]);
+
+  const checkSevenDays = async(dateString: string) => {
+    const startDate = new Date(dateString);
+    const now = new Date();
+
+    const diffInMs = now.getTime() - startDate.getTime();
+    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+
+    const isSevenDaysPassed = diffInMs >= sevenDaysInMs;
+    if(isSevenDaysPassed) {
+      await updateCourseStatus((selectedCourse as TraineeCourses).course.id, user.user.id, {participant_status: 'completed'})
+      setSelectedCourse({...selectedCourse, participant_status: 'completed'})
+    }
+  }
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -109,6 +150,7 @@ const CourseView = () => {
   const getCourseStatusBadge = (status: string) => {
     const statusMap: Record<string, string> = {
       "in progress": "bg-blue-100 text-blue-800",
+      "pending survey": "bg-blue-100 text-blue-800",
       "pending": "bg-yellow-100 text-yellow-800",
       "completed": "bg-green-100 text-green-800",
       "draft": "bg-gray-100 text-gray-800",
@@ -116,12 +158,14 @@ const CourseView = () => {
     };
     
     const statusClass = statusMap[status.toLowerCase()] || "bg-gray-100 text-gray-800";
-    return (
-      <span className={`text-xs px-2 py-1 rounded-full ${statusClass}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
+      return (
+        <span className={`text-xs px-2 py-1 rounded-full ${statusClass}`}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </span>
+      );
+    };
+
+    console.log(selectedCourse)
 
   return (
     <section className="w-full h-full overflow-y-auto bg-gray-50">
@@ -177,7 +221,7 @@ const CourseView = () => {
                 >
                   {(selectedCourse as TraineeCourses).participant_status === "pending"
                     ? "Start Course"
-                    : (selectedCourse as TraineeCourses).participant_status === "in progress"
+                    : (selectedCourse as TraineeCourses).participant_status === "in progress" || (selectedCourse as TraineeCourses).participant_status === "pending survey"
                     ? "Continue Learning"
                     : "Course Completed"}
                 </button>
@@ -300,7 +344,7 @@ const CourseView = () => {
                       ? selectedCourse.course.participants_display.length 
                       : selectedCourse.participants_display.length})
                   </h3>
-                  <div className="flex gap-2">
+                  {user.user.role === 'training_officer' && (
                     <button 
                       onClick={openEvaluation}
                       className="flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
@@ -308,7 +352,7 @@ const CourseView = () => {
                       <HiOutlineChartBar size={14} />
                       Standings
                     </button>
-                  </div>
+                  )}
                 </div>
 
                 <div className="max-h-60 overflow-y-auto">
@@ -349,7 +393,7 @@ const CourseView = () => {
       {viewEvaluation && (
         <TrainingEvaluationRecord 
           modal={openEvaluation} 
-          courseID={(selectedCourse as CoursesState).id}
+          records={evaluationRecords}
         />
       )}
     </section>

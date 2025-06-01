@@ -249,5 +249,9 @@ export interface SurveyQuestion {
 
 export interface SurveyState {
   title: string;
-  questions: SurveyQuestion[];
+  questions: {
+    id: string;
+    title: string;
+    rates: { [key: number]: number };
+  }[];
 }
