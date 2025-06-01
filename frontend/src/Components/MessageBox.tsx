@@ -3,7 +3,7 @@ import { MdErrorOutline } from "react-icons/md";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { CiSquareInfo } from "react-icons/ci";
 
-
+import React from 'react'
 
 type MessageBoxProps = {
     title: string;
@@ -11,7 +11,7 @@ type MessageBoxProps = {
     status: 'success' | 'error' | 'warning' | 'info' | '';
 }
 
-const MessageBox: React.FC<MessageBoxProps> = (props) => {
+const MessageBox: React.FC<MessageBoxProps> = React.memo((props) => {
   const { title, message, status } = props
   return (
     <section className="fixed z-30 left-0 top-0 w-full h-full flex flex-col items-center justify-start bg-black bg-opacity-5 p-5">
@@ -27,6 +27,6 @@ const MessageBox: React.FC<MessageBoxProps> = (props) => {
         </div>
     </section>
   )
-}
+})
 
 export default MessageBox

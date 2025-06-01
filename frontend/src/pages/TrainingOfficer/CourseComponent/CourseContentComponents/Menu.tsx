@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { FiChevronDown, FiPlus } from "react-icons/fi";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -22,7 +22,7 @@ type MenuState = {
   setModuleID: (id: number | string) => void;
 }
 
-const Menu: React.FC<MenuState> = (props) => {
+const Menu: React.FC<MenuState> = React.memo((props) => {
   const { menuData, addModule, modules, deleteModule, deleteModulePermanent, deleteMenu, courseAction, setMenuID, setModuleID } = props
   const [collapse, setCollapse] = useState<boolean>(false);
   const { SetMenuTitle } = useTrainingOfficerHook()
@@ -87,6 +87,6 @@ const Menu: React.FC<MenuState> = (props) => {
       </div>
     </section>
   )
-}
+})
 
 export default Menu

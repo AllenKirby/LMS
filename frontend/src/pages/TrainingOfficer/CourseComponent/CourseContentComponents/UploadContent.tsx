@@ -4,7 +4,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { FiUpload } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import FileIcon from '../../../../assets/file.png'
-import { useRef } from "react";
+import React, { useRef } from "react";
 
 import { FileUploadState, DocumentState } from "../../../../types/CourseCreationTypes";
 import {useTrainingOfficerHook} from "../../../../hooks";
@@ -20,7 +20,7 @@ type UploadContentState = {
     deleteFileContent: (id: number) => void;
 }
 
-const UploadContent: React.FC<UploadContentState> = (props) => {
+const UploadContent: React.FC<UploadContentState> = React.memo((props) => {
     const {moduleID, data, deleteUploadContent, setTitle, setFile, deleteFile, courseAction, deleteFileContent} = props
     const {deleteUserCourseDocument} = useTrainingOfficerHook()
     const inputFile = useRef<HTMLInputElement>(null)
@@ -90,6 +90,6 @@ const UploadContent: React.FC<UploadContentState> = (props) => {
         </div>
     </section>
   )
-}
+})
 
 export default UploadContent

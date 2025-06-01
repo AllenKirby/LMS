@@ -5,7 +5,7 @@ import FileIcon from '../../../assets/file.png'
 import ParticipantsList from "../ParticipantsList";
 import {MessageBox} from "../../../Components";
 
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useTrainingOfficerHook } from "../../../hooks";
 
@@ -34,7 +34,7 @@ interface Trainees {
   address: string;
 }
 
-const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
+const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) => {
   const { modal, data = {} as TrainingDataState, flag } = props;
   const [uploadedFile, setUploadedFile] = useState<File[] | []>([])
   const [files, setFiles] = useState<{document_id: number, doc_name: string, doc_url: string}[]>([])
@@ -376,6 +376,6 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = (props) => {
       {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </>
   );
-};
+});
 
 export default ExternalTrainingForm;

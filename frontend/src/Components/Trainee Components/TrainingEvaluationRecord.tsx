@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import useTrainingOfficer from "../../hooks/useTrainingOfficerHook";
-
 interface EvaluationRecord {
   date_started: string;
   date_ended: string;
@@ -8,27 +5,17 @@ interface EvaluationRecord {
   final_score: number;
   follow_up: string;
   participant_status: string;
+  start_survey: string;
   participant: { id: number; email: string; first_name: string; last_name: string };
 }
 
 type EvaluationRecordState = {
   modal: () => void;
-  courseID: number;
+  records: EvaluationRecord[]
 };
 
 const TrainingEvaluationRecord: React.FC<EvaluationRecordState> = (props) => {
-  const { modal, courseID } = props;
-  const { getEvaluationRecord } = useTrainingOfficer();
-  const [evaluationRecords, setEvaluationRecords] = useState<EvaluationRecord[]>([]);
-
-  useEffect(() => {
-    const getEvaluation = async () => {
-      const response = await getEvaluationRecord(courseID);
-      console.log(response);
-      setEvaluationRecords(response);
-    };
-    getEvaluation();
-  }, [courseID]);
+  const { modal, records } = props;
 
   const convertDate = (dateString: string) => {
     if (dateString) {
@@ -73,7 +60,7 @@ const TrainingEvaluationRecord: React.FC<EvaluationRecordState> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {evaluationRecords.map((item, index) => (
+              {records.map((item, index) => (
                 <tr key={index} className="h-14 cursor-pointer">
                   <td
                     className={`pl-4 text-start font-medium border-r rounded-l-md ${

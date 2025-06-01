@@ -124,6 +124,7 @@ const useTraineeHook = () => {
             if(response.status === 200){
                 setIsLoading(false)
                 console.log(response.data)
+                return true
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {

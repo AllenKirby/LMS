@@ -8,3 +8,4 @@ export { default as ResourcesViewModal } from "./ResourcesViewModal";
 export { default as Resource } from "./Resources";
 export { default as MessageBox } from "./MessageBox";
 export { default as NavButton } from "./NavButton";
+export { default as TrainingEvaluationForm } from "./TrainingEvaluationForm";

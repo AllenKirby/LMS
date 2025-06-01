@@ -5,39 +5,38 @@ import { ParticipantsList } from '../'
 import { updateField } from '../../../redux/CourseDataRedux';
 
 import { Trainees, CourseData } from '../../../types/CourseCreationTypes'
-import { SignupState } from '../../../types/UserTypes'
 
 const CourseParticipants = () => {
-  const trainees = useSelector((state: {trainees: {trainees: SignupState[]}}) => state.trainees)
-  //const courseData = useSelector((state: {courseData: CourseData}) => state.courseData)
-  const [participants, setParticipants] = useState<SignupState[]>([])
+  const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
+  const courseData = useSelector((state: {courseData: CourseData}) => state.courseData)
+  const [participants, setParticipants] = useState<string[]>([])
   const dispatch = useDispatch()
 
-  // useEffect(() => {
-  //   if(Array.isArray(courseData?.participants_display)) {
-  //     console.log(courseData?.participants_display)
-  //     setParticipants([...courseData.participants_display])
-  //   }
-  // }, [])
+  useEffect(() => {
+    if(Array.isArray(courseData?.participants_display)) {
+      const emails = courseData.participants_display.map(email => email.email)
+      console.log(emails)
+      setParticipants([...emails])
+    }
+  }, [])
 
-  const handleCheckboxChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    trainee: SignupState
-  ) => {
-    const checked = event.target.checked;
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const valueArray  = event.target.value;
+    const checked  = event.target.checked;
 
-    setParticipants((prevData) => {
-      if (!trainee || !trainee.email) return prevData;
-
-      return checked
-        ? [...prevData, trainee]
-        : prevData.filter((val) => val.email !== trainee.email);
-    });
+    if(Array.isArray(valueArray)) {
+      setParticipants([...valueArray])
+    } else {
+      setParticipants((prevData) => 
+        checked ? [...prevData, valueArray] : prevData.filter((val) => val !== valueArray)
+      );
+    }
   };
 
+  console.log(trainees)
   useEffect(() => {
     dispatch(updateField({name: 'participants', value: participants}))
-    console.log(participants)
+    console.log(courseData)
   }, [participants])
 
   return (
@@ -53,23 +52,20 @@ const CourseParticipants = () => {
           <div className='w-full h-fit p-5 border-b'>
             <h1 className='font-medium'>Selected Participants</h1>
           </div>
-          <div className="w-full overflow-x-auto px-2">
-            <table className="w-full table-auto">
-              <thead className="sticky top-0 bg-white">
-                <tr>
-                  <th className="text-left p-2 border-b">Name</th>
-                  <th className="text-center p-2 border-b">Department</th>
-                </tr>
-              </thead>
-              <tbody>
-                {participants.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="p-2">{`${item.first_name} ${item.last_name}`}</td>
-                    <td className="p-2">{item.department}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <header className='w-full h-fit flex items-center gap-2 p-2 border-b font-semibold'>
+            <p className='w-1/2'>Name</p>
+            <p className='w-1/2'>Department</p>
+          </header>
+          <div className='w-full p-2 flex-1 overflow-y-auto'>
+            {participants.map((item, index) => {
+              const user = trainees.trainees.find((user) => user.email === item);
+              return (
+                <div key={index} className='w-full flex items-center gap-2 p-2 border-b'>
+                  <p className='w-1/2'>{`${user?.first_name} ${user?.last_name}`}</p>
+                  <p className='w-1/2'>{user?.department}</p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

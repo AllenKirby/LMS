@@ -5,7 +5,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { LessonState  } from '../../../../types/CourseCreationTypes'
 
 import JoditEditor from 'jodit-react'
-import { useRef, useMemo } from 'react'
+import React, { useRef, useMemo } from 'react'
 
 type SeparatorState = {
     moduleID: string;
@@ -14,7 +14,7 @@ type SeparatorState = {
     deleteSeparator: (moduleID: string, lessonID: string) => void;
 }
 
-const Separator: React.FC<SeparatorState> = (props) => {
+const Separator: React.FC<SeparatorState> = React.memo((props) => {
     const { moduleID, data, setContent, deleteSeparator } = props
 
     const editor = useRef(null)
@@ -112,6 +112,6 @@ const Separator: React.FC<SeparatorState> = (props) => {
             </div>
         </section>
   )
-}
+})
 
 export default Separator

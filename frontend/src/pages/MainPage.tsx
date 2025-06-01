@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom';
 import { Header} from '../Components';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useTrainingOfficerHook, useTraineeHook, useAuthHook } from '../hooks/'
+import { useTrainingOfficerHook, useTraineeHook, useAuthHook, useSharedHook } from '../hooks/'
 import { setTrainees } from '../redux/TraineesAccountsRedux';
 import { setData } from '../redux/ExternalTrainingDataRedux';
 import { setCourses } from '../redux/CoursesRedux';
@@ -16,6 +16,7 @@ const MainPage: React.FC = () => {
   const { handleRefreshToken } = useAuthHook()
   const { retrieveTrainees, retrieveExternalTraining, retrieveCourses } = useTrainingOfficerHook()
   const { getTraineeCourses, getTraineeExternalTraining } = useTraineeHook()
+  const { getProfilePicture } = useSharedHook()
 
   useEffect(() => {
     const getTrainees = async() => {
@@ -54,9 +55,10 @@ const MainPage: React.FC = () => {
     }
   }, [])
 
-  const refreshToken = async() => {
-     await handleRefreshToken()
-  }
+  const refreshToken = useCallback(async() => {
+     await handleRefreshToken();
+     await getProfilePicture();
+  }, [])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,7 +66,7 @@ const MainPage: React.FC = () => {
     }, 40 * 60 * 1000); 
   
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshToken]);
 
   return (
     <section className="w-full h-screen flex flex-col">

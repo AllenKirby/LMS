@@ -5,7 +5,7 @@ import { useTraineeHook, useTrainingOfficerHook } from '../../../hooks';
 
 import FileIcon from '../../../assets/file.png';
 import { IoClose } from 'react-icons/io5';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 type ParticipantUploadedDocumentProps = {
@@ -20,7 +20,7 @@ interface FilesState {
   documents: { doc_id: number; doc_name: string; doc_url: string }[];
 }
 
-const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = (props) => {
+const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = React.memo((props) => {
   const { onClose, data, trainingID, trainingTitle = '' } = props
   const openInput = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -212,6 +212,6 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
       </div>
     </>
   );
-};
+});
 
 export default ParticipantUploadedDocument;

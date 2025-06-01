@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid'
 
 import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
@@ -152,76 +152,76 @@ const CourseContent = () => {
     }
   }
 
-  const MenuID = (id: number) => {
+  const MenuID = useCallback((id: number) => {
     dispatch(setMenuID(id))
-  }
+  }, [dispatch])
 
-  const ModuleID = (id: string | number) => {
+  const ModuleID = useCallback((id: string | number) => {
     dispatch(setModuleID(id))
-  }
+  }, [dispatch])
 
-  const AddModule = (id: number) => {
+  const AddModule = useCallback((id: number) => {
     dispatch(setModule({menuID: id, moduleID: uuidv4(), title: '', content: [], submitted: false, id: 0, required: false, position: 0}))
-  }
+  }, [dispatch])
 
-  const DeleteModule = (id: string) => {
+  const DeleteModule = useCallback((id: string) => {
     dispatch(deleteModule(id))
     dispatch(resetIDs())
-  }
+  }, [dispatch])
 
-  const SetQuestion = (id: string, questionnaireID: string, fieldString: string, dataString: string | boolean) => {
+  const SetQuestion = useCallback((id: string, questionnaireID: string, fieldString: string, dataString: string | boolean) => {
     if(fieldString === 'choiceType') {
       dispatch(deleteAllChoicesFromQuestionnaire({moduleID: id, questionnaireID: questionnaireID}))
       dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question", value: dataString}))
     }
     dispatch(setQuestion({moduleID: id, questionnaireID: questionnaireID, field: fieldString as "choiceType" | "question", value: dataString}))
-  }
+  }, [dispatch])
 
-  const AddChoice = (id: string, questionnaireID: string, dataString: ChoicesState) => {
+  const AddChoice = useCallback((id: string, questionnaireID: string, dataString: ChoicesState) => {
     dispatch(addChoice({moduleID: id, questionnaireID: questionnaireID, value: dataString}))
-  }
+  }, [dispatch])
   
-  const SetChoice = (id: string, questionnaireID: string, choiceID: string, dataString: string) => {
+  const SetChoice = useCallback((id: string, questionnaireID: string, choiceID: string, dataString: string) => {
     dispatch(setChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID, value: dataString}))
-  }
+  }, [dispatch])
 
-  const SetKeyAnswers = (id: string, questionnaireID: string, dataString: string, type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False") => {
+  const SetKeyAnswers = useCallback((id: string, questionnaireID: string, dataString: string, type: "" | "Multiple Choice" | "Text Answer" | "Check Box" | "True or False") => {
     dispatch(setKeyAnswer({moduleID: id, questionnaireID: questionnaireID, value: dataString, type: type}))
-  }
+  }, [dispatch])
 
-  const DeleteContent = (id: string, contentID: string) => {
+  const DeleteContent = useCallback((id: string, contentID: string) => {
     dispatch(deleteContent({moduleID: id, contentID: contentID}))
-  }
+  }, [dispatch])
 
-  const DeleteChoice = (id: string, questionnaireID: string, choiceID: string) => {
+  const DeleteChoice = useCallback((id: string, questionnaireID: string, choiceID: string) => {
     dispatch(deleteChoice({moduleID: id, questionnaireID: questionnaireID, choiceID: choiceID}))
-  }
+  }, [dispatch])
 
-  const DeleteModulePermanent = async(id: number, moduleID: string) => {
+  const DeleteModulePermanent = useCallback(async(id: number, moduleID: string) => {
     await handleDeleteModule(id, courseID)
     dispatch(deleteModule(moduleID))
     dispatch(resetIDs())
-  }
+  }, [dispatch])
 
   const SetContent = (id: string, lessonID: string, field: string, value: string) => {
     dispatch(setLesson({moduleID: id, lessonID: lessonID, field: field as "content" | "title" , value: value}))
   }
 
-  const SetFileName = (id: string, fileID: string, value: string) => {
+  const SetFileName = useCallback((id: string, fileID: string, value: string) => {
     dispatch(setFileName({moduleID: id, fileID: fileID, value: value}))
-  }
+  }, [dispatch])
 
-  const SetFile = (id: string, fileID: string, value: File) => {
+  const SetFile = useCallback((id: string, fileID: string, value: File) => {
     dispatch(setFile({moduleID: id, fileID: fileID, value: value}))
-  }
+  }, [dispatch])
 
-  const DeleteFile = (id: string, fileID: string) => {
+  const DeleteFile = useCallback((id: string, fileID: string) => {
     dispatch(deleteFile({moduleID: id, fileID: fileID}))
-  }
+  }, [dispatch])
 
-  const removeMenu = async(id: number) => {
+  const removeMenu = useCallback(async(id: number) => {
     await deleteMenu(id)
-  }
+  }, [])
 
   const getModule = async(id: number) => {
     console.log(await getSpecificModule(id))

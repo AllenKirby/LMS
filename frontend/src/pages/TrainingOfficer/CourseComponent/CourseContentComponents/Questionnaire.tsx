@@ -6,7 +6,7 @@ import { IoMdClose } from "react-icons/io";
 import { FiPlus } from "react-icons/fi";
 import { FaAngleDown } from "react-icons/fa";
 
-import { useEffect, useState, useRef, useMemo} from "react";
+import React, { useEffect, useState, useRef, useMemo} from "react";
 
 import { v4 as uuidv4 } from 'uuid'
 import JoditEditor from "jodit-react";
@@ -25,7 +25,7 @@ type QuestionnaireDataState = {
     keyAnswers?: {[key: string]: string | string[]}[]
 }
 
-const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
+const Questionnaire: React.FC<QuestionnaireDataState> = React.memo((props) => {
     const { 
         data,
         moduleID,
@@ -282,6 +282,6 @@ const Questionnaire: React.FC<QuestionnaireDataState> = (props) => {
         </footer>
     </section>
   )
-}
+})
 
 export default Questionnaire
