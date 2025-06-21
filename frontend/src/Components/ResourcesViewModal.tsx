@@ -60,27 +60,33 @@ interface ResourcesViewModalProps {
           </button>
         </header>
         <div className="w-full p-4 flex-1 overflow-y-auto">
-          {courseDocuments.map((documents, index) => (
-            <div key={index} className="w-full">
-              {documents.map((document) => (
-                <a 
-                  href={`${VITE_URL}/course${document.document_url}`} 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key={document.id} 
-                  className="p-2 border rounded mb-4 flex items-center w-full hover:bg-c-grey-5"
-                >
-                  <img src={File} alt="file" className="w-12"/>
-                  <article className="w-full overflow-hidden">
-                    <p className="truncate">{document.document_name}</p>
-                    <p className="text-c-grey-50 text-p-sm">
-                      View Document
-                    </p>
-                  </article>
-                </a>
-              ))}
-            </div>
-          ))}
+          {courseDocuments.length > 0 ? (
+            courseDocuments.map((documents, index) => (
+              <div key={index} className="w-full">
+                {documents.map((document) => (
+                  <a 
+                    href={`${VITE_URL}/course${document.document_url}`} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={document.id} 
+                    className="p-2 border rounded mb-4 flex items-center w-full hover:bg-c-grey-5"
+                  >
+                    <img src={File} alt="file" className="w-12"/>
+                    <article className="w-full overflow-hidden">
+                      <p className="truncate">{document.document_name}</p>
+                      <p className="text-c-grey-50 text-p-sm">
+                        View Document
+                      </p>
+                    </article>
+                  </a>
+                ))}
+              </div>))
+              ) : (
+                <div className="w-full h-full font-medium flex items-center justify-center">
+                  <h1>No Document Found</h1>
+                </div>
+              )
+          }
         </div>
       </div>
     </section>

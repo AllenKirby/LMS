@@ -1,4 +1,4 @@
-import { ExternalParticipantState } from '../../../types/CourseCreationTypes';
+import { ExternalParticipantState, TrainingDataState } from '../../../types/CourseCreationTypes';
 import { UserState } from '../../../types/UserTypes';
 
 import { useTraineeHook, useTrainingOfficerHook } from '../../../hooks';
@@ -12,7 +12,7 @@ type ParticipantUploadedDocumentProps = {
   onClose: () => void;
   data: ExternalParticipantState;
   trainingID: number;
-  trainingTitle?: string;
+  trainingData?: TrainingDataState;
 };
 
 interface FilesState {
@@ -21,7 +21,7 @@ interface FilesState {
 }
 
 const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = React.memo((props) => {
-  const { onClose, data, trainingID, trainingTitle = '' } = props
+  const { onClose, data, trainingID, trainingData = {} } = props
   const openInput = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FilesState>();
@@ -84,8 +84,13 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
     });
   }
 
-  console.log(uploadedFiles)
+  const isOverdue = (dateString: string) => {
+    const endDate = new Date(dateString);
+    const now = new Date();
 
+    return endDate < now
+  }
+  console.log(trainingData)
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black opacity-30" />
@@ -94,7 +99,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
           {/* Header */}
           <header className="flex items-center justify-between px-6 py-4 border-b">
             <h2 className="text-xl font-semibold">
-              {user.user.role === 'training_officer' ? `${data.first_name} ${data.last_name}` : trainingTitle}
+              {user.user.role === 'training_officer' ? `${data.first_name} ${data.last_name}` : (trainingData as TrainingDataState).training_title}
             </h2>
             <button onClick={onClose} type="button" className="text-gray-600 hover:text-red-600 text-2xl">
               &times;
@@ -124,7 +129,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
             </section>
 
             {/* Upload Section (Trainee Only) */}
-            {data.status !== 'completed' && user.user.role === 'trainee' && (
+            {(data.status !== 'completed' && user.user.role === 'trainee' && !isOverdue((trainingData as TrainingDataState).end_date)) && (
               <section className="mb-6">
                 <button
                   type="button"
@@ -197,7 +202,7 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
 
           {/* Footer Actions */}
           <div className="p-4 border-t">
-            {data.status !== 'completed' && user.user.role === 'training_officer' ? (
+            {!isOverdue((trainingData as TrainingDataState).end_date) ? data.status !== 'completed' && user.user.role === 'training_officer' ? (
               <button
                 type="submit"
                 className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
@@ -206,7 +211,9 @@ const ParticipantUploadedDocument: React.FC<ParticipantUploadedDocumentProps> = 
               </button>
             ) : data.status === 'completed' ? (
               <div className="text-center text-green-600 font-medium">Completed</div>
-            ) : null}
+            ) : null : (
+              <div className="text-center text-red-600 font-medium">This training is overdue and file uploads are no longer allowed.</div>
+            )}
           </div>
         </form>
       </div>

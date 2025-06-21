@@ -7,6 +7,9 @@ export const handleAuthNavigation = (role: string, navigate: ReturnType<typeof u
     case 'trainee':
       navigate('/trainee/home', { replace: true });
       break;
+    case 'reviewer':
+      navigate('/reviewer/program/data', { replace: true });
+      break;
     case 'training_officer':
       navigate('/trainingofficer/dashboard', { replace: true });
       break;

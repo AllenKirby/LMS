@@ -1,4 +1,4 @@
-import { FiSearch, FiFilter } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { useLocation } from "react-router-dom";
 
 import { Trainees } from '../../types/CourseCreationTypes'
@@ -19,11 +19,17 @@ const ParticipantsList: React.FC<ParticipantsListState> = React.memo((props) => 
 
   //Search
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const filteredTrainees = trainees.trainees.filter((trainee) =>
-    `${trainee.first_name} ${trainee.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trainee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    trainee.department?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
+  const filteredTrainees = trainees.trainees.filter((trainee) => {
+  const matchesSearch = `${trainee.first_name} ${trainee.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        trainee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        trainee.department?.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesDepartment = selectedDepartment === "" || trainee.department === selectedDepartment;
+
+  return matchesSearch && matchesDepartment;
+});
+
 
   //Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,14 +62,30 @@ const ParticipantsList: React.FC<ParticipantsListState> = React.memo((props) => 
             <input
               type="text"
               className={SearchBar}
-              placeholder="Search course"
+              placeholder="Search Trainee"
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1); 
               }}
             />
           </section>
-          <button className="p-2 bg-c-grey-5 rounded-md"><FiFilter size={20}/></button>
+          <select
+              value={selectedDepartment}
+              onChange={(e) => {
+                setSelectedDepartment(e.target.value);
+                setCurrentPage(1);
+              }}
+              name="Categories"
+              className="px-3 py-2 border rounded-md h-fit w-40 truncate "
+            >
+              <option value="" disabled>
+                Select Department
+              </option>
+              <option value="">All</option>
+              <option value="RIM">RO</option>
+              <option value="EOD">EOD</option>
+              <option value="AFD">AFD</option>
+            </select>
         </div>
       </div>
       {currentTrainees.length > 0 ? 

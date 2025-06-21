@@ -165,8 +165,6 @@ const CourseView = () => {
       );
     };
 
-    console.log(selectedCourse)
-
   return (
     <section className="w-full h-full overflow-y-auto bg-gray-50">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm overflow-hidden min-h-full">
@@ -174,7 +172,7 @@ const CourseView = () => {
         <div className="bg-gradient-to-r from-c-green-60 to-c-green-80 p-6 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <button 
-              onClick={() => window.history.back()}
+              onClick={() => navigate('/trainee/mycourses')}
               className="flex items-center gap-2 hover:bg-c-green-70 p-2 rounded-lg transition-colors"
             >
               <FiArrowLeft size={20} />

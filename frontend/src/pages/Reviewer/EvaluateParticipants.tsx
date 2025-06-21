@@ -1,50 +1,17 @@
-import { useState } from "react";
-import { FaCircleCheck } from "react-icons/fa6";
 import ActivityEffectivenessForm from "./ActivityEffectivenessForm";
 
 interface EvaluateParticipantsProps {
   onClose: () => void;
+  userData: {id: number, name: string};
+  programID: number;
+  type: 'course' | 'training';
+  getCourseParticipants: () => void; 
+  getTrainingParticipants: () => void;
 }
 
-const EvaluateParticipants: React.FC<EvaluateParticipantsProps> = ({
-  onClose,
-}) => {
-  const dummyData = [
-    {
-      NAME: "John",
-    },
-    {
-      NAME: "Jane",
-    },
-    {
-      NAME: "Alice",
-    },
-    {
-      NAME: "Bob",
-    },
-    {
-      NAME: "Charlie",
-    },
-    {
-      NAME: "Eva",
-    },
-    {
-      NAME: "Lucas",
-    },
-    {
-      NAME: "Mia",
-    },
-    {
-      NAME: "Noah",
-    },
-    {
-      NAME: "Lily",
-    },
-  ];
-
-  const [selectedParticipant, setSelectedParticipant] = useState<string | null>(
-    dummyData[0].NAME
-  );
+const EvaluateParticipants: React.FC<EvaluateParticipantsProps> = (props) => {
+  const { onClose, userData, programID, type, getCourseParticipants, getTrainingParticipants } = props
+ 
 
   return (
     <section className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
@@ -56,25 +23,15 @@ const EvaluateParticipants: React.FC<EvaluateParticipantsProps> = ({
           </button>
         </header>
         <main className="w-full h-full flex flex-row overflow-hidden">
-          <aside className="w-1/4 h-full border-r overflow-y-auto px-4 py-2">
-            {dummyData.map((trainees, index) => (
-              <button
-                key={index}
-                className={`w-full flex flex-row items-center justify-between gap-5 px-3 py-2 rounded-md ${
-                  selectedParticipant === trainees.NAME
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-100"
-                }`}
-                onClick={() => setSelectedParticipant(trainees.NAME)}
-              >
-                {trainees.NAME}
-                {/*Kulay green pag naevaluate na*/}
-                <FaCircleCheck className="text-gray-200" />
-              </button>
-            ))}
-          </aside>
           <div className="flex-1 overflow-y-auto">
-            <ActivityEffectivenessForm name={selectedParticipant} />
+            <ActivityEffectivenessForm 
+              name={userData.name} 
+              userID={userData.id} 
+              programID={programID} 
+              type={type}
+              onClose={onClose}
+              getCourseParticipants={getCourseParticipants}
+              getTrainingParticipants={getTrainingParticipants}/>
           </div>
         </main>
       </div>

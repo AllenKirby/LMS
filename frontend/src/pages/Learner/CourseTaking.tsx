@@ -18,11 +18,12 @@ const CourseTaking = () => {
   //states
   const [collapse, setCollapse] = useState<boolean[]>([]);
   const [menus, setMenus] = useState<MenuDataState[]>([])
-  const [score, setScore] = useState<{totalScore: number, userScore: number, percentage: string}>({totalScore: 0, userScore: 0, percentage: ''})
+  const [score, setScore] = useState<{totalScore: number | null, userScore: number | null, percentage: string | null}>({totalScore:null, userScore:null, percentage: null})
   const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
-  const [result, setResult] = useState<{ [key: string]: string }>({}); 
+  const [result, setResult] = useState<{ [key: string]: string }>({});
   const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
+  const [showNextButton, setShowNextButton] = useState<boolean>(false);
   const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
   const [firstLoad, setFirstLoad] = useState<boolean>(true)
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
@@ -52,7 +53,7 @@ const CourseTaking = () => {
   //const activeModule = JSON.parse(localStorage.getItem("IDs") || '{}');
 
   useEffect(() => {
-    if (selectedModule && selectedModule.submitted_answers) {
+    if (selectedModule && selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0) {
       setAnswers({ answers: selectedModule.submitted_answers });
       setResult(compareAnswers(selectedModule.submitted_answers));
     }
@@ -77,9 +78,27 @@ const CourseTaking = () => {
   }, [result])
 
   const handleSubmit = async () => {
-    await submitAnswers(selectedModule.id, user.user.id, answers);
-    setResult(compareAnswers());
-  };
+    const requiredQuestions = selectedModule.content.map(item => item.type === 'questionnaire' && item.required ? item.questionnaireID : null).filter(item => item !== null);
+    const allExist = requiredQuestions.every(key => key in answers.answers);
+
+    if(allExist) {
+      const res = await submitAnswers(selectedModule.id, user.user.id, answers);
+      if(res) {
+        setResult(compareAnswers());
+        setShowNextButton(true);
+      }
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Questions",
+        message: "Please answer all required questions before submitting.",
+      });
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 5000);
+    }
+  }; 
 
   const compareAnswers = (answersData = answers.answers) => {
     const keyAnswers = selectedModule?.key_answers?.reduce(
@@ -151,6 +170,10 @@ const CourseTaking = () => {
   
     const isLastModule = currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
     const isLastMenu = currentMenuIndex >= menus.length - 1;
+
+    setShowNextButton(false);
+    setResult({});
+    setAnswers({ answers: {} });
   
     if (!isLastModule) {
       setCurrentModuleIndex(currentModuleIndex + 1);
@@ -191,7 +214,7 @@ const CourseTaking = () => {
     const getModuleDetails = async () => {
       const moduleID = menus[currentMenuIndex]?.modules[currentModuleIndex]?.id;
       if (!moduleID) return;
-  
+      setShowNextButton(false);
       const response = await getSingleModule(user.user.id, moduleID);
       
       if (firstLoad) {
@@ -255,49 +278,32 @@ const CourseTaking = () => {
 
   const updateStatus = async() => {
     const res = await updateCourseStatus(Number(finalID), user.user.id, {participant_status: 'pending survey'})
-    return res
+    if(res) {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "info",
+        title: "Survey Available for 7 Days",
+        message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 5000);
+    }
   }
 
   useEffect(() => {
     const pendingSurvey = async() => {
       const isLastModule = currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1
       const isContainsQuestionnaire = selectedModule.content.some(item => item.type === 'questionnaire')
-      const isAnswersEmpty = Object.keys(answers.answers).length === 0
-      const isResultsEmpty = Object.values(result).every(item => item !== 'No answer provided')
 
-      console.log(isLastModule, isContainsQuestionnaire, !isAnswersEmpty, isResultsEmpty)
       if(isLastModule && !isContainsQuestionnaire) {
-        const res = await updateStatus()
-        if(res) {
-          setShowMessageBox(true);
-          setMessageInfo({
-            status: "info",
-            title: "Survey Available for 7 Days",
-            message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
-          })
-          setTimeout(() => {
-            setShowMessageBox(false);
-          }, 5000);
-        }
-      } else if(isLastModule && isContainsQuestionnaire && !isAnswersEmpty && isResultsEmpty) {
-        const res = await updateStatus()
-        if(res) {
-          setShowMessageBox(true);
-          setMessageInfo({
-            status: "info",
-            title: "Survey Available for 7 Days",
-            message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
-          })
-          setTimeout(() => {
-            setShowMessageBox(false);
-          }, 5000);
-        }
+        updateStatus()
+      } else if(isLastModule && isContainsQuestionnaire && showNextButton) {
+        await updateStatus()
       }
     }
     pendingSurvey()
-  }, [selectedModule, answers, result])
-
-  console.log(selectedModule)
+  }, [selectedModule, result])
 
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
   const sortedItems = (items: ModulePreview[]) => {
@@ -394,27 +400,27 @@ const CourseTaking = () => {
                           )
                       }
                     })}
-                    {(selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || result && Object.entries(result).some(([, value]) => value === "Correct")) && (
+                    {((selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 &&  selectedModule.content.some(content => content.type === 'questionnaire' && content.questionnaireType === 'exam/quiz')) || (result && Object.entries(result).some(([, value]) => value === "Correct") && selectedModule.content.some(content => content.type === 'questionnaire' && content.questionnaireType === 'exam/quiz'))) && (
                       <div className="w-full flex flex-col items-center justify-center">
                         <div 
                           className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
-                          ${parseFloat(score.percentage) < 30 ? "bg-red-500 border-red-200"
-                            : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                          ${parseFloat(String(score.percentage)) < 30 ? "bg-red-500 border-red-200"
+                            : parseFloat(String(score.percentage)) >= 30 && parseFloat(String(score.percentage)) <= 70
                           ? "bg-amber-500 border-amber-200" : "bg-green-500 border-c-blue-10"}`}
                         >
                           <p className="font-medium text-center">You Score</p>
                           <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
                         </div>
-                        {parseFloat(score.percentage) < 30
+                        {parseFloat(String(score.percentage)) < 30
                           ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
-                          : parseFloat(score.percentage) >= 30 && parseFloat(score.percentage) <= 70
+                          : parseFloat(String(score.percentage)) >= 30 && parseFloat(String(score.percentage)) <= 70
                           ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
                           : <p className="text-p-rg font-medium text-green-500">Great job!</p>
                         }
                         <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
                       </div>
                     )}
-                    {(selectedModule.content.some(item => item.type === "questionnaire") && Object.values(result).every(value => value !== "Correct" && value !== "Incorrect"))&& (
+                    {((selectedModule.content.some(item => item.type === "questionnaire") && Object.keys(selectedModule.submitted_answers || {}).length === 0) && !showNextButton) && (
                       <div className="w-full flex items-center justify-center">
                         <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
                           Submit
@@ -423,7 +429,7 @@ const CourseTaking = () => {
                     )}
                     <div className="w-full flex items-center justify-between">
                       <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
-                      {(selectedModule.content.some(item => item.type !== "questionnaire") || score.userScore !== 0 && score.totalScore !== 0 && score.percentage) && (
+                      {(selectedModule.content.some(item => item.type !== "questionnaire") || selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || Object.keys(result).length > 0 || showNextButton) && (
                         <button onClick={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? () => goToSurveyForm(true, menus[currentMenuIndex].id, selectedModule.id) : () => handleClickNext(menus[currentMenuIndex].id, selectedModule.id)} className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'Survey Form' : 'Next' }</button>
                       )}
                     </div>

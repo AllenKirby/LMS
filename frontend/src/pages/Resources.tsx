@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux";
+import Empty from '../assets/Empty.png'
 
 import { CoursesState } from '../types/CourseCreationTypes' 
 import { ResourcesViewModal } from "../Components";
@@ -19,26 +20,26 @@ const Resources = () => {
   };
 
   return (
-    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg grid grid-cols-5 gap-10">
-      {courses.length === 0 ? (
-        <p className="col-span-5 text-center text-c-grey-50">No resources available.</p>
-      ) : (
-        courses.map((item, index) => (
-          <React.Fragment key={index}>
-            <article
-              className="w-full h-[160px] flex flex-col justify-between rounded-xl bg-white shadow-md group cursor-pointer p-3"
-              onClick={() => handleViewResources((item as CoursesState).id ? (item as CoursesState).id : (item as TraineeCourses).course.id)}
-            >
-                <p className="text-p-rg text-f-dark font-semibold">{(item as CoursesState).course_title ? (item as CoursesState).course_title : (item as TraineeCourses).course.course_title}</p>
-                <div className="font-medium text-p-sm text-c-grey-50">
-                  <p>3 Files</p>
-                  <p>1 Image</p>
-                  <p>2 Video Links</p>
-                </div>
-            </article>
-          </React.Fragment>
-        ))
-      )}
+    <section className="w-full h-full px-7 py-5 text-f-dark bg-content-bg overflow-y-auto">
+      <div className="w-full h-fit grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-6">
+        {courses.length === 0 ? (
+          <>
+            <h1 className="col-span-5 text-center text-c-grey-50 text-lg py-60">No resources available.</h1>
+          </>
+        ) : (
+          courses.map((item, index) => (
+              <section
+                key={index}
+                className="h-[160px] flex flex-col justify-start rounded-xl bg-white shadow-md group cursor-pointer p-3"
+                onClick={() => handleViewResources((item as CoursesState).id ? (item as CoursesState).id : (item as TraineeCourses).course.id)}
+              > 
+                  <h1 className="text-p-rg text-f-dark font-semibold text-lg">{(item as CoursesState).course_title ? (item as CoursesState).course_title : (item as TraineeCourses).course.course_title}</h1>
+                  <h2 className="text-gray-500">{(item as CoursesState).department ? (item as CoursesState).department.join(', ') : (item as TraineeCourses).course.department.join(', ')}</h2>
+              </section>
+            )
+          )
+        )}
+      </div>
       {viewResource && <ResourcesViewModal onClose={handleViewResources} id={courseID}/>}
     </section>
   )

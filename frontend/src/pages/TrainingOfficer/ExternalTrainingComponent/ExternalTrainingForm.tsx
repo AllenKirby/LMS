@@ -6,7 +6,8 @@ import ParticipantsList from "../ParticipantsList";
 import {MessageBox} from "../../../Components";
 
 import React, { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setData } from "../../../redux/ExternalTrainingDataRedux";
 import { useTrainingOfficerHook } from "../../../hooks";
 
 import { defaultSelect } from "../../../assets/Util/SelectStyle";
@@ -50,7 +51,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) 
     participants: []
   })
   const [counter, setCounter] = useState<number>(1);
-  const { createExternalTraining, retrieveExternalParticipants, updateExternalTraining, deleteTrainingDocument} = useTrainingOfficerHook()
+  const { createExternalTraining, retrieveExternalParticipants, updateExternalTraining, deleteTrainingDocument, retrieveExternalTraining} = useTrainingOfficerHook()
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
   const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
     status: "",
@@ -60,6 +61,7 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) 
 
   //redux
   const trainees = useSelector((state: {trainees: {trainees: Trainees[]}}) => state.trainees)
+  const dispatch = useDispatch();
   //const user = useSelector((state: {user: UserState}) => state.user)
 
   const VITE_URL = import.meta.env.VITE_URL
@@ -109,6 +111,11 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) 
         : (prevData.participants || []).filter((val) => val !== value)
     }));
   };  
+
+  const getExternalTrainings = async() => {
+    const response = await retrieveExternalTraining()
+    dispatch(setData(response))
+  }
   
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -118,8 +125,20 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) 
         formData.append("document_name", item.name);
         formData.append("document", item);
       });
-      await createExternalTraining(trainingData, formData)
-      modal()
+      const res = await createExternalTraining(trainingData, formData)
+      if(res) {
+        setShowMessageBox(true);
+        setMessageInfo({
+          status: "success",
+          title: "External Training Created",
+          message: "External training has been created successfully.",
+        })
+        setTimeout(() => {
+          setShowMessageBox(false);
+          modal()
+          getExternalTrainings()
+        }, 2000);
+      }
     } else {
       setShowMessageBox(true);
       setMessageInfo({
@@ -136,13 +155,36 @@ const ExternalTrainingForm: React.FC<ExternalTrainingForm> = React.memo((props) 
   const handleUpdate = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData()
-
-    uploadedFile.forEach((item) => {
-      formData.append("document_name", item.name);
-      formData.append("document", item);
-    });
-    await updateExternalTraining(Number(data.id), trainingData, formData)
-    modal()
+    if(trainingData.participants && trainingData.participants.length > 0 && trainingData.training_title !== '' && trainingData.training_setup !== '' && trainingData.start_date !== '' && trainingData.end_date !== '' && trainingData.training_provider !== '' && trainingData.venue !== '' && uploadedFile.length > 0) {  
+      uploadedFile.forEach((item) => {
+        formData.append("document_name", item.name);
+        formData.append("document", item);
+      });
+      const response = await updateExternalTraining(Number(data.id), trainingData, formData)
+      if(response) {
+        setShowMessageBox(true);
+        setMessageInfo({
+          status: "success",
+          title: "External Training Updated",
+          message: "External training has been updated successfully.",
+        })
+        setTimeout(() => {
+          setShowMessageBox(false);
+          modal()
+          getExternalTrainings()
+        }, 2000);
+      }
+    } else {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "error",
+        title: "Missing Required Fields",
+        message: "Please fill in all required fields before continuing.",
+      })
+      setTimeout(() => {
+        setShowMessageBox(false);
+      }, 2000);
+    }
   }
 
   const handleDeleteDoc = async(docID: number) => {

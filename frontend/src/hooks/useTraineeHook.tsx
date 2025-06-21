@@ -97,9 +97,9 @@ const useTraineeHook = () => {
             const response = await axios.post(`${API_URL}/course/user_participant/${moduleID}/${userID}/`, data,{
                 withCredentials: true
             })
-            if(response.status === 200){
+            if(response.status === 201){
                 setIsLoading(false)
-                console.log(response.data)
+                return true
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -316,6 +316,8 @@ const useTraineeHook = () => {
             }
         }
     }
+
+    
 
   return {
     getTraineeCourses, 

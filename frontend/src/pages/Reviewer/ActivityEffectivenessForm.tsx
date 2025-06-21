@@ -1,7 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useReviewerHook } from "../../hooks";
+import { MessageBox } from "../../Components";
 
 const evaluationOptions: string[] = [
   "Work know-how",
@@ -23,38 +25,59 @@ const ratingDescriptions: Record<number, string> = {
 };
 
 interface EvaluationFormData {
-  name: string | null;
+  name: string;
+  userID: number;
+  programID: number;
+  type: "course" | "training";
+  onClose: () => void;
+  getCourseParticipants: () => void;
+  getTrainingParticipants: () => void;
 }
 
 interface FormValues {
-  selectedOptions: string[];
-  other: string;
-  rating: number | null;
-  comments: string;
+  user: number;
+  program_id: number;
+  program_type: "course" | "training";
+  program_evaluation: {
+    improvement_list: string[];
+    ratings: number | null;
+    comments: string;
+    others?: string;
+  };
 }
 
 const schema = yup.object().shape({
-  selectedOptions: yup
-    .array()
-    .of(yup.string())
-    .test(
-      "at-least-one",
-      "Please select at least one area or fill out the 'Others' field.",
-      function (value) {
-        return (
-          (value && value.length > 0) || this.parent.other.trim().length > 0
-        );
-      }
-    ),
-  other: yup.string(),
-  rating: yup
-    .number()
-    .typeError("Please select a rating.")
-    .required("Rating is required."),
-  comments: yup.string().optional(),
+  program_evaluation: yup.object().shape({
+    improvement_list: yup
+      .array()
+      .of(yup.string())
+      .test(
+        "at-least-one",
+        "Please select at least one area or fill out the 'Others' field.",
+        function (value) {
+          const others = this.parent?.others || "";
+          return (value && value.length > 0) || others.trim().length > 0;
+        }
+      ),
+    others: yup.string().optional(), // separate field for Others
+    ratings: yup
+      .number()
+      .typeError("Please select a rating.")
+      .required("Rating is required."),
+    comments: yup.string().optional(),
+  }),
 });
 
-const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
+
+const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({
+  name,
+  userID,
+  programID,
+  type,
+  onClose,
+  getTrainingParticipants,
+  getCourseParticipants
+}) => {
   const {
     register,
     handleSubmit,
@@ -64,20 +87,63 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      selectedOptions: [],
-      other: "",
-      rating: null,
-      comments: "",
+      user: userID,
+      program_id: programID,
+      program_type: type,
+      program_evaluation: {
+        improvement_list: [],
+        ratings: null,
+        comments: "",
+        others: "",
+      },
     },
-    mode: "onSubmit",
   });
+  const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
+  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+    status: "",
+    title: "",
+    message: ""
+  });
+  const { submitEvaluatedData } = useReviewerHook()
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Submitted Data:", data);
+  const onSubmit = async(data: FormValues) => {
+    const improvements = [...data.program_evaluation.improvement_list];
+
+    const othersText = `others|${(data as FormValues).program_evaluation.others}`;
+    if (othersText && othersText.trim() !== "") {
+      improvements.push(othersText.trim());
+    }
+
+    // Clean the data: remove `others`
+    const cleanedData = {
+      ...data,
+      program_evaluation: {
+        ...data.program_evaluation,
+        improvement_list: improvements,
+      },
+    };
+    delete (cleanedData.program_evaluation as any).others;
+
+    console.log("Submitted Data:", cleanedData);
+    const response = await submitEvaluatedData(cleanedData)
+    if(response) {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "success",
+        title: 'Submitted Successfully!',
+        message: "The evaluation has been submitted successfully.",
+      }) 
+      setTimeout(() => {
+        setShowMessageBox(false);
+        if(type === 'course') {
+          getCourseParticipants();
+        } else {
+          getTrainingParticipants();
+        }
+        onClose()
+      }, 2000);
+    }
   };
-
-  const selectedOptions = watch("selectedOptions");
-  const other = watch("other");
 
   return (
     <form
@@ -99,7 +165,7 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
               <input
                 type="checkbox"
                 value={option}
-                {...register("selectedOptions")}
+                {...register("program_evaluation.improvement_list")}
               />
               <span>{option}</span>
             </label>
@@ -110,14 +176,14 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
             Others, please specify:
           </label>
           <textarea
-            {...register("other")}
+            {...register("program_evaluation.others")}
             rows={3}
             className="w-full border p-2 rounded"
           />
         </div>
-        {errors.selectedOptions && (
+        {errors.program_evaluation?.improvement_list && (
           <p className="text-red-500 text-sm mt-1">
-            {errors.selectedOptions.message}
+            {errors.program_evaluation.improvement_list.message}
           </p>
         )}
       </div>
@@ -130,7 +196,7 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
         <div className="space-y-1">
           <Controller
             control={control}
-            name="rating"
+            name="program_evaluation.ratings"
             render={({ field }) => (
               <>
                 {[5, 4, 3, 2, 1].map((num) => (
@@ -149,8 +215,10 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
               </>
             )}
           />
-          {errors.rating && (
-            <p className="text-red-500 text-sm mt-1">{errors.rating.message}</p>
+          {errors.program_evaluation?.ratings && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.program_evaluation.ratings.message}
+            </p>
           )}
         </div>
       </div>
@@ -161,7 +229,7 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
           III. Other Observations/Feedback/Comments:
         </h3>
         <textarea
-          {...register("comments")}
+          {...register("program_evaluation.comments")}
           rows={3}
           className="w-full border p-2 rounded"
         />
@@ -173,6 +241,7 @@ const ActivityEffectivenessForm: React.FC<EvaluationFormData> = ({ name }) => {
       >
         Submit Evaluation
       </button>
+      {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
     </form>
   );
 };

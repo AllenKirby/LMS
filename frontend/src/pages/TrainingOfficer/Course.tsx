@@ -15,7 +15,7 @@ import { setAction } from "../../redux/CourseActionRedux";
 const Course: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Course");
   const [activeTab, setActiveTab] = useState<string>(selectedTab);
-  const [selectedDepartment, setSelectedDepartment] = useState<"" | "EMU" | "RIM" | "EOD" | "AFD" | "IT">('')
+  const [selectedDepartment, setSelectedDepartment] = useState<"" | "RO" | "EOD" | "AFD">('')
   const [search, setSearch] = useState<{courses: string; trainings: string}>({courses: '', trainings: ''})
   const [isTrainingModalOpen, setTrainingModalOpen] = useState<boolean>(false);
   const { default: tabDefault, active: tabActive } = TabButton;
@@ -49,11 +49,11 @@ const Course: React.FC = () => {
     <section className={`${PageSpacing} flex-col`}>
       <header className="flex justify-between items-center">
         <h1 className="text-h-h6 font-medium">{selectedTab}</h1>
-        <div className="flex gap-3">
+        <div className="flex flex-col lg:flex-row  gap-3">
           {activeTab === 'Course' && (
             <select
               value={selectedDepartment}
-              onChange={(e) => setSelectedDepartment(e.target.value as "" | "EMU" | "RIM" | "EOD" | "AFD" | "IT")}
+              onChange={(e) => setSelectedDepartment(e.target.value as "" | "RO" | "EOD" | "AFD")}
               name="Categories"
               className="px-3 py-2 border rounded-md h-fit w-40 truncate "
             >
@@ -61,11 +61,9 @@ const Course: React.FC = () => {
                 Select Department
               </option>
               <option value="">All</option>
-              <option value="EMU">EMU</option>
-              <option value="RIM">RIM</option>
+              <option value="RIM">RO</option>
               <option value="EOD">EOD</option>
               <option value="AFD">AFD</option>
-              <option value="IT">IT</option>
             </select>
           )}
           <section className="flex items-center relative">
@@ -119,11 +117,11 @@ const Course: React.FC = () => {
           External Training
         </button>
       </nav>
-      <main className="w-full flex-1  overflow-y-auto">
+      <main className="w-full flex-1 overflow-y-auto">
         <>
           {activeTab === "Course" && <CourseCard selectedDepartment={selectedDepartment} searchString={search.courses}/>}
         </>
-        <section className="w-full grid lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
+        <section className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 pt-5 gap-10">
           {activeTab === "External Training" && <TrainingCard searchString={search.trainings}/>}
         </section>
       </main>
