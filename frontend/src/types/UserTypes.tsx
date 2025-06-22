@@ -21,6 +21,7 @@ export interface User {
   }
 
   export interface SignupState {
+    id?: number;
     email: string;
     password: string;
     first_name: string;

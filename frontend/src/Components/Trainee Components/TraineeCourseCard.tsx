@@ -38,12 +38,12 @@ const TraineeCourseCard: React.FC<TraineeCourseCardState> = React.memo((props) =
           <div className="w-full flex-1 p-5 flex flex-col justify-between">
               <article>
                   <p className="text-p-sm font-medium text-c-green-50">{data.course.department}</p>
-                  <p className="text-p-lg font-semibold">{data.course.course_title}</p>
+                  <p className="text-p-lg font-semibold w-full">{data.course.course_title}</p>
               </article>
-              <p>{data.course.course_description}</p>
-              <div className="flex items-center justify-between">
-                  <p className="flex items-center gap-1"><CiCalendar/> {convertDate(data.course.created_at)}</p>
-                  <p className="flex items-center gap-1"><CiUser/> {data.course.participants_display.length} Enrolled</p>
+              <p className="text-p-rg text-c-grey-70 h-20 w-full truncate">{data.course.course_description}</p>
+              <div className="w-full flex items-center justify-between text-p-sm">
+                  <p className="text-c-grey-70 flex items-center justify-center gap-1"><CiCalendar/> {convertDate(data.course.created_at)}</p>
+                  <p className="text-c-grey-70 flex items-center justify-center gap-1"><CiUser/> {data.course.participants_display.length} Enrolled</p>
               </div>
           </div>
       </section>

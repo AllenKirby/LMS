@@ -117,7 +117,7 @@ const Questionnaire: React.FC<QuestionnaireDataState> = React.memo((props) => {
                 className="px-2 py-1 outline-none rounded-md bg-c-grey-5 font-medium text-p-sm">
                 <option value="Multiple Choice">Multiple Choice</option>
                 <option value="Check Box">Check Box</option>
-                <option value="Text Answer">Text Answer</option>
+                {data.questionnaireType !== 'exam/quiz' && <option value="Text Answer">Text Answer</option>}
                 <option value="True or False">True or False</option>
              </select>
             <div className="flex items-center justify-center gap-2">
@@ -130,8 +130,6 @@ const Questionnaire: React.FC<QuestionnaireDataState> = React.memo((props) => {
                     <div className="w-11 h-6 bg-gray-300 peer-checked:bg-teal-600 rounded-full peer-focus:ring-2 peer-focus:ring-teal-500 transition-colors duration-300"></div>
                     <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-full"></div>
                 </label>
-                <button><BiDownArrowAlt size={20} color="gray"/></button>
-                <button><BiUpArrowAlt size={20} color="gray"/></button>
                 <button onClick={() => deleteQuestionnaire(moduleID, data.questionnaireID)}><RiDeleteBinLine size={20} color="gray"/></button>
             </div>
         </header>

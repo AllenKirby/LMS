@@ -111,7 +111,7 @@ export interface CourseData {
   cover_image_url?: string;
   course_title: string;
   course_description: string;
-  department: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
+  department: ("" | "RO" | "EOD" | "AFD")[];
   visibility: "public" | "private" | "";
   participants: string[];
   participants_display?: UserState[];
@@ -136,7 +136,7 @@ export interface TrainingDataState {
     last_name: string;
     email: string;
     status: string;
-    department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
+    department?: "" | "RO" | "EOD" | "AFD";
   }[];
 }
 
@@ -145,7 +145,7 @@ export interface ExternalParticipantState {
   first_name: string;
   last_name: string;
   email: string;
-  department?: "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
+  department?: "" | "RO" | "EOD" | "AFD";
   status: string;
 }
 
@@ -153,7 +153,7 @@ export interface CoursesState {
   id: number;
   course_title: string;
   course_description: string;
-  department: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[];
+  department: ("" | "RO" | "EOD" | "AFD")[];
   visibility: string;
   cover_image_url: string;
   created_at: string;
@@ -178,60 +178,67 @@ export interface IDsState {
 
 export interface SurveyAnswers {
   survey: {
-    "1.1": number;
-    "1.2": number;
-    "1.3": number;
-    "1.4": number;
-    "1.5": number;
-    "1.6": number;
-    "1.7": number;
-    "1.8": number;
-    "1.9": number;
-    "2.A.1": number;
-    "2.A.2": number;
-    "2.A.3": number;
-    "2.A.4": number;
-    "2.B.1": number;
-    "2.B.2": number;
-    "2.B.3": number;
-    "2.B.4": number;
-    "2.B.5": number;
-    "2.B.6": number;
-    "2.B.7": number;
-    "2.B.8": number;
-    "2.B.9": number;
-    "2.B.10": number;
-    "2.C.1": number;
-    "2.C.2": number;
-    "2.C.3": number;
-    "2.C.4": number;
-    "2.C.5": number;
-    "2.C.6": number;
-    "2.C.7": number;
-    "2.D.1": number;
-    "2.D.2": number;
-    "3.1": number;
-    "3.2": number;
-    "3.3": number;
-    "3.4": number;
-    "3.5": number;
-    "3.6": number;
-    "3.7": number;
-    "3.8": number;
-    "3.9": number;
-    "3.10": number;
-    "4.1": number;
-    "4.2": number;
-    "4.3": number;
-    "4.4": number;
-    "4.5": number;
-    "4.6": number;
-    "5.1": number;
-    "5.2": number;
-    "5.3": number;
-    "5.4": number;
-    "5.5": number;
-    "5.6": number;
+    learnings: string;
+    comments1: string;
+    comments2: string;
+    comments3: string;
+    comments4: string;
+    survey: {
+      "1.1": number;
+      "1.2": number;
+      "1.3": number;
+      "1.4": number;
+      "1.5": number;
+      "1.6": number;
+      "1.7": number;
+      "1.8": number;
+      "1.9": number;
+      "2.A.1": number;
+      "2.A.2": number;
+      "2.A.3": number;
+      "2.A.4": number;
+      "2.B.1": number;
+      "2.B.2": number;
+      "2.B.3": number;
+      "2.B.4": number;
+      "2.B.5": number;
+      "2.B.6": number;
+      "2.B.7": number;
+      "2.B.8": number;
+      "2.B.9": number;
+      "2.B.10": number;
+      "2.C.1": number;
+      "2.C.2": number;
+      "2.C.3": number;
+      "2.C.4": number;
+      "2.C.5": number;
+      "2.C.6": number;
+      "2.C.7": number;
+      "2.D.1": number;
+      "2.D.2": number;
+      "3.1": number;
+      "3.2": number;
+      "3.3": number;
+      "3.4": number;
+      "3.5": number;
+      "3.6": number;
+      "3.7": number;
+      "3.8": number;
+      "3.9": number;
+      "3.10": number;
+      "4.1": number;
+      "4.2": number;
+      "4.3": number;
+      "4.4": number;
+      "4.5": number;
+      "4.6": number;
+      "5.1": number;
+      "5.2": number;
+      "5.3": number;
+      "5.4": number;
+      "5.5": number;
+      "5.6": number;
+    };
   };
 }
 
@@ -254,4 +261,32 @@ export interface SurveyState {
     title: string;
     rates: { [key: number]: number };
   }[];
+}
+
+export interface TrainingEvaluation {
+  employee_details: {
+    department: string;
+    email: string;
+    first_name: string;
+    id: number;
+    last_name: string,
+    designation: string;
+  }
+  evaluation_details: {
+    user: number;
+    program_id: number;
+    program_type: "course" | "training";
+    program_evaluation: {
+      improvement_list: string[];
+      ratings: number | null;
+      comments: string;
+      others?: string;
+    };
+  }
+  program_details: {
+    end_date: string;
+    program_title: string;
+    start_date: string;
+    venue: string;
+  }
 }

@@ -56,6 +56,11 @@ const QuestionCard: React.FC<QuestionCardProps> = React.memo(({
         {/* Question */}
         <p className="text-lg font-medium text-gray-800">
           {HTMLReactParser(content.question)}
+          {content.required && 
+            (
+              <span className="text-red-500">*</span>
+            )
+          }
         </p>
 
         {/* Answer Choices */}

@@ -12,6 +12,10 @@ import { useState, useEffect } from "react";
 import { useTrainingOfficerHook } from "../../../hooks";
 import { deleteTrainingRedux } from '../../../redux/ExternalTrainingDataRedux'
 
+import Upcoming from '../../../assets/Upcoming.png'
+import Ongoing from '../../../assets/Ongoing.png'
+import Completed from '../../../assets/Completed.png'
+
 interface TraineeTrainings {
   training_details: TrainingDataState;
   training: number;
@@ -99,17 +103,43 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
     dispatch(deleteTrainingRedux(trainingID))
     setConfirmation(!confirmation)
   }
+
+  const sortTraining = (array: TraineeTrainings[] | TrainingDataState[]) => {
+    const clonedArray = [...array];
+    if(user.user.role === 'training_officer') {
+      return clonedArray.sort((a, b) => new Date((b as TrainingDataState).start_date).getTime() - new Date((a as TrainingDataState).start_date).getTime());
+    } else {
+      return clonedArray.sort((a, b) => new Date((b as TraineeTrainings).training_details.start_date).getTime() - new Date((a as TraineeTrainings).training_details.start_date).getTime());
+    }
+  } 
+
+  const trainingStatus = (start_date: string, end_date: string) => {
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+    const now = new Date();
+
+    if(startDate > now) {
+      return Upcoming
+    } else if(endDate < now) {
+      return Completed
+    } else if(now >= startDate && now <= endDate) {
+      return Ongoing
+    } else {
+      return 
+    }
+
+  }
   
   return (
     <>
       {filteredTrainings.length === 0 && (
-        <p className="text-center col-span-5 text-c-grey-50 w-full">
+        <p className="text-center col-span-5 text-c-grey-50 w-full py-16">
           No trainings available.
         </p>
       )}
       {filteredTrainings && user.user.role === 'training_officer' && (
         
-        filteredTrainings.map((info, index) => (
+        sortTraining(filteredTrainings).map((info, index) => (
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
             key={index}
@@ -153,6 +183,7 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
             <div className="w-full h-full">
               <figure className="w-full h-2/5">
                 <img
+                  src={trainingStatus((info as TrainingDataState).start_date, (info as TrainingDataState).end_date)}
                   alt="Status-img"
                   className="object-cover w-full h-full rounded-t-xl bg-gradient-to-r from-c-blue-10 to-c-green-20"
                 />
@@ -183,7 +214,7 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
         ))
       )}
       {externalTrainings && user.user.role === 'trainee' && (
-        externalTrainings.map((info, index) => (
+        sortTraining(externalTrainings).map((info, index) => (
           <section
             className="relative w-full h-[340px] flex flex-col items-center justify-center rounded-xl bg-white shadow-md group cursor-pointer"
             key={index}
@@ -228,6 +259,7 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
             <div className="w-full h-full">
               <figure className="w-full h-2/5">
                 <img
+                  src={trainingStatus((info as TraineeTrainings).training_details.start_date, (info as TraineeTrainings).training_details.end_date)}
                   alt="Status-img"
                   className="object-cover w-full h-full rounded-t-xl bg-gradient-to-r from-c-blue-10 to-c-green-20"
                 />
@@ -241,14 +273,12 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
                   <h1 className="text-p-lg font-semibold w-full">
                     {(info as TraineeTrainings).training_details.training_title}
                   </h1>
-                  <p className="text-p-rg text-c-grey-70 w-full">{(info as TraineeTrainings).training_details.venue}</p>
+                  <p className="text-p-rg text-c-grey-70 w-full truncate">{(info as TraineeTrainings).training_details.venue}</p>
                 </section>
                 <article className="w-full flex flex-col gap-1 text-p-sm">
                   <p className="text-f-dark font-medium">Date</p>
                   <p className="text-c-grey-70 flex items-center gap-1">
-                    <MdOutlineCalendarToday size={15} />
                     {formatDate((info as TraineeTrainings).training_details.start_date)} -{" "}
-                    <MdOutlineCalendarToday size={15} />
                     {formatDate((info as TraineeTrainings).training_details.end_date)}
                   </p>
                 </article>
@@ -269,7 +299,7 @@ const TrainingCard: React.FC<TrainingCardState> = (props) => {
                   status: (info as TraineeTrainings).status
                 }} 
                 trainingID={Number((info as TraineeTrainings).training_details.id)} 
-                trainingTitle={(info as TraineeTrainings).training_details.training_title}
+                trainingData={(info as TraineeTrainings).training_details}
               />
             )}
           </section>

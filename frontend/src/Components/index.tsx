@@ -9,3 +9,4 @@ export { default as Resource } from "./Resources";
 export { default as MessageBox } from "./MessageBox";
 export { default as NavButton } from "./NavButton";
 export { default as TrainingEvaluationForm } from "./TrainingEvaluationForm";
+export { default as ActivityEffectivenessForm } from "./ActivityEffectivenessForm";

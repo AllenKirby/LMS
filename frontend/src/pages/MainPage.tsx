@@ -3,7 +3,7 @@ import { Header} from '../Components';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useTrainingOfficerHook, useTraineeHook, useAuthHook, useSharedHook } from '../hooks/'
+import { useTrainingOfficerHook, useTraineeHook, useAuthHook, useSharedHook, useReviewerHook } from '../hooks/'
 import { setTrainees } from '../redux/TraineesAccountsRedux';
 import { setData } from '../redux/ExternalTrainingDataRedux';
 import { setCourses } from '../redux/CoursesRedux';
@@ -17,6 +17,7 @@ const MainPage: React.FC = () => {
   const { retrieveTrainees, retrieveExternalTraining, retrieveCourses } = useTrainingOfficerHook()
   const { getTraineeCourses, getTraineeExternalTraining } = useTraineeHook()
   const { getProfilePicture } = useSharedHook()
+  const { retrieveAllCourses, retrieveAllTrainings } = useReviewerHook()
 
   useEffect(() => {
     const getTrainees = async() => {
@@ -45,6 +46,16 @@ const MainPage: React.FC = () => {
       dispatch(setData(response))
     }
 
+    const getReviewerTrainings = async() => {
+      const response = await retrieveAllTrainings()
+      dispatch(setData(response))
+    }
+
+    const getReviewerCourses = async() => {
+      const response = await retrieveAllCourses()
+      dispatch(setCourses(response))
+    }
+
     if(user.user.role === 'training_officer') {
       getTrainees()
       getExternalTrainings()
@@ -52,6 +63,9 @@ const MainPage: React.FC = () => {
     } else if(user.user.role === 'trainee') {
       getTraineeCourse()
       getTraineeTraining()
+    } else if(user.user.role === 'reviewer') {
+      getReviewerTrainings()
+      getReviewerCourses()
     }
   }, [])
 

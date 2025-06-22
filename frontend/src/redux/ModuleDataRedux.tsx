@@ -88,6 +88,14 @@ const ModuleDataRedux = createSlice({
                 if (questionnaire) {
                     const choice = questionnaire.choices.find((choice) => choice.choiceID === choiceID)
                     if(choice) choice.choice = value
+                    if(module.key_answers) {
+                        const existingEntry = module.key_answers.find(
+                            (entry) => Object.keys(entry)[0] === questionnaireID
+                        );
+                        if (existingEntry) {
+                            existingEntry[questionnaireID] = value; 
+                        }
+                    }
                 }
             }
         }

@@ -32,7 +32,7 @@ const MyCourse = () => {
     (state: { externalTrainingData: TrainingDataState[] }) => state.externalTrainingData
   );
 
-  const [activeButtonCourse, setActiveButtonCourse] = useState<"" | "EMU" | "RIM" | "EOD" | "AFD" | "IT">("");
+  const [activeButtonCourse, setActiveButtonCourse] = useState<"" | "RO" | "EOD" | "AFD">("");
   const { id } = useParams();
   const [collapse, setCollapse] = useState<boolean>(false);
 
@@ -99,7 +99,7 @@ const MyCourse = () => {
                   <p className="text-p-lg">Categories</p>
                 </header>
                 <div className="flex-1 flex flex-col">
-                  {["", "EMU", "RIM", "EOD", "AFD", "IT"].map((category) => (
+                  {["" , "RO" , "EOD" , "AFD"].map((category) => (
                     <button
                       key={category}
                       className={`w-full rounded-md text-p-sm p-2 text-start font-medium ${
@@ -107,7 +107,7 @@ const MyCourse = () => {
                           ? "text-c-blue-50 border border-c-blue-50 bg-c-blue-5"
                           : "bg-none text-c-grey-50"
                       }`}
-                      onClick={() => setActiveButtonCourse(category as "" | "EMU" | "RIM" | "EOD" | "AFD" | "IT")}
+                      onClick={() => setActiveButtonCourse(category as "" | "RO" | "EOD" | "AFD")}
                     >
                       {!category ? "All" : category}
                     </button>

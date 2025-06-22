@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Menu, Questionnaire, Separator, UploadContent } from './CourseContentComponents'
 import { MessageBox } from '../../../Components'
 import { useTrainingOfficerHook } from '../../../hooks'
+import { DocumentState } from '../../../types/CourseCreationTypes'
 
 import { FiPlus, FiUpload, FiSave } from "react-icons/fi";
 import { RxText } from "react-icons/rx";
@@ -101,7 +102,7 @@ const CourseContent = () => {
     });
   };
   
-
+  console.log(moduleID, menuID)
   const HandleAddModule = async (menuID: number, data: ModuleState) => {
     if(checkFields(data)) {
       await handleAddModule(menuID, data)
@@ -273,7 +274,7 @@ const CourseContent = () => {
   const deleteDocContent = async(id: number) => {
     setSelectedModuleMap((prevModule) => ({
       ...prevModule,
-      content: prevModule.content.filter((item) => item.values.document_id !== id)
+      content: prevModule.content.filter((item) => (item as DocumentState).values.document_id !== id)
     }))
   }
 

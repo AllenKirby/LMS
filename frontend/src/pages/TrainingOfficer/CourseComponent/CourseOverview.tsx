@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateField } from "../../../redux/CourseDataRedux";
 import { CourseData } from "../../../types/CourseCreationTypes";
 
-const departments = ["IT", "EOD", "AFD", "RIM", "EMU"];
+const departments = ["" , "RO" , "EOD" , "AFD"];
 
 // Define validation schema
 const schema = yup.object().shape({
@@ -65,7 +65,7 @@ const CourseOverview = () => {
     input.click();
   };
 
-  type Department = "IT" | "EOD" | "AFD" | "RIM" | "EMU" | "";
+  type Department = "" | "RO" | "EOD" | "AFD";
 
   const toggleDepartment = (dept: Department) => {
     const newSelection = courseData.department.includes(dept)
@@ -193,7 +193,7 @@ const CourseOverview = () => {
                   className="fixed inset-0 z-30"
                   onClick={() => setDeptDropdownOpen(!deptDropdownOpen)}
                 />
-                <div className="absolute top-full mt-1 z-40 bg-white border rounded-md shadow-md w-full max-h-40 overflow-y-auto">
+                <div className="absolute bottom-12 mt-1 z-40 bg-white border rounded-md shadow-md w-full max-h-40 overflow-y-auto">
                   {departments.map((dept) => (
                     <>
                       <label

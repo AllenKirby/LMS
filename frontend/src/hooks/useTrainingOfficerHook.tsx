@@ -361,7 +361,10 @@ const useTrainingOfficer = () => {
             if(response.status === 200) {
                 const data = response.data
                 setIsLoading(false)
-                await uploadDocsExternalTraining(data.id, documents)
+                const res = await uploadDocsExternalTraining(data.id, documents)
+                if(res) {
+                    return true
+                }
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -418,6 +421,7 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
+                return true
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -543,6 +547,7 @@ const useTrainingOfficer = () => {
             })
             if(response.status === 200) {
                 setIsLoading(false)
+                return true
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -566,7 +571,10 @@ const useTrainingOfficer = () => {
             if(response.status === 200) {
                 setIsLoading(false)
                 console.log(response.data)
-                await uploadDocsExternalTraining(id, documents)
+                const res = await uploadDocsExternalTraining(id, documents)
+                if(res) {
+                    return true
+                }
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -734,6 +742,90 @@ const useTrainingOfficer = () => {
         }
     } 
 
+    const getUserSurveyAnswers = async(courseID: number, userID: number) => {
+        try {
+            const response = await axios.get(`${API_URL}/course/user-survey/${courseID}/${userID}/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const getDashboardData = async() => {
+        try {
+            const response = await axios.get(`${API_URL}/course/dashboard/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const getChartData = async(endpoint: string) => {
+        try {
+            const response = await axios.get(endpoint, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
+    const getTrainingAnalytics = async() => {
+        try {
+            const response = await axios.get(`${API_URL}/training/analytics/`, {
+                withCredentials: true
+            })
+            if(response.status === 200){
+                const data = response.data
+                return data
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                setIsLoading(false)
+                console.log(error.response?.data?.message);
+                setError(error.response?.data?.message || "Something went wrong");
+            } else {
+                console.log(error);
+                setError("An unexpected error occurred");
+            }
+        }
+    }
+
   return { 
     handleAddCourse, 
     retrieveTrainees, 
@@ -761,6 +853,10 @@ const useTrainingOfficer = () => {
     getSurveyAnswers,
     deleteTraining,
     getCourseAnswers,
+    getUserSurveyAnswers,
+    getDashboardData,
+    getChartData,
+    getTrainingAnalytics,
     isLoading, 
     error }
 }

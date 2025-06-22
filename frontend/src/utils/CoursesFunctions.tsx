@@ -10,6 +10,18 @@ interface TraineeCourses {
 
 const CoursesFunctions = () => {
 
+    const getCurrentTimeOfDay = () => {
+      const hour = new Date().getHours(); // 0–23
+
+      if (hour >= 5 && hour < 12) {
+        return "Good Morning!";
+      } else if (hour >= 12 && hour < 17) {
+        return "Good Afternoon!";
+      } else {
+        return "Good Evening!"; // covers 17:00 to 04:59
+      }
+    }
+
     const filterCoursesStatus = (status: string, courses: TraineeCourses[]) => {
         if(!status) return courses
         return courses.filter(course => course.participant_status === status)
@@ -55,7 +67,17 @@ const CoursesFunctions = () => {
         });
       };
 
-  return { filterCoursesStatus, convertDate, sortCourses }
+      const isSixMonthsAgoOrMore = (isoDateString: string) => {
+        const inputDate = new Date(isoDateString);
+        const today = new Date();
+
+        const sixMonthsAgo = new Date(today);
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        return inputDate <= sixMonthsAgo;
+      };
+
+  return { filterCoursesStatus, convertDate, sortCourses, isSixMonthsAgoOrMore, getCurrentTimeOfDay }
 }
 
 export default CoursesFunctions

@@ -17,7 +17,7 @@ const initialState: CourseData = {
 type UpdateFieldPayload =
   | { name: "course_title"; value: string }
   | { name: "course_description"; value: string }
-  | { name: "department"; value: ("IT" | "EOD" | "AFD" | "RIM" | "EMU" | "")[] }
+  | { name: "department"; value: ("" | "RO" | "EOD" | "AFD")[] }
   | { name: "visibility"; value: "public" | "private" | "" }
   | { name: "participants"; value: string[] }
   | { name: "submitted"; value: true | false }

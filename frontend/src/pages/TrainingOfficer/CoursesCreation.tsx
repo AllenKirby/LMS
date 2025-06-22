@@ -13,6 +13,7 @@ import { resetCourseContent } from "../../redux/CourseContentDataRedux";
 import { resetCourseID } from "../../redux/CourseIDRedux";
 import { resetModuleData } from "../../redux/ModuleDataRedux";
 import {resetIDs} from '../../redux/IDsRedux'
+import { setCourses } from "../../redux/CoursesRedux";
 
 import { FaCircleCheck } from "react-icons/fa6";
 
@@ -39,7 +40,7 @@ const Courses: React.FC = () => {
   const courseOverviewData = useSelector((state: { courseData: CourseData }) => state.courseData);
   const courseAction = useSelector(
     (state: { courseAction: string }) => state.courseAction)
-  const { handleAddCourse, handleUpdateCourse, publishCourse } = useTrainingOfficerHook();
+  const { handleAddCourse, handleUpdateCourse, publishCourse, retrieveCourses } = useTrainingOfficerHook();
 
   const modal = useCallback(() => {
     setIsModalOpen(!isModalOpen);
@@ -54,22 +55,30 @@ const Courses: React.FC = () => {
     setConfirmationOpen(true);
   };
 
+  const getCourses = async() => {
+    const response = await retrieveCourses()
+    dispatch(setCourses(response))
+  }
+
   const handlePublish = async() => {
-    await publishCourse(courseID)
-    dispatch(resetCourseData())
-    dispatch(resetCourseContent())
-    dispatch(resetCourseID())
-    dispatch(resetModuleData())
-    navigate('/trainingofficer/courses/course')
-    // setShowMessageBox(true);
-    // setMessageInfo({
-    //   status: "success",
-    //   title: courseAction === 'create' ? "Course Published" : 'Course Updated',
-    //   message: courseAction === 'create' ? "The course has been published successfully." : "The course has been updated successfully.",
-    // }) 
-    // setTimeout(() => {
-    //   setShowMessageBox(false);
-    // }, 2000);
+    const res = await publishCourse(courseID)
+    if(res) {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "success",
+        title: courseAction === 'create' ? "Course Published" : 'Course Updated',
+        message: courseAction === 'create' ? "The course has been published successfully." : "The course has been updated successfully.",
+      }) 
+      setTimeout(() => {
+        setShowMessageBox(false);
+        dispatch(resetCourseData())
+        dispatch(resetCourseContent())
+        dispatch(resetCourseID())
+        dispatch(resetModuleData())
+        navigate('/trainingofficer/courses/course')
+        getCourses();
+      }, 2000);
+    }
   }
 
   const handleConfirmNavigation = async () => {

@@ -1,8 +1,8 @@
-import { Calendar, TraineeCourseCard } from "../../Components/Trainee Components";
+import { TraineeCourseCard } from "../../Components/Trainee Components";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { UserState } from "../../types/UserTypes";
-import { CoursesState } from '../../types/CourseCreationTypes'
+import { CoursesState, TrainingDataState } from '../../types/CourseCreationTypes'
 
 import  CoursesFunctions  from '../../utils/CoursesFunctions'
 
@@ -11,14 +11,24 @@ interface TraineeCourses {
   participant_status: string
 }
 
+interface TraineeTrainings {
+  training_details: TrainingDataState;
+  training: number;
+  status: string;
+}
+
 const Home: React.FC = () => {
   const [activeButtonCourse, setActiveButtonCourse] = useState<string>("");
   const [selectedFilters, setSelectedFilters]= useState<string>('Latest')
 
   const user = useSelector((state: {user: UserState}) => state.user);
   const courses = useSelector((state: {courses: TraineeCourses[]}) => state.courses)
+  const externalTrainings = useSelector(
+    (state: { externalTrainingData: TraineeTrainings[] }) =>
+      state.externalTrainingData
+  );
 
-  const {filterCoursesStatus, sortCourses} = CoursesFunctions()
+  const {filterCoursesStatus, sortCourses, getCurrentTimeOfDay} = CoursesFunctions()
 
   const toTitleCase =(str: string): string => {
     return str
@@ -27,17 +37,16 @@ const Home: React.FC = () => {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
-
-  console.log(courses)
-
   const completedCourses = courses.filter((course) => course.participant_status === "completed");
+  const now = new Date()
+  const upcomingTrainings = externalTrainings.filter((training) => training?.training_details?.start_date ?? new Date(training?.training_details?.start_date) > now)
 
   return (
     <section className="w-full h-full py-7 px-5 flex flex-row gap-5 bg-content-bg">
-      <section className="w-2/3 2xl:w-3/4 h-full overflow-y-auto flex flex-col gap-5 px-5">
-        <section className="flex flex-col gap-5">
+      <div className="w-full h-full overflow-y-auto flex flex-col gap-5 px-5">
+        <section className="w-full flex flex-col gap-5">
           <article>
-            <p className="text-p-sm font-medium text-f-gray">Good Evening</p>
+            <p className="text-p-sm font-medium text-f-gray">{getCurrentTimeOfDay()}</p>
             <h2 className="text-h-h5 font-medium text-f-black">
               Welcome back, {user?.user.first_name}!
             </h2>
@@ -61,13 +70,17 @@ const Home: React.FC = () => {
             </div>
             <div className="flex flex-col gap-3 flex-1 h-fit shadow-md rounded-lg p-4 bg-white">
               <p className="text-p-sm font-medium text-f-gray">
-                Activities Completed
+                Upcoming Training
               </p>
-              <div className="w-12 h-12 rounded-xl bg-gray-300 p-5"></div>
+              <div className="w-12 h-12 px-5 font-medium flex items-center justify-center">
+                <h1 className="text-h-h5">{upcomingTrainings.length}</h1>
+              </div>
             </div>
             <div className="flex flex-col gap-3 flex-1 h-fit shadow-md rounded-lg p-4 bg-white">
-              <p className="text-p-sm font-medium text-f-gray">Course Due</p>
-              <div className="w-12 h-12 rounded-xl bg-gray-300 p-5"></div>
+              <p className="text-p-sm font-medium text-f-gray">Trainings</p>
+              <div className="w-12 h-12 px-5 font-medium flex items-center justify-center">
+                <h1 className="text-h-h5">{externalTrainings.length}</h1>
+              </div>
             </div>
           </section>
         </section>
@@ -97,7 +110,7 @@ const Home: React.FC = () => {
               </button>
             ))}
           </nav>
-          <div className="relative w-full h-full grid grid-cols-2 gap-5">
+          <div className="relative w-full h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filterCoursesStatus(activeButtonCourse, courses).length > 0 ? sortCourses(filterCoursesStatus(activeButtonCourse, courses), user, selectedFilters).map(item => (
                <TraineeCourseCard data={item as TraineeCourses}/>
             )) : 
@@ -108,10 +121,7 @@ const Home: React.FC = () => {
             )}
           </div>
         </section>
-      </section>
-      <section className="w-1/3 2xl:w-1/4 h-full">
-        <Calendar/>
-      </section>
+      </div>
     </section>
   );
 };

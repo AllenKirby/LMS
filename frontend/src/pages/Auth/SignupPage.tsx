@@ -53,7 +53,10 @@ const signupSchema = yup.object({
   // Step 2: Personal Information
   sex: yup.string().required("Sex is required"),
   birthdate: yup.date().required("Birthdate is required"),
-  official_id_number: yup.string().required("Official ID number is required"),
+  official_id_number: yup.string()
+    .required("Official ID number is required")
+    .min(6, "Official ID Number must be at least 6 numbers long")
+    .max(6, "Official ID Number must be at least 6 numbers long"),
   contactNumber: yup
     .string()
     .required("Contact number is required")
@@ -244,7 +247,7 @@ const SignupPage: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-4/5 h-full py-10 flex flex-col justify-between"
+      className="w-4/5 h-full py-10 flex flex-col justify-between overflow-y-auto p-2"
     >
       <section className="w-full h-auto flex flex-col">
         <h1 className="text-h-h4 font-medium">Acount Registration</h1>
@@ -466,7 +469,7 @@ const SignupPage: React.FC = () => {
                     type="number"
                     min="1"
                     max="31"
-                    placeholder={date.day}
+                    value={date.day}
                     onChange={(e) => setDate({ ...date, day: e.target.value })}
                     styling="tertiary"
                   />
@@ -671,12 +674,25 @@ const SignupPage: React.FC = () => {
               <label className="mb-1">
                 Division / Department / Cluster / Section / Unit
               </label>
-              <Input
+              {/* <Input
                 type="text"
                 styling="tertiary"
                 {...register("department")}
                 error={!!errors.department}
-              />
+              /> */}
+              <select
+                {...register("department", {
+                  required: "Department is required",
+                })}
+                className={`w-full p-3 rounded-md focus:outline-green-950 border  ${
+                  errors.department ? "border-red-500" : "border-f-gray"
+                }`}
+                defaultValue="">
+                <option value="" disabled>Select Department</option>
+                <option value="RO" >RO</option>
+                <option value="EOD" >EOD</option>
+                <option value="AFD" >AFD</option>
+              </select>
               {errors.department && (
                 <p className="text-p-sm text-red-500 mt-1">
                   {errors.department.message}

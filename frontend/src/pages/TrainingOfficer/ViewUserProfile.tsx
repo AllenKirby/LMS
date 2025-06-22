@@ -40,7 +40,6 @@ interface ValidationErrors {
 
 const ViewUserProfile = () => {
   const [activeTab, setActiveTab] = useState<string>("Personal Information");
-  const [activeSection, setActiveSection] = useState<string>("User Profile");
   const [municipalitiesSearch, setMunicipalitiesSearch] = useState<string>("");
   const [date, setDate] = useState({ day: "", month: "", year: "" });
   const { tab: tabStyle, section: sectionStyle } = DPButton;
@@ -466,9 +465,7 @@ const ViewUserProfile = () => {
         }, 2000);
     }
   }
-
-  console.log(courses);
-
+  
   return (
     <section className={`${PageSpacing} flex flex-col gap-2`}>
       <nav className="w-full h-fit flex items-center justify-end">
@@ -544,529 +541,512 @@ const ViewUserProfile = () => {
             </section>
           </article>
           <section className="flex flex-col items-start mt-5 gap-2">
-            {["User Profile", "Courses"].map((key) => (
-              <button
-                key={key}
-                className={`${
-                  activeSection === key
-                    ? sectionStyle
-                    : "border-l-2 border-content-bg pl-2"
-                }`}
-                onClick={() => setActiveSection(key)}
-              >
-                {key}
-              </button>
-            ))}
           </section>
         </div>
         <div className="w-3/4 p-5 h-full overflow-y-auto rounded-md bg-white shadow-md">
-          {activeSection === "User Profile" ? (
-            <section>
-              {activeTab === "Personal Information" && (
-                <div className="w-full flex-1 flex flex-col gap-5">
-                  <section className="w-full h-fit gap-5 flex flex-row">
-                    <p className="flex flex-col w-1/3">
-                      Personal Information
-                      <span className="text-p-sm text-c-grey-50">
-                        Update your personal information
-                      </span>
-                    </p>
-                    <div className="w-2/3 flex flex-col gap-3">
-                      <div className="w-full flex flex-row gap-5">
-                        <section className="w-full">
-                          <p className="text-p-sm">First Name</p>
-                          <input
-                            type="text"
-                            value={userData.first_name}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                first_name: e.target.value,
-                              })
-                            }
-                            className={`${defaultInput} w-full ${
-                              errors.first_name ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.first_name && (
-                            <p className="text-red-500 text-xs">
-                              {errors.first_name}
-                            </p>
-                          )}
-                        </section>
-                        <section className="w-full">
-                          <p className="text-p-sm">Last Name</p>
-                          <input
-                            type="text"
-                            value={userData.last_name}
-                            onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                last_name: e.target.value,
-                              })
-                            }
-                            className={`${defaultInput} w-full ${
-                              errors.last_name ? "border-red-500" : ""
-                            }`}
-                          />
-                          {errors.last_name && (
-                            <p className="text-red-500 text-xs">
-                              {errors.last_name}
-                            </p>
-                          )}
-                        </section>
-                      </div>
+          <section>
+            {activeTab === "Personal Information" && (
+              <div className="w-full flex-1 flex flex-col gap-5">
+                <section className="w-full h-fit gap-5 flex flex-row">
+                  <p className="flex flex-col w-1/3">
+                    Personal Information
+                    <span className="text-p-sm text-c-grey-50">
+                      Update your personal information
+                    </span>
+                  </p>
+                  <div className="w-2/3 flex flex-col gap-3">
+                    <div className="w-full flex flex-row gap-5">
                       <section className="w-full">
-                        <p className="text-p-sm">Official ID No.</p>
+                        <p className="text-p-sm">First Name</p>
                         <input
-                          type="number"
-                          value={userData.official_id_number}
+                          type="text"
+                          value={userData.first_name}
                           onChange={(e) =>
                             setUserData({
                               ...userData,
-                              official_id_number: e.target.value,
+                              first_name: e.target.value,
                             })
                           }
                           className={`${defaultInput} w-full ${
-                            errors.official_id_number ? "border-red-500" : ""
+                            errors.first_name ? "border-red-500" : ""
                           }`}
                         />
-                        {errors.official_id_number && (
+                        {errors.first_name && (
                           <p className="text-red-500 text-xs">
-                            {errors.official_id_number}
+                            {errors.first_name}
                           </p>
                         )}
                       </section>
                       <section className="w-full">
-                        <p className="text-p-sm">Sex</p>
-                        <select
-                          value={userData.sex}
+                        <p className="text-p-sm">Last Name</p>
+                        <input
+                          type="text"
+                          value={userData.last_name}
                           onChange={(e) =>
-                            setUserData({ ...userData, sex: e.target.value })
+                            setUserData({
+                              ...userData,
+                              last_name: e.target.value,
+                            })
                           }
-                          className={`${errors.sex ? "border-red-500" : ""} w-full ${defaultInput}`}
-                        >
-                          {sex.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                        {errors.sex && (
-                          <p className="text-red-500 text-xs">{errors.sex}</p>
-                        )}
-                      </section>
-                      <div className="flex flex-col">
-                        <label className="mb-1">Birthdate</label>
-                        <div className="w-full flex gap-2">
-                          <div className="w-1/5">
-                            <input
-                              type="number"
-                              min="1"
-                              max="31"
-                              value={date.day}
-                              onChange={(e) =>
-                                setDate({ ...date, day: e.target.value })
-                              }
-                              //styling="tertiary"
-                              className={
-                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
-                              }
-                            />
-                          </div>
-                          <div className="w-2/5">
-                            <select
-                              value={date.month}
-                              onChange={(e) =>
-                                setDate({ ...date, month: e.target.value })
-                              }
-                              className={
-                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
-                              }
-                            >
-                              {months.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="w-2/5">
-                            <select
-                              value={date.year}
-                              onChange={(e) =>
-                                setDate({ ...date, year: e.target.value })
-                              }
-                              className={
-                                `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
-                              }
-                            >
-                              {years.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        {errors.birth_date && (
+                          className={`${defaultInput} w-full ${
+                            errors.last_name ? "border-red-500" : ""
+                          }`}
+                        />
+                        {errors.last_name && (
                           <p className="text-red-500 text-xs">
-                            {errors.birth_date}
+                            {errors.last_name}
                           </p>
                         )}
-                      </div>
-                    </div>
-                  </section>
-                  <hr />
-                  <section className="w-full h-fit gap-5 flex flex-row">
-                    <p className="flex flex-col w-1/3">
-                      Contact Information
-                      <span className="text-p-sm text-c-grey-50">
-                        Update your contact information
-                      </span>
-                    </p>
-                    <div className="w-2/3 flex flex-col gap-3">
-                      <section className="w-full">
-                        <p className="text-p-sm">Municipality (Region IV-A)</p>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={userData.address}
-                            placeholder="Select Municipality"
-                            //styling="tertiary"
-                            onChange={(e) => {
-                              setMunicipalitiesSearch(e.target.value);
-                              setUserData({
-                                ...userData,
-                                address: e.target.value,
-                              });
-                            }}
-                            className={
-                                `${errors.address ? "border-red-500" : defaultInput } w-full`
-                              }
-                          />
-                          {errors.address && (
-                            <p className="text-red-500 text-xs">
-                              {errors.address}
-                            </p>
-                          )}
-                          {municipalitiesSearch && (
-                            <div className="w-full p-2 absolute left-0 bg-white">
-                              <div className="flex flex-col">
-                                {Municipalities.region4A
-                                  .filter((municipality: Municipality) =>
-                                    municipality.label
-                                      .toLowerCase()
-                                      .includes(
-                                        municipalitiesSearch.toLowerCase()
-                                      )
-                                  )
-                                  .map((municipality: Municipality) => (
-                                    <button
-                                      type="button"
-                                      key={municipality.value}
-                                      className="text-left"
-                                      onClick={() => {
-                                        setUserData({
-                                          ...userData,
-                                          address: municipality.value,
-                                        });
-                                        setMunicipalitiesSearch("");
-                                      }}
-                                    >
-                                      {municipality.label}
-                                    </button>
-                                  ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
                       </section>
-                      <section className="w-full flex flex-col">
-                        <p className="text-p-sm">Contact Number</p>
-                        <div className="flex gap-3">
-                          <article className="bg-c-grey-5 rounded-md px-2 py-1 mt-1 flex gap-2 items-center w-fit">
-                            <img src={Ph} alt="icon" className="w-8" />
-                            <p className="text-p-sm">+63</p>
-                          </article>
+                    </div>
+                    <section className="w-full">
+                      <p className="text-p-sm">Official ID No.</p>
+                      <input
+                        type="number"
+                        value={userData.official_id_number}
+                        onChange={(e) =>
+                          setUserData({
+                            ...userData,
+                            official_id_number: e.target.value,
+                          })
+                        }
+                        className={`${defaultInput} w-full ${
+                          errors.official_id_number ? "border-red-500" : ""
+                        }`}
+                      />
+                      {errors.official_id_number && (
+                        <p className="text-red-500 text-xs">
+                          {errors.official_id_number}
+                        </p>
+                      )}
+                    </section>
+                    <section className="w-full">
+                      <p className="text-p-sm">Sex</p>
+                      <select
+                        value={userData.sex}
+                        onChange={(e) =>
+                          setUserData({ ...userData, sex: e.target.value })
+                        }
+                        className={`${errors.sex ? "border-red-500" : ""} w-full ${defaultInput}`}
+                      >
+                        {sex.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.sex && (
+                        <p className="text-red-500 text-xs">{errors.sex}</p>
+                      )}
+                    </section>
+                    <div className="flex flex-col">
+                      <label className="mb-1">Birthdate</label>
+                      <div className="w-full flex gap-2">
+                        <div className="w-1/5">
                           <input
                             type="number"
-                            value={userData.contact}
+                            min="1"
+                            max="31"
+                            value={date.day}
                             onChange={(e) =>
-                              setUserData({
-                                ...userData,
-                                contact: e.target.value,
-                              })
+                              setDate({ ...date, day: e.target.value })
                             }
-                            className={`${defaultInput} flex-1 ${
-                              errors.contact ? "border-red-500" : ""
-                            }`}
+                            //styling="tertiary"
+                            className={
+                              `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
+                            }
                           />
                         </div>
-                        {errors.contact && (
+                        <div className="w-2/5">
+                          <select
+                            value={date.month}
+                            onChange={(e) =>
+                              setDate({ ...date, month: e.target.value })
+                            }
+                            className={
+                              `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
+                            }
+                          >
+                            {months.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="w-2/5">
+                          <select
+                            value={date.year}
+                            onChange={(e) =>
+                              setDate({ ...date, year: e.target.value })
+                            }
+                            className={
+                              `${errors.birth_date ? "border-red-500" : defaultInput } w-full`
+                            }
+                          >
+                            {years.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      {errors.birth_date && (
+                        <p className="text-red-500 text-xs">
+                          {errors.birth_date}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </section>
+                <hr />
+                <section className="w-full h-fit gap-5 flex flex-row">
+                  <p className="flex flex-col w-1/3">
+                    Contact Information
+                    <span className="text-p-sm text-c-grey-50">
+                      Update your contact information
+                    </span>
+                  </p>
+                  <div className="w-2/3 flex flex-col gap-3">
+                    <section className="w-full">
+                      <p className="text-p-sm">Municipality (Region IV-A)</p>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={userData.address}
+                          placeholder="Select Municipality"
+                          //styling="tertiary"
+                          onChange={(e) => {
+                            setMunicipalitiesSearch(e.target.value);
+                            setUserData({
+                              ...userData,
+                              address: e.target.value,
+                            });
+                          }}
+                          className={
+                              `${errors.address ? "border-red-500" : defaultInput } w-full`
+                            }
+                        />
+                        {errors.address && (
                           <p className="text-red-500 text-xs">
-                            {errors.contact}
+                            {errors.address}
                           </p>
                         )}
-                      </section>
-                      <section className="w-full">
-                        <p className="text-p-sm">Email Address</p>
-                        <input
-                          type="email"
-                          value={userData.email}
-                          className={`${defaultInput} w-full ${
-                            errors.email ? "border-red-500" : ""
-                          }`}
-                          onChange={(e) =>
-                            setUserData({ ...userData, email: e.target.value })
-                          }
-                        />
-                        {errors.email && (
-                          <p className="text-red-500 text-xs">{errors.email}</p>
+                        {municipalitiesSearch && (
+                          <div className="w-full p-2 absolute left-0 bg-white">
+                            <div className="flex flex-col">
+                              {Municipalities.region4A
+                                .filter((municipality: Municipality) =>
+                                  municipality.label
+                                    .toLowerCase()
+                                    .includes(
+                                      municipalitiesSearch.toLowerCase()
+                                    )
+                                )
+                                .map((municipality: Municipality) => (
+                                  <button
+                                    type="button"
+                                    key={municipality.value}
+                                    className="text-left"
+                                    onClick={() => {
+                                      setUserData({
+                                        ...userData,
+                                        address: municipality.value,
+                                      });
+                                      setMunicipalitiesSearch("");
+                                    }}
+                                  >
+                                    {municipality.label}
+                                  </button>
+                                ))}
+                            </div>
+                          </div>
                         )}
-                      </section>
-                    </div>
+                      </div>
+                    </section>
+                    <section className="w-full flex flex-col">
+                      <p className="text-p-sm">Contact Number</p>
+                      <div className="flex gap-3">
+                        <article className="bg-c-grey-5 rounded-md px-2 py-1 mt-1 flex gap-2 items-center w-fit">
+                          <img src={Ph} alt="icon" className="w-8" />
+                          <p className="text-p-sm">+63</p>
+                        </article>
+                        <input
+                          type="number"
+                          value={userData.contact}
+                          onChange={(e) =>
+                            setUserData({
+                              ...userData,
+                              contact: e.target.value,
+                            })
+                          }
+                          className={`${defaultInput} flex-1 ${
+                            errors.contact ? "border-red-500" : ""
+                          }`}
+                        />
+                      </div>
+                      {errors.contact && (
+                        <p className="text-red-500 text-xs">
+                          {errors.contact}
+                        </p>
+                      )}
+                    </section>
+                    <section className="w-full">
+                      <p className="text-p-sm">Email Address</p>
+                      <input
+                        type="email"
+                        value={userData.email}
+                        className={`${defaultInput} w-full ${
+                          errors.email ? "border-red-500" : ""
+                        }`}
+                        onChange={(e) =>
+                          setUserData({ ...userData, email: e.target.value })
+                        }
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 text-xs">{errors.email}</p>
+                      )}
+                    </section>
+                  </div>
+                </section>
+                <footer className="w-full flex-1 flex justify-end mt-5">
+                  <button
+                    onClick={handleUpdatePersonalInformation}
+                    className="bg-black text-f-light rounded-md px-3 py-2"
+                  >
+                    Update Information
+                  </button>
+                </footer>
+              </div>
+            )}
+            {activeTab === "Office Affiliation" && (
+              <section className="w-full h-fit gap-5 flex flex-row">
+                <p className="flex flex-col w-1/3">
+                  Work Information
+                  <span className="text-p-sm text-c-grey-50">
+                    Update your professional details
+                  </span>
+                </p>
+                <div className="w-2/3 flex flex-col gap-3">
+                  <section className="w-full">
+                    <p className="text-p-sm">Affiliation</p>
+                    <select
+                      value={userData.affiliation}
+                      onChange={(e) =>
+                        setUserData({
+                          ...userData,
+                          affiliation: e.target.value,
+                        })
+                      }
+                      className={
+                        `${errors.affiliation ? "border-red-500" : defaultInput } w-full`
+                      }
+                    >
+                      {affiliation.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.affiliation && (
+                      <p className="text-red-500 text-xs">
+                        {errors.affiliation}
+                      </p>
+                    )}
+                  </section>
+                  <section className="w-full">
+                    <p className="text-p-sm">Office Name</p>
+                    <select
+                      value={userData.office_name}
+                      onChange={(e) =>
+                        setUserData({
+                          ...userData,
+                          office_name: e.target.value,
+                        })
+                      }
+                      className={
+                        `${errors.office_name ? "border-red-500" : defaultInput } w-full`
+                      }
+                    >
+                      {officeName.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.office_name && (
+                      <p className="text-red-500 text-xs">
+                        {errors.office_name}
+                      </p>
+                    )}
+                  </section>
+                  <section className="w-full">
+                    <p className="text-p-sm">Office Address</p>
+                    <input
+                      type="text"
+                      value={userData.office_address}
+                      onChange={(e) =>
+                        setUserData({
+                          ...userData,
+                          office_address: e.target.value,
+                        })
+                      }
+                      className={`${defaultInput} w-full ${
+                        errors.office_address ? "border-red-500" : ""
+                      }`}
+                    />
+                    {errors.office_address && (
+                      <p className="text-red-500 text-xs">
+                        {errors.office_address}
+                      </p>
+                    )}
+                  </section>
+                  <section className="w-full">
+                    <p className="text-p-sm">
+                      Division / Department / Cluster / Section / Unit
+                    </p>
+                    <input
+                      type="text"
+                      value={userData.department}
+                      onChange={(e) =>
+                        setUserData({
+                          ...userData,
+                          department: e.target.value,
+                        })
+                      }
+                      className={`${defaultInput} w-full ${
+                        errors.department ? "border-red-500" : ""
+                      }`}
+                    />
+                    {errors.department && (
+                      <p className="text-red-500 text-xs">
+                        {errors.department}
+                      </p>
+                    )}
+                  </section>
+                  <section className="w-full">
+                    <p className="text-p-sm">Designation</p>
+                    <input
+                      type="text"
+                      value={userData.designation}
+                      onChange={(e) =>
+                        setUserData({
+                          ...userData,
+                          designation: e.target.value,
+                        })
+                      }
+                      className={`${defaultInput} w-full ${
+                        errors.designation ? "border-red-500" : ""
+                      }`}
+                    />
+                    {errors.designation && (
+                      <p className="text-red-500 text-xs">
+                        {errors.designation}
+                      </p>
+                    )}
                   </section>
                   <footer className="w-full flex-1 flex justify-end mt-5">
                     <button
-                      onClick={handleUpdatePersonalInformation}
+                      onClick={handleUpdateAffiliation}
                       className="bg-black text-f-light rounded-md px-3 py-2"
                     >
-                      Update Information
+                      Update Affiliation
                     </button>
                   </footer>
                 </div>
-              )}
-              {activeTab === "Office Affiliation" && (
-                <section className="w-full h-fit gap-5 flex flex-row">
-                  <p className="flex flex-col w-1/3">
-                    Work Information
-                    <span className="text-p-sm text-c-grey-50">
-                      Update your professional details
-                    </span>
-                  </p>
-                  <div className="w-2/3 flex flex-col gap-3">
-                    <section className="w-full">
-                      <p className="text-p-sm">Affiliation</p>
-                      <select
-                        value={userData.affiliation}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            affiliation: e.target.value,
-                          })
-                        }
-                        className={
-                          `${errors.affiliation ? "border-red-500" : defaultInput } w-full`
-                        }
-                      >
-                        {affiliation.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.affiliation && (
-                        <p className="text-red-500 text-xs">
-                          {errors.affiliation}
-                        </p>
-                      )}
-                    </section>
-                    <section className="w-full">
-                      <p className="text-p-sm">Office Name</p>
-                      <select
-                        value={userData.office_name}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            office_name: e.target.value,
-                          })
-                        }
-                        className={
-                          `${errors.office_name ? "border-red-500" : defaultInput } w-full`
-                        }
-                      >
-                        {officeName.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.office_name && (
-                        <p className="text-red-500 text-xs">
-                          {errors.office_name}
-                        </p>
-                      )}
-                    </section>
-                    <section className="w-full">
-                      <p className="text-p-sm">Office Address</p>
+              </section>
+            )}
+            {activeTab === "Password" && (
+              <section className="w-full h-fit gap-5 flex flex-row">
+                <p className="flex flex-col w-1/3">
+                  Work Information
+                  <span className="text-p-sm text-c-grey-50">
+                    Update your professional details
+                  </span>
+                </p>
+                <div className="w-2/3 flex flex-col gap-3">
+                  <section className="w-full">
+                    <p className="text-p-sm">Current Password</p>
+                    <div className="w-full flex flex-row items-center justify-center gap-2">
                       <input
-                        type="text"
-                        value={userData.office_address}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            office_address: e.target.value,
-                          })
-                        }
-                        className={`${defaultInput} w-full ${
-                          errors.office_address ? "border-red-500" : ""
-                        }`}
+                        type="password"
+                        className={`${defaultInput} w-full`}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
                       />
-                      {errors.office_address && (
-                        <p className="text-red-500 text-xs">
-                          {errors.office_address}
-                        </p>
-                      )}
-                    </section>
-                    <section className="w-full">
-                      <p className="text-p-sm">
-                        Division / Department / Cluster / Section / Unit
-                      </p>
-                      <input
-                        type="text"
-                        value={userData.department}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            department: e.target.value,
-                          })
-                        }
-                        className={`${defaultInput} w-full ${
-                          errors.department ? "border-red-500" : ""
-                        }`}
-                      />
-                      {errors.department && (
-                        <p className="text-red-500 text-xs">
-                          {errors.department}
-                        </p>
-                      )}
-                    </section>
-                    <section className="w-full">
-                      <p className="text-p-sm">Designation</p>
-                      <input
-                        type="text"
-                        value={userData.designation}
-                        onChange={(e) =>
-                          setUserData({
-                            ...userData,
-                            designation: e.target.value,
-                          })
-                        }
-                        className={`${defaultInput} w-full ${
-                          errors.designation ? "border-red-500" : ""
-                        }`}
-                      />
-                      {errors.designation && (
-                        <p className="text-red-500 text-xs">
-                          {errors.designation}
-                        </p>
-                      )}
-                    </section>
-                    <footer className="w-full flex-1 flex justify-end mt-5">
-                      <button
-                        onClick={handleUpdateAffiliation}
-                        className="bg-black text-f-light rounded-md px-3 py-2"
-                      >
-                        Update Affiliation
+                      <button 
+                        onClick={() => checkCurrentPassword(currentPassword)}
+                        className="w-fit py-2 px-5 rounded-md bg-c-green-50 text-f-light">
+                        Check
                       </button>
-                    </footer>
-                  </div>
-                </section>
-              )}
-              {activeTab === "Password" && (
-                <section className="w-full h-fit gap-5 flex flex-row">
-                  <p className="flex flex-col w-1/3">
-                    Work Information
-                    <span className="text-p-sm text-c-grey-50">
-                      Update your professional details
-                    </span>
-                  </p>
-                  <div className="w-2/3 flex flex-col gap-3">
-                    <section className="w-full">
-                      <p className="text-p-sm">Current Password</p>
-                      <div className="w-full flex flex-row items-center justify-center gap-2">
-                        <input
-                          type="password"
-                          className={`${defaultInput} w-full`}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                        />
-                        <button 
-                          onClick={() => checkCurrentPassword(currentPassword)}
-                          className="w-fit py-2 px-5 rounded-md bg-c-green-50 text-f-light">
-                          Check
-                        </button>
-                      </div>  
-                    </section>
-                    {passwordStatus.correct &&
-                      passwordStatus.message === "Password Match!" && (
-                        <>
-                          <section className="w-full">
-                            <p className="text-p-sm">New Password</p>
-                            <input
-                              type="password"
-                              className={`${defaultInput} w-full ${
-                                errors.password ? "border-red-500" : ""
-                              }`}
-                              onChange={(e) =>
-                                setUserData({
-                                  ...userData,
-                                  password: e.target.value,
-                                })
-                              }
-                            />
-                            {errors.password && (
-                              <p className="text-red-500 text-xs">
-                                {errors.password}
-                              </p>
-                            )}
-                          </section>
-                          <section className="w-full">
-                            <p className="text-p-sm">Confirm Password</p>
-                            <input
-                              type="password"
-                              className={`${defaultInput} w-full ${
-                                errors.confirmPassword ? "border-red-500" : ""
-                              }`}
-                              onChange={(e) =>
-                                setUserData({
-                                  ...userData,
-                                  confirmPassword: e.target.value,
-                                })
-                              }
-                            />
-                            {errors.confirmPassword && (
-                              <p className="text-red-500 text-xs">
-                                {errors.confirmPassword}
-                              </p>
-                            )}
-                          </section>
-                        </>
-                      )}
-                    <footer className="w-full flex-1 flex justify-end mt-5">
-                      <button
-                        onClick={handleUpdatePassword}
-                        disabled={
-                          !passwordStatus.correct &&
-                          passwordStatus.message !== "Password Match!"
-                        }
-                        className={`${
-                          !passwordStatus.correct &&
-                          passwordStatus.message !== "Password Match!"
-                            ? "bg-gray-100 text-gray-400"
-                            : "bg-black text-f-light"
-                        } rounded-md px-3 py-2`}
-                      >
-                        Update Password
-                      </button>
-                    </footer>
-                  </div>
-                </section>
-              )}
-            </section>
-          ) : (
-            <section>b</section>
-          )}
+                    </div>  
+                  </section>
+                  {passwordStatus.correct &&
+                    passwordStatus.message === "Password Match!" && (
+                      <>
+                        <section className="w-full">
+                          <p className="text-p-sm">New Password</p>
+                          <input
+                            type="password"
+                            className={`${defaultInput} w-full ${
+                              errors.password ? "border-red-500" : ""
+                            }`}
+                            onChange={(e) =>
+                              setUserData({
+                                ...userData,
+                                password: e.target.value,
+                              })
+                            }
+                          />
+                          {errors.password && (
+                            <p className="text-red-500 text-xs">
+                              {errors.password}
+                            </p>
+                          )}
+                        </section>
+                        <section className="w-full">
+                          <p className="text-p-sm">Confirm Password</p>
+                          <input
+                            type="password"
+                            className={`${defaultInput} w-full ${
+                              errors.confirmPassword ? "border-red-500" : ""
+                            }`}
+                            onChange={(e) =>
+                              setUserData({
+                                ...userData,
+                                confirmPassword: e.target.value,
+                              })
+                            }
+                          />
+                          {errors.confirmPassword && (
+                            <p className="text-red-500 text-xs">
+                              {errors.confirmPassword}
+                            </p>
+                          )}
+                        </section>
+                      </>
+                    )}
+                  <footer className="w-full flex-1 flex justify-end mt-5">
+                    <button
+                      onClick={handleUpdatePassword}
+                      disabled={
+                        !passwordStatus.correct &&
+                        passwordStatus.message !== "Password Match!"
+                      }
+                      className={`${
+                        !passwordStatus.correct &&
+                        passwordStatus.message !== "Password Match!"
+                          ? "bg-gray-100 text-gray-400"
+                          : "bg-black text-f-light"
+                      } rounded-md px-3 py-2`}
+                    >
+                      Update Password
+                    </button>
+                  </footer>
+                </div>
+              </section>
+            )}
+          </section>
         </div>
       </div>
       {showMessageBox && (

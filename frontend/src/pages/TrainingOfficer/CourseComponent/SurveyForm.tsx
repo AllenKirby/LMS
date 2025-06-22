@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import SurveyCharts from "./SurveyCharts";
 import Chart from "react-apexcharts";
 import { useTrainingOfficerHook } from "../../../hooks";
-import { SurveyState } from '../../../types/CourseCreationTypes'
+import { CoursesState, SurveyState } from '../../../types/CourseCreationTypes'
 import { TrainingEvaluationForm } from '../../../Components'
 
 import { useParams } from "react-router-dom";
@@ -10,6 +10,7 @@ import { pdf } from '@react-pdf/renderer'
 
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import HTMLReactParser from "html-react-parser/lib/index";
+import { useSelector } from "react-redux";
 
 const surveyResults = [
   {
@@ -365,6 +366,15 @@ interface SurveyResultState {
   }[];
 }
 
+interface ParticipantState {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  birth_date: string;
+  sex: string;
+}
+
 const transformData = (surveyResults: SurveyResultState[]) => {
   return surveyResults.map((section) => ({
     title: section.title,
@@ -382,8 +392,9 @@ const SurveyForm = () => {
   const [activeSection, setActiveSection] = useState<string>("Course");
   const [surveyData, setSurveyData] = useState<SurveyState[]>([]);
   const [courseAnswers, setCourseAnswers] = useState<CourseAnswerState>({})
-  const { getSurveyAnswers, getCourseAnswers } = useTrainingOfficerHook()
-  const [participants, setParticipants] = useState<{participant:{id: number, first_name: string, last_name: string, email: string,}}[]>([])
+  const { getSurveyAnswers, getCourseAnswers, getUserSurveyAnswers } = useTrainingOfficerHook()
+  const [participants, setParticipants] = useState<{participant: ParticipantState}[]>([])
+  const courses = useSelector((state: {courses: CoursesState[]}) => state.courses)
 
   useEffect(() => {
     const getCourseSurveyAnswers = async () => {
@@ -402,25 +413,54 @@ const SurveyForm = () => {
         setParticipants(response.participants)
       }
     }
-    getCourseSurveyAnswers()
-  }, [id])
 
-  useEffect(() => {
     const retrieveCourseAnswers = async () => {
       const response = await getCourseAnswers(Number(id))
       console.log(response)
       setCourseAnswers(response)
     }
+    
     retrieveCourseAnswers()
+    getCourseSurveyAnswers()
+    
   }, [id])
 
-  const handleOpenPdf = async () => {
-    const blob = await pdf(
-      <TrainingEvaluationForm />
-    ).toBlob();
+  console.log(participants)
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+  const calculateUserAge = (birthDateString: string) => {
+    const today = new Date();
+    const birthDate = new Date(birthDateString);
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
+  }
+
+  const handleOpenPdf = async (userID: number, userData: ParticipantState) => {
+    const response = await getUserSurveyAnswers(Number(id), userID)
+    const courseInfo = courses.find(course => course.id === Number(id))
+    if(response && courseInfo) {
+      const user = {
+        name: `${userData.first_name} ${userData.last_name}`,
+        sex: userData.sex,
+        birthdate: String(calculateUserAge(userData.birth_date))
+      }
+
+      console.log(calculateUserAge(userData.birth_date))
+
+      const blob = await pdf(
+        <TrainingEvaluationForm surveyAnswers={response} userData={user} courseData={courseInfo}/>
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    }
   };
 
   return (
@@ -531,7 +571,7 @@ const SurveyForm = () => {
                     >
                       {name.participant.first_name} {name.participant.last_name}
                     </p>
-                    <button onClick={handleOpenPdf} className="w-48 h-fit py-2 bg-c-green-50 text-white rounded-md font-medium">
+                    <button onClick={() => handleOpenPdf(name.participant.id, name.participant)} className="w-48 h-fit py-2 bg-c-green-50 text-white rounded-md font-medium">
                       Export Results
                     </button>
                   </div>
