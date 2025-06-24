@@ -54,7 +54,8 @@ const signupSchema = yup.object({
   sex: yup.string().required("Sex is required"),
 
   birthdate: yup.date().required("Birthdate is required"),
-  official_id_number: yup.string()
+  official_id_number: yup
+    .string()
     .required("Official ID number is required")
     .min(6, "Official ID Number must be at least 6 numbers long")
     .max(6, "Official ID Number must be at least 6 numbers long"),
@@ -78,7 +79,8 @@ const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [date, setDate] = useState({ day: "", month: "", year: "" });
   const [municipalitiesSearch, setMunicipalitiesSearch] = useState<string>("");
-  const [municipalitiesSearchFlag, setMunicipalitiesSearchFlag] = useState<boolean>(false);
+  const [municipalitiesSearchFlag, setMunicipalitiesSearchFlag] =
+    useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<ShowPassword>({
     password: false,
     confirmPassword: false,
@@ -242,7 +244,7 @@ const SignupPage: React.FC = () => {
     };
 
     const res = await handleSignup(formattedData);
-    if(res) {
+    if (res) {
       setShowMessageBox(true);
       setMessageInfo({
         status: "success",
@@ -259,11 +261,11 @@ const SignupPage: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-4/5 h-full py-10 flex flex-col justify-between overflow-y-auto p-2"
+      className="w-full md:w-4/5 h-full px-7 md:px-0 py-7 md:py-10 flex flex-col justify-between overflow-y-auto p-2"
     >
       <section className="w-full h-auto flex flex-col">
         <h1 className="text-h-h4 font-medium">Acount Registration</h1>
-        <div className="flex text-p-sm mt-2">
+        <div className="flex text-p-sm my-2">
           <div className="flex flex-col items-start">
             <IoMdCheckboxOutline className="text-c-blue-50" size={24} />
             <h6 className="text-left text-c-blue-50  font-medium">
@@ -485,9 +487,9 @@ const SignupPage: React.FC = () => {
                     onChange={(e) => {
                       const value = parseInt(e.target.value, 10);
                       if (value >= 1 && value <= 31) {
-                        setDate({ ...date, day: e.target.value })
+                        setDate({ ...date, day: e.target.value });
                       } else {
-                        setDate({ ...date, day: '' }); 
+                        setDate({ ...date, day: "" });
                       }
                     }}
                     styling="tertiary"
@@ -587,7 +589,7 @@ const SignupPage: React.FC = () => {
                     });
                   }}
                 />
-                {(municipalitiesSearch && municipalitiesSearchFlag) && (
+                {municipalitiesSearch && municipalitiesSearchFlag && (
                   <div className="w-full p-2 absolute left-0 bg-white shadow-lg z-10 max-h-60 overflow-y-auto">
                     <div className="flex flex-col">
                       {Municipalities.region4A
@@ -690,12 +692,6 @@ const SignupPage: React.FC = () => {
               <label className="mb-1">
                 Division / Department / Cluster / Section / Unit
               </label>
-              {/* <Input
-                type="text"
-                styling="tertiary"
-                {...register("department")}
-                error={!!errors.department}
-              /> */}
               <select
                 {...register("department", {
                   required: "Department is required",
@@ -703,11 +699,14 @@ const SignupPage: React.FC = () => {
                 className={`w-full p-3 rounded-md focus:outline-green-950 border  ${
                   errors.department ? "border-red-500" : "border-f-gray"
                 }`}
-                defaultValue="">
-                <option value="" disabled>Select Department</option>
-                <option value="RO" >RO</option>
-                <option value="EOD" >EOD</option>
-                <option value="AFD" >AFD</option>
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Department
+                </option>
+                <option value="RO">RO</option>
+                <option value="EOD">EOD</option>
+                <option value="AFD">AFD</option>
               </select>
               {errors.department && (
                 <p className="text-p-sm text-red-500 mt-1">
@@ -732,7 +731,7 @@ const SignupPage: React.FC = () => {
           </div>
         )}
         <div
-          className={`flex mt-10 ${
+          className={`flex mt-5 md:mt-10 ${
             counter === 1 ? "justify-end" : "justify-between"
           }`}
         >
@@ -768,7 +767,7 @@ const SignupPage: React.FC = () => {
           )}
         </div>
       </section>
-      <section className="flex flex-col items-center justify-center pb-10">
+      <section className="flex flex-col items-center justify-center py-5 md:py-0 md:pb-10">
         <p className="text-f-gray">
           Already have an account?{" "}
           <span

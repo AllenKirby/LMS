@@ -16,7 +16,7 @@ const AuthPage = () => {
 
   useEffect(() => {
     const user = getAuthCookie();
-  
+
     if (user?.user?.role) {
       dispatch(setUser(user));
       handleAuthNavigation(user.user.role, navigate);
@@ -25,12 +25,12 @@ const AuthPage = () => {
     }
   }, [dispatch, navigate]);
 
-  if (isChecking) return <LoadingPage/>;
+  if (isChecking) return <LoadingPage />;
 
   return (
-    <section className="w-full h-screen flex flex-row">
+    <section className="w-full h-screen flex flex-col md:flex-row">
       <figure
-        className="relative w-3/5 h-full bg-c-green-90 p-5 z-10"
+        className="relative w-full md:w-3/5 h-full bg-c-green-90 p-5 z-10"
         style={{
           backgroundImage: `url(${NIABG})`,
           backgroundSize: "cover",
@@ -55,7 +55,7 @@ const AuthPage = () => {
           </div>
         </section>
       </figure>
-      <div className="w-2/5 h-full flex flex-col items-center justify-center bg-[#fafafa]">
+      <div className="w-full md:w-2/5 h-2/3 md:h-full absolute bottom-0 md:right-0 z-50 md:z-0 rounded-t-3xl flex flex-col items-center justify-center bg-[#fafafa]">
         <Outlet />
       </div>
     </section>
