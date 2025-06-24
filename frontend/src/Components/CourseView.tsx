@@ -172,7 +172,7 @@ const CourseView = () => {
         <div className="bg-gradient-to-r from-c-green-60 to-c-green-80 p-6 text-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <button 
-              onClick={() => navigate('/trainee/mycourses')}
+              onClick={() => navigate(user.user.role === "training_officer" ? '/trainingofficer/courses/course' : '/trainee/mycourses')}
               className="flex items-center gap-2 hover:bg-c-green-70 p-2 rounded-lg transition-colors"
             >
               <FiArrowLeft size={20} />

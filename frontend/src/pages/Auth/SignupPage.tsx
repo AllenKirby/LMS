@@ -52,6 +52,7 @@ const signupSchema = yup.object({
 
   // Step 2: Personal Information
   sex: yup.string().required("Sex is required"),
+
   birthdate: yup.date().required("Birthdate is required"),
   official_id_number: yup.string()
     .required("Official ID number is required")
@@ -240,9 +241,20 @@ const SignupPage: React.FC = () => {
       designation: data.designation,
     };
 
-    await handleSignup(formattedData);
+    const res = await handleSignup(formattedData);
+    if(res) {
+      setShowMessageBox(true);
+      setMessageInfo({
+        status: "success",
+        title: "Registration Successful",
+        message: "Please your email to verify your account.",
+      });
+      setTimeout(() => {
+        setShowMessageBox(false);
+        navigate("/");
+      }, 2000);
+    }
   };
-  console.log(errors)
 
   return (
     <form
@@ -470,7 +482,14 @@ const SignupPage: React.FC = () => {
                     min="1"
                     max="31"
                     value={date.day}
-                    onChange={(e) => setDate({ ...date, day: e.target.value })}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      if (value >= 1 && value <= 31) {
+                        setDate({ ...date, day: e.target.value })
+                      } else {
+                        setDate({ ...date, day: '' }); 
+                      }
+                    }}
                     styling="tertiary"
                   />
                 </div>
@@ -534,9 +553,6 @@ const SignupPage: React.FC = () => {
             <div className="flex flex-col">
               <label className="mb-1">Contact Number</label>
               <div className="flex flex-row gap-2">
-                <div className="w-fit flex items-center justify-center gap-2 bg-c-grey-5 rounded-md px-3">
-                  <p className="text-c-grey-50">+63</p>
-                </div>
                 <div className="w-full">
                   <Input
                     type="text"
