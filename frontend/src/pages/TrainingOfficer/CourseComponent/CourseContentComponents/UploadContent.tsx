@@ -25,6 +25,8 @@ const UploadContent: React.FC<UploadContentState> = React.memo((props) => {
     const {deleteUserCourseDocument} = useTrainingOfficerHook()
     const inputFile = useRef<HTMLInputElement>(null)
 
+    console.log('UploadContent Rendered', data)
+
     const uploadFile = () => {
         inputFile.current?.click();
     }

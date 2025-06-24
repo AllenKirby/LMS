@@ -88,7 +88,6 @@ const useAuthHook = () => {
   }
 
   const handleSignup = async(data: SignupState) => {
-    console.log(data)
     setIsLoading(true)
     setError(null)
     try {
@@ -99,10 +98,7 @@ const useAuthHook = () => {
       })
       if(response.status === 200) {
         setIsLoading(false)
-        console.log(response.data)
-        setAuthCookie(response.data);        
-        dispatch(setUser(response.data))
-        handleAuthNavigation(response.data.user.role, navigate);
+        return true
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -136,7 +132,39 @@ const useAuthHook = () => {
     }
   }
 
-  return  {handleLogin, handleLogout, handleSignup, handleRefreshToken, isLoading, error}
+  const handleEmailVerification = async(data: {email: string}) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const response = await axios.post(`${API_URL}/accounts/resend-verification/`, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if(response.status === 200) {
+        setIsLoading(false)
+        console.log(response.data)
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setIsLoading(false)
+        console.log(error.response?.data?.message);
+        setError(error.response?.data?.message || "Something went wrong");
+      } else {
+          console.log(error);
+          setError("An unexpected error occurred");
+      }
+    }
+  }
+
+  return  {
+    handleLogin, 
+    handleLogout, 
+    handleSignup, 
+    handleRefreshToken, 
+    handleEmailVerification,
+    isLoading, 
+    error}
 }
 
 export default useAuthHook

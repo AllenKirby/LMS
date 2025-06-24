@@ -139,8 +139,8 @@ const Dashboard = () => {
   return (
     <section className="w-full h-full flex flex-col p-4 md:p-10 gap-6 md:gap-10 text-f-dark bg-[#f0f0f0] overflow-y-auto">
       <div className="w-full flex flex-col lg:flex-row gap-6 md:gap-10">
-        <section className="w-full lg:w-1/3 rounded-lg p-5 flex flex-col gap-3 bg-white">
-          <article className="w-full flex justify-between">
+        <section className="w-full lg:w-1/3 h-full rounded-lg p-5 flex flex-col gap-3 bg-white">
+          <article className="w-full h-fit flex justify-between">
             <section>
               <p className="text-c-grey-50">{getCurrentTimeOfDay()}</p>
               <h6 className="text-p-lg font-medium -mt-1 text-xl">
@@ -149,8 +149,8 @@ const Dashboard = () => {
             </section>
           </article>
 
-          <div className="flex flex-col gap-5 text-f-light">
-            <section className="flex flex-col sm:flex-row gap-5">
+          <div className="h-full flex flex-col gap-5 text-f-light">
+            <section className="h-1/2 flex flex-col sm:flex-row gap-5">
               <div className="flex-1 rounded-md bg-gradient-to-r from-sky-300 to-teal-400 p-4 flex flex-col items-center justify-center">
                 <h1 className="text-4xl">{getUpcomingTrainings(externalTrainings).length}</h1>
                 <h6 className="text-p-lg font-medium text-center">Upcoming Trainings</h6>
@@ -160,7 +160,7 @@ const Dashboard = () => {
                 <h6 className="text-p-lg font-medium text-center">Active Trainees</h6>
               </div>
             </section>
-            <section className="flex flex-col sm:flex-row gap-5">
+            <section className="h-1/2 flex flex-col sm:flex-row gap-5">
               <div className="flex-1 rounded-md bg-gradient-to-r from-yellow-300 to-orange-400 p-4 flex flex-col items-center justify-center">
                 <h1 className="text-4xl">{courses.length}</h1>
                 <h6 className="text-p-lg font-medium text-center">Courses Available</h6>
