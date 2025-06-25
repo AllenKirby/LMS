@@ -1,5 +1,9 @@
-import { QuestionCard, CourseContentComponent, SurveyForm } from "../../Components/Trainee Components"
-import { MessageBox } from '../../Components'
+import {
+  QuestionCard,
+  CourseContentComponent,
+  SurveyForm,
+} from "../../Components/Trainee Components";
+import { MessageBox } from "../../Components";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa";
 import { TbAlignLeft } from "react-icons/tb";
@@ -7,83 +11,139 @@ import { CiLock } from "react-icons/ci";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTraineeHook } from "../../hooks";
-import { ModuleState, MenuDataState, ModulePreview } from '../../types/CourseCreationTypes'
-import { UserState } from '../../types/UserTypes'
+import {
+  ModuleState,
+  MenuDataState,
+  ModulePreview,
+} from "../../types/CourseCreationTypes";
+import { UserState } from "../../types/UserTypes";
 import { useSelector } from "react-redux";
-import NIALogo from '../../assets/NIAimg.png'
+import NIALogo from "../../assets/NIAimg.png";
+import { IoClose } from "react-icons/io5";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 const CourseTaking = () => {
-  const { id } = useParams()
-  const [finalID, course_title] = id ? id.split('|') : []
+  const { id } = useParams();
+  const [finalID, course_title] = id ? id.split("|") : [];
   //states
   const [collapse, setCollapse] = useState<boolean[]>([]);
-  const [menus, setMenus] = useState<MenuDataState[]>([])
-  const [score, setScore] = useState<{totalScore: number | null, userScore: number | null, percentage: string | null}>({totalScore:null, userScore:null, percentage: null})
-  const [answers, setAnswers] = useState<{ answers: {[key: string]: string | string[]} }>({answers:{}}); 
+  const [menus, setMenus] = useState<MenuDataState[]>([]);
+  const [score, setScore] = useState<{
+    totalScore: number | null;
+    userScore: number | null;
+    percentage: string | null;
+  }>({ totalScore: null, userScore: null, percentage: null });
+  const [answers, setAnswers] = useState<{
+    answers: { [key: string]: string | string[] };
+  }>({ answers: {} });
   const [result, setResult] = useState<{ [key: string]: string }>({});
   const [currentMenuIndex, setCurrentMenuIndex] = useState<number>(0);
   const [currentModuleIndex, setCurrentModuleIndex] = useState<number>(0);
   const [showNextButton, setShowNextButton] = useState<boolean>(false);
   const [showSurveyForm, setShowSurveyForm] = useState<boolean>(false);
-  const [firstLoad, setFirstLoad] = useState<boolean>(true)
+  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const [showMessageBox, setShowMessageBox] = useState<boolean>(false);
-  const [messageInfo, setMessageInfo] = useState<{status: 'success' | 'error' | 'warning' | 'info' | ''; title: string; message: string}>({
+  const [messageInfo, setMessageInfo] = useState<{
+    status: "success" | "error" | "warning" | "info" | "";
+    title: string;
+    message: string;
+  }>({
     status: "",
     title: "",
-    message: ""
+    message: "",
   });
   const [selectedModule, setSelectedModule] = useState<ModuleState>({
     menuID: 0,
     id: 0,
-    moduleID: '',
-    title: '',
+    moduleID: "",
+    title: "",
     content: [],
-    participant_module_progress: '',
+    participant_module_progress: "",
     position: 0,
     section: 0,
     key_answers: [],
     submitted_answers: {},
-    required: false
+    required: false,
   });
   //redux
-  const user = useSelector((state: {user: UserState}) => state.user)
+  const user = useSelector((state: { user: UserState }) => state.user);
   //hooks
-  const { getCourseContent, getSingleModule, submitAnswers, updateModuleStatus, updateCourseStatus } = useTraineeHook()
+  const {
+    getCourseContent,
+    getSingleModule,
+    submitAnswers,
+    updateModuleStatus,
+    updateCourseStatus,
+  } = useTraineeHook();
   //local storage
   //const activeModule = JSON.parse(localStorage.getItem("IDs") || '{}');
 
   useEffect(() => {
-    if (selectedModule && selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0) {
+    if (
+      selectedModule &&
+      selectedModule.submitted_answers &&
+      Object.keys(selectedModule.submitted_answers).length > 0
+    ) {
       setAnswers({ answers: selectedModule.submitted_answers });
       setResult(compareAnswers(selectedModule.submitted_answers));
     }
-  }, [selectedModule]);  
+  }, [selectedModule]);
 
   useEffect(() => {
-    if(result) {
-      const questions = selectedModule.content.filter(item => item.type === 'questionnaire' && item.questionnaireType === 'exam/quiz').length
-      const correctCount = Object.values(result).filter(value => value === "Correct").length;
+    if (result) {
+      const questions = selectedModule.content.filter(
+        (item) =>
+          item.type === "questionnaire" &&
+          item.questionnaireType === "exam/quiz"
+      ).length;
+      const correctCount = Object.values(result).filter(
+        (value) => value === "Correct"
+      ).length;
       //get percentage
-      const percentage = correctCount / questions * 100
-      const finalPercentage = percentage.toFixed(2)
+      const percentage = (correctCount / questions) * 100;
+      const finalPercentage = percentage.toFixed(2);
       //get total score
-      const scores = selectedModule.content.map(item => item.type === 'questionnaire' && Number(item.questionPoint))
-      const correctKeys = Object.entries(result).filter(([, value]) => value === "Correct").map(([key]) => key);
-      const matchingPoints = selectedModule.content.filter(q => q.type === 'questionnaire' && correctKeys.includes(q.questionnaireID)).map(q => q.type === 'questionnaire' && Number(q.questionPoint));
-      const sumTotalScores = scores.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
-      const sumUserScores = matchingPoints.filter(num => typeof num === "number").reduce((acc, num) => acc + num, 0);
-              
-      setScore({totalScore: sumTotalScores, userScore: sumUserScores, percentage: finalPercentage.toString()})
+      const scores = selectedModule.content.map(
+        (item) => item.type === "questionnaire" && Number(item.questionPoint)
+      );
+      const correctKeys = Object.entries(result)
+        .filter(([, value]) => value === "Correct")
+        .map(([key]) => key);
+      const matchingPoints = selectedModule.content
+        .filter(
+          (q) =>
+            q.type === "questionnaire" &&
+            correctKeys.includes(q.questionnaireID)
+        )
+        .map((q) => q.type === "questionnaire" && Number(q.questionPoint));
+      const sumTotalScores = scores
+        .filter((num) => typeof num === "number")
+        .reduce((acc, num) => acc + num, 0);
+      const sumUserScores = matchingPoints
+        .filter((num) => typeof num === "number")
+        .reduce((acc, num) => acc + num, 0);
+
+      setScore({
+        totalScore: sumTotalScores,
+        userScore: sumUserScores,
+        percentage: finalPercentage.toString(),
+      });
     }
-  }, [result])
+  }, [result]);
 
   const handleSubmit = async () => {
-    const requiredQuestions = selectedModule.content.map(item => item.type === 'questionnaire' && item.required ? item.questionnaireID : null).filter(item => item !== null);
-    const allExist = requiredQuestions.every(key => key in answers.answers);
+    const requiredQuestions = selectedModule.content
+      .map((item) =>
+        item.type === "questionnaire" && item.required
+          ? item.questionnaireID
+          : null
+      )
+      .filter((item) => item !== null);
+    const allExist = requiredQuestions.every((key) => key in answers.answers);
 
-    if(allExist) {
+    if (allExist) {
       const res = await submitAnswers(selectedModule.id, user.user.id, answers);
-      if(res) {
+      if (res) {
         setResult(compareAnswers());
         setShowNextButton(true);
       }
@@ -98,83 +158,90 @@ const CourseTaking = () => {
         setShowMessageBox(false);
       }, 5000);
     }
-  }; 
+  };
 
   const compareAnswers = (answersData = answers.answers) => {
-    const keyAnswers = selectedModule?.key_answers?.reduce(
-      (acc, obj) => ({ ...acc, ...obj }),
-      {}
-    ) ?? {};
-  
+    const keyAnswers =
+      selectedModule?.key_answers?.reduce(
+        (acc, obj) => ({ ...acc, ...obj }),
+        {}
+      ) ?? {};
+
     const userAnswers = answersData ?? {};
     const comparisonResult: { [key: string]: string } = {};
-  
+
     Object.keys(keyAnswers).forEach((id) => {
       const correct = keyAnswers[id];
       const user = userAnswers[id];
-  
+
       if (user === undefined) {
         comparisonResult[id] = "No answer provided";
       } else if (Array.isArray(correct) && Array.isArray(user)) {
         // Check if every correct answer is included in user's answers
         const allIncluded = correct.every((item) => user.includes(item));
         const sameLength = correct.length === user.length;
-  
+
         comparisonResult[id] =
           allIncluded && sameLength ? "Correct" : "Incorrect";
-      } else if (
-        typeof correct === "string" &&
-        typeof user === "string"
-      ) {
+      } else if (typeof correct === "string" && typeof user === "string") {
         comparisonResult[id] = correct === user ? "Correct" : "Incorrect";
       } else {
         comparisonResult[id] = "Incorrect";
       }
     });
-  
+
     return comparisonResult;
   };
 
-  const handleRadioChange = useCallback((questionID: string, choice: string) => {
-    setAnswers((prev) => ({
-      answers: {
-        ...prev.answers,
-        [questionID]: choice, 
-      }
-    }));
-  }, []);
-  
-  const handleCheckboxChange = useCallback((questionID: string, choice: string) => {
-    setAnswers((prev) => {
-      const selectedChoices = Array.isArray(prev.answers?.[questionID]) ? (prev.answers[questionID] as string[]) : [];
-      
-      return {
+  const handleRadioChange = useCallback(
+    (questionID: string, choice: string) => {
+      setAnswers((prev) => ({
         answers: {
           ...prev.answers,
-          [questionID]: selectedChoices.includes(choice)
-            ? selectedChoices.filter((id) => id !== choice)
-            : [...selectedChoices, choice], 
-        }
-      };
-    });
-  }, []);
+          [questionID]: choice,
+        },
+      }));
+    },
+    []
+  );
+
+  const handleCheckboxChange = useCallback(
+    (questionID: string, choice: string) => {
+      setAnswers((prev) => {
+        const selectedChoices = Array.isArray(prev.answers?.[questionID])
+          ? (prev.answers[questionID] as string[])
+          : [];
+
+        return {
+          answers: {
+            ...prev.answers,
+            [questionID]: selectedChoices.includes(choice)
+              ? selectedChoices.filter((id) => id !== choice)
+              : [...selectedChoices, choice],
+          },
+        };
+      });
+    },
+    []
+  );
 
   const handleClickNext = async (menuID: number, moduleID: number) => {
     const data = {
       participant_module_progress: "completed",
       module: Number(selectedModule.id),
-      participant: Number(user.user.id)
+      participant: Number(user.user.id),
     };
     await updateModuleStatus(data);
-    changeModuleProgress(menuID, moduleID)
-  
-    const isLastModule = currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
+    changeModuleProgress(menuID, moduleID);
+
+    const isLastModule =
+      currentModuleIndex >= menus[currentMenuIndex]?.modules.length - 1;
     const isLastMenu = currentMenuIndex >= menus.length - 1;
 
     setShowNextButton(false);
     setResult({});
     setAnswers({ answers: {} });
-  
+
     if (!isLastModule) {
       setCurrentModuleIndex(currentModuleIndex + 1);
     } else if (!isLastMenu) {
@@ -184,7 +251,6 @@ const CourseTaking = () => {
       console.log("End of course reached.");
     }
   };
-  
 
   const handleClickPrevious = () => {
     if (currentModuleIndex > 0) {
@@ -193,7 +259,7 @@ const CourseTaking = () => {
       if (currentMenuIndex > 0) {
         const previousMenuIndex = currentMenuIndex - 1;
         const lastModuleIndex = menus[previousMenuIndex].modules.length - 1;
-  
+
         setCurrentMenuIndex(previousMenuIndex); // Go to previous menu
         setCurrentModuleIndex(lastModuleIndex); // Go to last module in previous menu
       } else {
@@ -201,14 +267,14 @@ const CourseTaking = () => {
       }
     }
   };
-  
+
   useEffect(() => {
-    const getCourseDetails = async() => {
-      const response = await getCourseContent(Number(finalID), user.user.id)
-      setMenus(response)
-    }
-    getCourseDetails()
-  }, [finalID])
+    const getCourseDetails = async () => {
+      const response = await getCourseContent(Number(finalID), user.user.id);
+      setMenus(response);
+    };
+    getCourseDetails();
+  }, [finalID]);
 
   useEffect(() => {
     const getModuleDetails = async () => {
@@ -216,16 +282,17 @@ const CourseTaking = () => {
       if (!moduleID) return;
       setShowNextButton(false);
       const response = await getSingleModule(user.user.id, moduleID);
-      
+
       if (firstLoad) {
-        if (response.participant_module_progress === 'completed') {
-          const isLastModule = currentModuleIndex >= menus[currentMenuIndex].modules.length - 1;
+        if (response.participant_module_progress === "completed") {
+          const isLastModule =
+            currentModuleIndex >= menus[currentMenuIndex].modules.length - 1;
           const isLastMenu = currentMenuIndex >= menus.length - 1;
-  
+
           if (!isLastModule) {
-            setCurrentModuleIndex(prev => prev + 1);
+            setCurrentModuleIndex((prev) => prev + 1);
           } else if (!isLastMenu) {
-            setCurrentMenuIndex(prev => prev + 1);
+            setCurrentMenuIndex((prev) => prev + 1);
             setCurrentModuleIndex(0);
           } else {
             setSelectedModule(response); // All modules completed
@@ -239,209 +306,379 @@ const CourseTaking = () => {
         setSelectedModule(response);
       }
     };
-  
+
     if (user.user.id && menus.length > 0) {
       getModuleDetails();
     }
   }, [currentMenuIndex, currentModuleIndex, menus]);
-  
-  const goToSurveyForm = async(flag: boolean, menuID: number = 0, moduleID: number = 0) => {
-    if(flag) {
+
+  const goToSurveyForm = async (
+    flag: boolean,
+    menuID: number = 0,
+    moduleID: number = 0
+  ) => {
+    if (flag) {
       const data = {
         participant_module_progress: "completed",
         module: Number(selectedModule.id),
-        participant: Number(user.user.id)
+        participant: Number(user.user.id),
       };
 
       await updateModuleStatus(data);
-      changeModuleProgress(menuID, moduleID)
+      changeModuleProgress(menuID, moduleID);
     }
-    setShowSurveyForm(true)
-  }
+    setShowSurveyForm(true);
+  };
 
   const changeModuleProgress = (menuID: number, moduleID: number) => {
-    setMenus(prevMenus =>
-      prevMenus.map(menu =>
+    setMenus((prevMenus) =>
+      prevMenus.map((menu) =>
         menu.id === menuID
           ? {
               ...menu,
-              modules: menu.modules.map(module =>
+              modules: menu.modules.map((module) =>
                 module.id === moduleID
-                  ? { ...module, module_progress: 'completed' }
+                  ? { ...module, module_progress: "completed" }
                   : module
               ),
             }
           : menu
       )
     );
-  }
+  };
 
-  const updateStatus = async() => {
-    const res = await updateCourseStatus(Number(finalID), user.user.id, {participant_status: 'pending survey'})
-    if(res) {
+  const updateStatus = async () => {
+    const res = await updateCourseStatus(Number(finalID), user.user.id, {
+      participant_status: "pending survey",
+    });
+    if (res) {
       setShowMessageBox(true);
       setMessageInfo({
         status: "info",
         title: "Survey Available for 7 Days",
-        message: "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
-      })
+        message:
+          "Please complete the survey within 7 days. After this period, the survey will automatically close and you will no longer be able to submit your response.",
+      });
       setTimeout(() => {
         setShowMessageBox(false);
       }, 5000);
     }
-  }
+  };
 
   useEffect(() => {
-    const pendingSurvey = async() => {
-      const isLastModule = currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1
-      const isContainsQuestionnaire = selectedModule.content.some(item => item.type === 'questionnaire')
+    const pendingSurvey = async () => {
+      const isLastModule =
+        currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 &&
+        currentMenuIndex === menus?.length - 1;
+      const isContainsQuestionnaire = selectedModule.content.some(
+        (item) => item.type === "questionnaire"
+      );
 
-      if(isLastModule && !isContainsQuestionnaire) {
-        updateStatus()
-      } else if(isLastModule && isContainsQuestionnaire && showNextButton) {
-        await updateStatus()
+      if (isLastModule && !isContainsQuestionnaire) {
+        updateStatus();
+      } else if (isLastModule && isContainsQuestionnaire && showNextButton) {
+        await updateStatus();
       }
-    }
-    pendingSurvey()
-  }, [selectedModule, result])
+    };
+    pendingSurvey();
+  }, [selectedModule, result]);
 
   const [collapseSideBar, setCollapseSideBar] = useState<boolean>(false);
   const sortedItems = (items: ModulePreview[]) => {
     return items.sort((a, b) => a.position - b.position);
-  }
+  };
 
   return (
-     <section className="flex flex-col w-full h-screen top-0 left-0 fixed inset-1">
-        <header className="w-full h-fit py-5 px-10 bg-white flex items-center justify-start gap-5 border-2 border-gray-200">
-          <section className="flex items-center justify-center gap-2">
-            <img src={NIALogo} alt="NIA Logo" className="w-12 h-12 rounded-full bg-gray-300" />
-            <h1 className="text-p-lg font-medium">NIA-LMS</h1>
+    <section className="flex flex-col w-full h-screen top-0 left-0 fixed inset-1">
+      <header className="w-full h-fit py-5 px-10 bg-white flex items-center justify-start gap-5 border-2 border-gray-200">
+        <section className="flex items-center justify-center gap-2">
+          <img
+            src={NIALogo}
+            alt="NIA Logo"
+            className="w-12 h-12 rounded-full bg-gray-300"
+          />
+          <h1 className="text-p-lg font-medium">NIA-LMS</h1>
+        </section>
+        <div className="border border-gray-200 rounded-lg h-full"></div>
+        <h1 className="font-medium text-h-h5">{course_title}</h1>
+      </header>
+      <div className="flex flex-1 overflow-hidden">
+        <nav
+          className={`transition-all duration-300 ${
+            collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
+          } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
+        >
+          <section className="flex items-center justify-between gap-10 pb-3">
+            <button
+              onClick={() => window.history.back()}
+              className="flex flex-row items-center gap-1 font-medium"
+            >
+              <IoArrowBackCircleOutline /> Go back
+            </button>
+            <button
+              className="block md:hidden"
+              onClick={() => setCollapseSideBar(!collapseSideBar)}
+            >
+              <IoClose size={24} />
+            </button>
           </section>
-          <div className="border border-gray-200 rounded-lg h-full"></div>
-          <h1 className="font-medium text-h-h5">{course_title}</h1>
-        </header>
-        <div className="flex flex-1 overflow-hidden">
-          <nav
-            className={`transition-all duration-300 ${
-              collapseSideBar ? "w-full px-5" : "w-0 overflow-hidden"
-            } md:w-1/4 h-full flex flex-col md:px-10 py-5 absolute md:relative bg-white`}
-          >  
-            <section className="flex items-center justify-between gap-10 pb-3">
-              <button onClick={() => window.history.back()} className="flex flex-row items-center gap-1 font-medium">
-                <IoArrowBackCircleOutline/>{" "} Go back
-              </button>
-              <button className="bg-red-300 h-fit rounded-full p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
-            </section>
-            {menus && menus.map((item, menuIndex) => (
+          {menus &&
+            menus.map((item, menuIndex) => (
               <section key={item.id} className="w-full rounded-md my-2">
-                <header className={`w-full p-3 flex flex-row items-center justify-between bg-c-blue-5 text-c-blue-50 border border-c-blue-50
+                <header
+                  className={`w-full p-3 flex flex-row items-center justify-between bg-c-blue-5 text-c-blue-50 border border-c-blue-50
                   ${!collapse[menuIndex] ? "rounded-t-md" : "rounded-md"}`} // Use collapse state for each menu
                 >
                   <p>{item.title}</p>
-                  <button 
+                  <button
                     onClick={() => {
                       const newCollapse = [...collapse];
                       newCollapse[menuIndex] = !newCollapse[menuIndex]; // Toggle the collapse state for this menu
                       setCollapse(newCollapse); // Update the collapse state for this menu index
                     }}
-                    className={`${!collapse[menuIndex] ? "rotate-0" : "rotate-180"}`}
+                    className={`${
+                      !collapse[menuIndex] ? "rotate-0" : "rotate-180"
+                    }`}
                   >
                     <FaAngleDown />
                   </button>
                 </header>
-                <div className={`w-full p-3 bg-white rounded-b-md ${!collapse[menuIndex] ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50" : "hidden"}`}>
-                  {sortedItems(item.modules).map((module: ModulePreview, index) => (
-                    <div onClick={() => {
-                      if(!module.required || module.module_progress === 'completed') {
-                        setCurrentMenuIndex(menuIndex)
-                        setCurrentModuleIndex(index)
-                        setShowSurveyForm(false)
-                      } else {
-                        return null
-                      }
-                    }} key={module.id} className="flex flex-row items-center gap-2 cursor-pointer">
-                      <TbAlignLeft/>{" "} {module.title}{" "}{module.required && module.module_progress === 'in progress' && module.id !== selectedModule.id ? <div className="flex-1 flex items-center justify-end"><CiLock color="red"/></div> : ""}
-                    </div>
-                  ))}
+                <div
+                  className={`w-full p-3 bg-white rounded-b-md ${
+                    !collapse[menuIndex]
+                      ? "block border-x border-b border-x-c-blue-50 border-b-c-blue-50"
+                      : "hidden"
+                  }`}
+                >
+                  {sortedItems(item.modules).map(
+                    (module: ModulePreview, index) => (
+                      <div
+                        onClick={() => {
+                          if (
+                            !module.required ||
+                            module.module_progress === "completed"
+                          ) {
+                            setCurrentMenuIndex(menuIndex);
+                            setCurrentModuleIndex(index);
+                            setShowSurveyForm(false);
+                          } else {
+                            return null;
+                          }
+                        }}
+                        key={module.id}
+                        className="flex flex-row items-center gap-2 cursor-pointer"
+                      >
+                        <TbAlignLeft /> {module.title}{" "}
+                        {module.required &&
+                        module.module_progress === "in progress" &&
+                        module.id !== selectedModule.id ? (
+                          <div className="flex-1 flex items-center justify-end">
+                            <CiLock color="red" />
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    )
+                  )}
                 </div>
               </section>
             ))}
-            <button onClick={() => goToSurveyForm(false)} disabled={!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed'))} className={`${menus.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) ? 'bg-c-green-50 text-white' : 'bg-c-grey-20'} px-4 py-3 flex items-center justify-between rounded-md font-medium`}>Survey Form {!menus?.every((menu: MenuDataState) => menu.modules.every(module => module.module_progress === 'completed')) && <CiLock size={24}/>}</button>
-          </nav>
-          {selectedModule && (
-            <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
-              <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
-                <button className="bg-red-400 p-3 block md:hidden" onClick={() => setCollapseSideBar(!collapseSideBar)}></button>
-                <h6 className="text-f-light text-h-h6">{!showSurveyForm ? selectedModule.title : 'Survey Form'}</h6>
-              </div>
-              <div className="flex flex-col items-end gap-5 p-10">
-                {showSurveyForm ? (
-                  <SurveyForm courseID={Number(finalID)} userID={user.user.id} />
-                ) : (
-                  <>
-                    {selectedModule.content && selectedModule.content.map(item => {
-                      switch(item.type) {
-                        case 'questionnaire':
+          <button
+            onClick={() => goToSurveyForm(false)}
+            disabled={
+              !menus?.every((menu: MenuDataState) =>
+                menu.modules.every(
+                  (module) => module.module_progress === "completed"
+                )
+              )
+            }
+            className={`${
+              menus.every((menu: MenuDataState) =>
+                menu.modules.every(
+                  (module) => module.module_progress === "completed"
+                )
+              )
+                ? "bg-c-green-50 text-white"
+                : "bg-c-grey-20"
+            } px-4 py-3 flex items-center justify-between rounded-md font-medium`}
+          >
+            Survey Form{" "}
+            {!menus?.every((menu: MenuDataState) =>
+              menu.modules.every(
+                (module) => module.module_progress === "completed"
+              )
+            ) && <CiLock size={24} />}
+          </button>
+        </nav>
+        {selectedModule && (
+          <div className="border-l w-3/4 h-full flex-1 overflow-y-auto">
+            <div className="w-full h-20 bg-c-green-50 flex items-center p-5 gap-3">
+              <button
+                className="block md:hidden text-f-light"
+                onClick={() => setCollapseSideBar(!collapseSideBar)}
+              >
+                <RxHamburgerMenu size={20} />
+              </button>
+              <h6 className="text-f-light text-p-lg font-medium md:text-h-h6 md:font-semibold">
+                {!showSurveyForm ? selectedModule.title : "Survey Form"}
+              </h6>
+            </div>
+            <div className="flex flex-col items-end gap-5 p-10">
+              {showSurveyForm ? (
+                <SurveyForm courseID={Number(finalID)} userID={user.user.id} />
+              ) : (
+                <>
+                  {selectedModule.content &&
+                    selectedModule.content.map((item) => {
+                      switch (item.type) {
+                        case "questionnaire":
                           return (
-                            <QuestionCard 
+                            <QuestionCard
                               data={answers}
                               content={item}
                               addChoice={handleRadioChange}
                               addMultipleChoice={handleCheckboxChange}
-                              correctAnswer={result}/>
-                          )
-                        case 'separator':
-                          return (
-                            <CourseContentComponent content={item}/>
-                          )
-                        case 'document':
-                          return (
-                            <CourseContentComponent content={item}/>
-                          )
+                              correctAnswer={result}
+                            />
+                          );
+                        case "separator":
+                          return <CourseContentComponent content={item} />;
+                        case "document":
+                          return <CourseContentComponent content={item} />;
                       }
                     })}
-                    {((selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 &&  selectedModule.content.some(content => content.type === 'questionnaire' && content.questionnaireType === 'exam/quiz')) || (result && Object.entries(result).some(([, value]) => value === "Correct") && selectedModule.content.some(content => content.type === 'questionnaire' && content.questionnaireType === 'exam/quiz'))) && (
-                      <div className="w-full flex flex-col items-center justify-center">
-                        <div 
-                          className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
-                          ${parseFloat(String(score.percentage)) < 30 ? "bg-red-500 border-red-200"
-                            : parseFloat(String(score.percentage)) >= 30 && parseFloat(String(score.percentage)) <= 70
-                          ? "bg-amber-500 border-amber-200" : "bg-green-500 border-c-blue-10"}`}
-                        >
-                          <p className="font-medium text-center">You Score</p>
-                          <p className="text-h-h5 font-semibold text-center">{score.userScore}/{score.totalScore}</p>
-                        </div>
-                        {parseFloat(String(score.percentage)) < 30
-                          ? <p className="text-p-rg font-medium text-red-500">Better luck next time</p>
-                          : parseFloat(String(score.percentage)) >= 30 && parseFloat(String(score.percentage)) <= 70
-                          ? <p className="text-p-rg font-medium text-amber-500">You're doing okay</p>
-                          : <p className="text-p-rg font-medium text-green-500">Great job!</p>
-                        }
-                        <p className="text-p-sm font-medium text-c-grey-50">Your Performance: {score.percentage}%</p>
+                  {((selectedModule.submitted_answers &&
+                    Object.keys(selectedModule.submitted_answers).length > 0 &&
+                    selectedModule.content.some(
+                      (content) =>
+                        content.type === "questionnaire" &&
+                        content.questionnaireType === "exam/quiz"
+                    )) ||
+                    (result &&
+                      Object.entries(result).some(
+                        ([, value]) => value === "Correct"
+                      ) &&
+                      selectedModule.content.some(
+                        (content) =>
+                          content.type === "questionnaire" &&
+                          content.questionnaireType === "exam/quiz"
+                      ))) && (
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <div
+                        className={`w-32 h-32 rounded-full flex flex-col items-center justify-center text-f-light mb-2 border-4 border-double
+                          ${
+                            parseFloat(String(score.percentage)) < 30
+                              ? "bg-red-500 border-red-200"
+                              : parseFloat(String(score.percentage)) >= 30 &&
+                                parseFloat(String(score.percentage)) <= 70
+                              ? "bg-amber-500 border-amber-200"
+                              : "bg-green-500 border-c-blue-10"
+                          }`}
+                      >
+                        <p className="font-medium text-center">You Score</p>
+                        <p className="text-h-h5 font-semibold text-center">
+                          {score.userScore}/{score.totalScore}
+                        </p>
                       </div>
-                    )}
-                    {((selectedModule.content.some(item => item.type === "questionnaire") && Object.keys(selectedModule.submitted_answers || {}).length === 0) && !showNextButton) && (
+                      {parseFloat(String(score.percentage)) < 30 ? (
+                        <p className="text-p-rg font-medium text-red-500">
+                          Better luck next time
+                        </p>
+                      ) : parseFloat(String(score.percentage)) >= 30 &&
+                        parseFloat(String(score.percentage)) <= 70 ? (
+                        <p className="text-p-rg font-medium text-amber-500">
+                          You're doing okay
+                        </p>
+                      ) : (
+                        <p className="text-p-rg font-medium text-green-500">
+                          Great job!
+                        </p>
+                      )}
+                      <p className="text-p-sm font-medium text-c-grey-50">
+                        Your Performance: {score.percentage}%
+                      </p>
+                    </div>
+                  )}
+                  {selectedModule.content.some(
+                    (item) => item.type === "questionnaire"
+                  ) &&
+                    Object.keys(selectedModule.submitted_answers || {})
+                      .length === 0 &&
+                    !showNextButton && (
                       <div className="w-full flex items-center justify-center">
-                        <button onClick={handleSubmit} className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70">
+                        <button
+                          onClick={handleSubmit}
+                          className="w-fit h-fit px-8 py-2 rounded-full text-f-light text-p-lg bg-c-blue-50 hover:bg-c-blue-40 active:text-c-blue-70"
+                        >
                           Submit
                         </button>
                       </div>
                     )}
-                    <div className="w-full flex items-center justify-between">
-                      <button onClick={handleClickPrevious} disabled={currentModuleIndex === 0 && currentMenuIndex === 0} className={`${currentModuleIndex === 0 && currentMenuIndex === 0 ? 'bg-gray-100 text-gray-500' : 'bg-c-green-50'} w-fit font-medium px-5 py-2 rounded-md text-f-light`}>Previous</button>
-                      {(selectedModule.content.some(item => item.type !== "questionnaire") || selectedModule.submitted_answers && Object.keys(selectedModule.submitted_answers).length > 0 || Object.keys(result).length > 0 || showNextButton) && (
-                        <button onClick={currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? () => goToSurveyForm(true, menus[currentMenuIndex].id, selectedModule.id) : () => handleClickNext(menus[currentMenuIndex].id, selectedModule.id)} className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}>{currentModuleIndex === menus?.[currentMenuIndex]?.modules?.length - 1 && currentMenuIndex === menus?.length - 1 ? 'Survey Form' : 'Next' }</button>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
+                  <div className="w-full flex items-center justify-between">
+                    <button
+                      onClick={handleClickPrevious}
+                      disabled={
+                        currentModuleIndex === 0 && currentMenuIndex === 0
+                      }
+                      className={`${
+                        currentModuleIndex === 0 && currentMenuIndex === 0
+                          ? "bg-gray-100 text-gray-500"
+                          : "bg-c-green-50"
+                      } w-fit font-medium px-5 py-2 rounded-md text-f-light`}
+                    >
+                      Previous
+                    </button>
+                    {(selectedModule.content.some(
+                      (item) => item.type !== "questionnaire"
+                    ) ||
+                      (selectedModule.submitted_answers &&
+                        Object.keys(selectedModule.submitted_answers).length >
+                          0) ||
+                      Object.keys(result).length > 0 ||
+                      showNextButton) && (
+                      <button
+                        onClick={
+                          currentModuleIndex ===
+                            menus?.[currentMenuIndex]?.modules?.length - 1 &&
+                          currentMenuIndex === menus?.length - 1
+                            ? () =>
+                                goToSurveyForm(
+                                  true,
+                                  menus[currentMenuIndex].id,
+                                  selectedModule.id
+                                )
+                            : () =>
+                                handleClickNext(
+                                  menus[currentMenuIndex].id,
+                                  selectedModule.id
+                                )
+                        }
+                        className={`bg-c-green-50 w-fit font-medium px-5 py-2 rounded-md text-f-light`}
+                      >
+                        {currentModuleIndex ===
+                          menus?.[currentMenuIndex]?.modules?.length - 1 &&
+                        currentMenuIndex === menus?.length - 1
+                          ? "Survey Form"
+                          : "Next"}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-          )}
-        </div>
-        {showMessageBox && (<MessageBox status={messageInfo.status} title={messageInfo.title} message={messageInfo.message}/>)}
+          </div>
+        )}
+      </div>
+      {showMessageBox && (
+        <MessageBox
+          status={messageInfo.status}
+          title={messageInfo.title}
+          message={messageInfo.message}
+        />
+      )}
     </section>
-  )
-}
+  );
+};
 
-export default CourseTaking
+export default CourseTaking;

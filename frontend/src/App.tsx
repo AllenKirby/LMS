@@ -28,7 +28,11 @@ import {
 import { Resources } from "./pages";
 import { CourseView } from "./Components";
 import { ProtectedRoute } from "./pages/Auth/ProtectedRoute";
-import { CoursesTrainingContainer, Reviewer, ViewParticipants } from "./pages/Reviewer";
+import {
+  CoursesTrainingContainer,
+  Reviewer,
+  ViewParticipants,
+} from "./pages/Reviewer";
 
 function App() {
   //const cookies = new Cookie();
@@ -68,8 +72,8 @@ function App() {
                 path="externaltraining/:id"
                 element={<ExternalTrainingView />}
               />
-              <Route path="courseview/:id" element={<CourseView />}/>
-              <Route path="viewresponses/:id" element={<SurveyForm />}/>
+              <Route path="courseview/:id" element={<CourseView />} />
+              <Route path="viewresponses/:id" element={<SurveyForm />} />
               <Route path="courseCreation" element={<CourseCreation />}>
                 <Route path="courseOverview" element={<CourseOverview />} />
                 <Route
@@ -86,10 +90,10 @@ function App() {
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={["reviewer"]}/>}>
+        <Route element={<ProtectedRoute allowedRoles={["reviewer"]} />}>
           <Route path="/reviewer" element={<MainPage />}>
-            <Route path="program" element={<CoursesTrainingContainer/>}>
-              <Route path="data" element={<Reviewer />}/>
+            <Route path="program" element={<CoursesTrainingContainer />}>
+              <Route path="data" element={<Reviewer />} />
               <Route path="course/:data" element={<ViewParticipants />} />
               <Route path="training/:data" element={<ViewParticipants />} />
             </Route>
